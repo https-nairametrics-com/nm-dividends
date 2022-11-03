@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 
 # Create your models here.
@@ -10,22 +11,40 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, username, email, password=None):
-        if username is None:
+    def create_user(self, username, firstname, lastname, address, referral_code, phone, email, password=None):
+        '''if username is None:
             raise TypeError('Users should have a username')
+            '''
         if email is None:
             raise TypeError('Users should have a Email')
 
-        user = self.model(username=username, email=self.normalize_email(email))
+        user = self.model(username=username, firstname=firstname, address=address, lastname=lastname,
+                          phone=phone, referral_code=referral_code, email=self.normalize_email(email))
+        #user = self.model(email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, username, email, password=None):
+    def create_with_referral_user(self, username, firstname, lastname, address, referral_code, phone, email, password=None):
+        '''if username is None:
+            raise TypeError('Users should have a username')
+            '''
+        if email is None:
+            raise TypeError('Users should have a Email')
+
+        user = self.model(username=username, firstname=firstname, address=address, lastname=lastname,
+                          phone=phone, referral_code=referral_code, email=self.normalize_email(email))
+        #user = self.model(email=self.normalize_email(email))
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, email, password=None):
         if password is None:
             raise TypeError('Password should not be none')
 
-        user = self.create_user(username, email, password)
+        #user = self.create_user(username, email, password)
+        user = self.create_user(email, password)
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -40,10 +59,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True, db_index=True)
     email = models.EmailField(max_length=255, unique=True, db_index=True)
     firstname = models.CharField(max_length=255)
-    laststname = models.CharField(max_length=255)
+    lastname = models.CharField(max_length=255)
     address = models.TextField()
     phone = models.CharField(max_length=255)
+    referral_code = models.CharField(
+        max_length=255, unique=True, db_index=True)
     is_verified = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -66,3 +88,19 @@ class User(AbstractBaseUser, PermissionsMixin):
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         }
+
+    def refer(self):
+        return self.referral_code
+
+
+class Referrals(models.Model):
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='owners_authentication_set')
+    referred = models.ForeignKey(
+        User, related_name='referral_authentication_set', on_delete=models.CASCADE)
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.status

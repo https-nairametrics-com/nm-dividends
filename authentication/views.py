@@ -1,11 +1,22 @@
+from urllib import request
 from django.shortcuts import render
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
+from rest_framework import status
+#from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+#from core.auth.serializers import LoginSerializer, RegistrationSerializer
+
+
 from rest_framework import generics, status, views, permissions
-from .serializers import RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
+from .serializers import SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
-from .models import User
+from .models import Referrals, User
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -19,12 +30,90 @@ from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnico
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-from .utils import Util
+from .utils import Util, username_generator, referral_generator
 from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 import os
 import datetime
 # test
+
+
+class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
+    permission_classes = (AllowAny,)
+    http_method_names = ['post']
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class LoginViewSet(ModelViewSet, TokenObtainPairView):
+    serializer_class = SigninSerializer
+    permission_classes = (AllowAny,)
+    http_method_names = ['post']
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class Invite(views.APIView):
+
+    serializer_class = InviteSerializer
+    serializer_referral = ReferralSerializer
+
+    invite_param_config = openapi.Parameter(
+        'user', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[invite_param_config])
+    def get(self, request):
+        referral_code = request.GET.get('user')
+
+        item = User.objects.get(referral_code=referral_code)
+        # print(item)
+        if item.is_approved:
+            serializer = InviteSerializer(item)
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error",  "error": "Object with referral code does not exists"},
+                            status=status.HTTP_400_BAD_REQUEST)
+    '''                        
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY)
+            user = User.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as identifier:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def get(self, request, referral_code):
+        if referral_code:
+            item = User.objects.filter(
+                is_verified=True, referral_code=referral_code)
+            if item.exists():
+                serializer = InviteSerializer(item)
+                return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+            else:
+                return Response({"res": "Object with referral code does not exists"},
+                                status=status.HTTP_400_BAD_REQUEST)
+    '''
 
 
 class CustomRedirect(HttpResponsePermanentRedirect):
@@ -38,7 +127,16 @@ class RegisterView(generics.GenericAPIView):
     renderer_classes = (UserRenderer,)
 
     def post(self, request):
-        user = request.data
+        user = {
+            'firstname': request.data.get('firstname'),
+            'lastname': request.data.get('lastname'),
+            'username': str(username_generator()),
+            'address': request.data.get('address'),
+            'referral_code': str(referral_generator()),
+            'phone': request.data.get('phone'),
+            'password': request.data.get('password'),
+            'email': request.data.get('email'), }
+        #user = request.data
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -56,6 +154,65 @@ class RegisterView(generics.GenericAPIView):
 
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
+
+
+class RegisterReferralView(generics.GenericAPIView):
+
+    serializer_class = RegisterSerializer
+    referal_serializer = ReferralSerializer
+    renderer_classes = (UserRenderer,)
+
+    def post(self, request):
+        if request.data.get('referral_code'):
+            check_user = User.objects.get(
+                referral_code=request.data.get('referral_code'))
+            print(check_user.id)
+            if check_user:
+                today = datetime.date.today()
+                thirty_days_ago = today - datetime.timedelta(days=30)
+                check_refers = Referrals.objects.filter(
+                    referred=check_user.id, created_at__gte=thirty_days_ago)
+                if len(check_refers) > 4:
+                    return Response({"status": "error",  "error": "User with referral code exceeded monthly limit"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    user = {
+                        'firstname': request.data.get('firstname'),
+                        'lastname': request.data.get('lastname'),
+                        'username': str(username_generator()),
+                        'address': request.data.get('address'),
+                        'referral_code': str(referral_generator()),
+                        'phone': request.data.get('phone'),
+                        'password': request.data.get('password'),
+                        'email': request.data.get('email'), }
+                    #user = request.data
+                    serializer = self.serializer_class(data=user)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    user_data = serializer.data
+                    refdata = {'owner': user_data['id'],
+                               'referred': check_user.id,
+                               'status': False, }
+                    re_serializer = self.referal_serializer(data=refdata)
+                    re_serializer.is_valid(raise_exception=True)
+                    re_serializer.save()
+                    user = User.objects.get(email=user_data['email'])
+                    token = RefreshToken.for_user(user).access_token
+                    current_site = get_current_site(request).domain
+                    relativeLink = reverse('email-verify')
+                    absurl = 'http://'+current_site + \
+                        relativeLink+"?token="+str(token)
+                    print(absurl)
+                    email_body = 'Hi '+user.username + \
+                        ' Use the link below to verify your email \n' + absurl
+                    data = {'email_body': email_body, 'to_email': user.email,
+                            'email_subject': 'Verify your email'}
+
+                    Util.send_email(data)
+                    return Response(user_data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"status": "error",  "error": "Referral code does not exists"},
+                                status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyEmail(views.APIView):
@@ -171,6 +328,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class LoadUserView(APIView):
     def get(self, request, format=None):
         try:
@@ -180,14 +338,14 @@ class LoadUserView(APIView):
             return Response(
                 {'user': user.data},
                 status=status.HTTP_200_OK
-            )        
+            )
 
         except:
             return Response(
                 {'error': 'Something went wrong when trying to load user'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-            
+
 
 class LoginView2(APIView):
     def post(self, request):
@@ -225,3 +383,39 @@ class LoginView2(APIView):
 
         return response
 
+
+class LoginView3(APIView):
+    def post(self, request):
+        email = request.data['email']
+        password = request.data['password']
+
+        user = User.objects.filter(email=email).first()
+
+        if user is None:
+            raise AuthenticationFailed('User not found!')
+
+        if not user.check_password(password):
+            raise AuthenticationFailed('Incorrect password')
+
+        payload = {
+            'id': user.id,
+            'exp': datetime.datetime.now() + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.now(),
+        }
+
+        token = jwt.encode(payload, 'secret',
+                           algorithm='HS256').decode('utf-8')
+
+        '''response = Response({
+            "jwt": token
+        }) 
+        '''
+        response = Response()
+
+        # Send only cookie
+        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.data = {
+            'jwt': token
+        }
+
+        return response

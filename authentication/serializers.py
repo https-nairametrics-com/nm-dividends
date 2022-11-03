@@ -1,12 +1,30 @@
 
 from rest_framework import serializers
-from .models import User
+from .models import User, Referrals
 from django.contrib import auth
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.settings import api_settings
+from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+
+
+class InviteSerializer(serializers.ModelSerializer):
+    referral_code = serializers.CharField(max_length=555)
+
+    class Meta:
+        model = User
+        fields = ['id', 'referral_code']
+
+
+class ReferralSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Referrals
+        fields = ['id', 'referred', 'owner', 'status']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -18,7 +36,33 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password']
+        fields = ['id', 'email', 'username', 'password', 'firstname',
+                  'lastname', 'phone', 'address', 'referral_code']
+
+    def validate(self, attrs):
+        email = attrs.get('email', '')
+        username = attrs.get('username', '')
+
+        if not username.isalnum():
+            raise serializers.ValidationError(
+                self.default_error_messages)
+        return attrs
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
+
+class RegisterWithReferralSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        max_length=68, min_length=6, write_only=True)
+
+    default_error_messages = {
+        'username': 'The username should only contain alphanumeric characters'}
+
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'password', 'firstname',
+                  'lastname', 'phone', 'address', 'referral_code']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -39,6 +83,23 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['token']
+
+
+class SigninSerializer(TokenObtainPairSerializer):
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        refresh = self.get_token(self.user)
+
+        data['user'] = UserSerializer(self.user).data
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+
+        if api_settings.UPDATE_LAST_LOGIN:
+            update_last_login(None, self.user)
+
+        return data
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -66,7 +127,9 @@ class LoginSerializer(serializers.ModelSerializer):
         email = attrs.get('email', '')
         password = attrs.get('password', '')
         filtered_user_by_email = User.objects.filter(email=email)
-        user = auth.authenticate(email=email, password=password)
+        user = auth.authenticate(**attrs)
+        print(auth.authenticate(**attrs))
+        # print(email)
 
         if filtered_user_by_email.exists() and filtered_user_by_email[0].auth_provider != 'email':
             raise AuthenticationFailed(
@@ -147,7 +210,8 @@ class LogoutSerializer(serializers.Serializer):
         except TokenError:
             self.fail('bad_token')
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')            
+        fields = ('username', 'email')
