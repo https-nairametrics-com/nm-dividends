@@ -7,7 +7,7 @@ from authentication.models import User
 class UserInvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['firstname', 'lastname']
+        fields = ['id', 'firstname', 'lastname']
 
 
 class PeriodInvestmentSerializer(serializers.ModelSerializer):
@@ -27,21 +27,32 @@ class RoomSerializer(serializers.ModelSerializer):
 class GallerySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = InvestmentRoom
-        fields = ['investment', 'gallery',
-                  'is_verified']
+        model = Gallery
+        fields = ['id', 'investment', 'gallery',
+                  'is_featured']
 
 
 class InvestmentSerializer(serializers.ModelSerializer):
-    room_name = RoomSerializer(read_only=False)
+    gallery_set = serializers.StringRelatedField(many=True)
+
+    room_name = RoomSerializer()
     period_details = PeriodInvestmentSerializer(read_only=False)
     user_details = UserInvestmentSerializer(read_only=False)
-    images = GallerySerializer(read_only=False)
+    #images = GallerySerializer()
 
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'name', 'description',
-                  'amount', 'room_name', 'images', 'user_details', 'period', 'period_details', 'roi',
+                  'amount', 'room_name', 'gallery_set', 'user_details', 'period_details', 'roi',
+                  'annualized', 'risk', 'features', 'is_verified']
+
+
+class InvestmentOnlySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Investment
+        fields = ['id', 'name', 'description',
+                  'amount', 'room', 'period', 'roi',
                   'annualized', 'risk', 'features', 'is_verified']
 
 

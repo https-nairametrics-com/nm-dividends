@@ -2,9 +2,15 @@ from email.policy import default
 from django.db import models
 from authentication.models import User
 from investor.models import Period, Risk
-
+from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.fields.jsonb import JSONField
 
 # Create your models here.
+
+
+def upload_to(instance, filename):
+    return 'posts/{filename}'.format(filename=filename)
+
 
 class InvestmentRoom(models.Model):
     name = models.CharField(max_length=255)
@@ -25,7 +31,8 @@ class Investment(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     room = models.ForeignKey(to=InvestmentRoom, on_delete=models.CASCADE)
-    period = models.ForeignKey(to=Period, on_delete=models.CASCADE)
+    period = models.ForeignKey(
+        to=Period, on_delete=models.CASCADE, related_name='investment_period')
     amount = models.CharField(max_length=255)
     roi = models.CharField(max_length=255)
     annualized = models.CharField(max_length=255)
@@ -41,8 +48,10 @@ class Investment(models.Model):
 
 class Gallery(models.Model):
     investment = models.ForeignKey(
-        to=Investment, on_delete=models.CASCADE, related_name='investment_investment_set')
-    gallery = models.CharField(max_length=255)
+        to=Investment, on_delete=models.CASCADE, related_name='gallery_set')
+    gallery = models.ImageField(
+        _("Gallery"), upload_to=upload_to, default='post/default.jpg')
+    #gallery = models.CharField(max_length=255)
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
