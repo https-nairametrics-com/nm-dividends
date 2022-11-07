@@ -36,7 +36,7 @@ itypes==1.2.0
 jinja2==2.11.2
 #jpeg==9e
 #krb5==1.19.2
-lerc==3.0
+lerc==0.1.0
 libdeflate==1.8
 libpng==1.6.37
 #libpq==12.9
