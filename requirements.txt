@@ -39,7 +39,8 @@ jinja2==2.11.2
 #krb5==1.19.2
 lerc==0.1.0
 #libdeflate==1.8
-libpng==1.6.37
+#libpng==1.6.37
+libpng-bins==0.0.3
 #libpq==12.9
 libprotobuf==3.13.0.1
 libtiff==4.4.0
