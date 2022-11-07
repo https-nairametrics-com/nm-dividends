@@ -43,7 +43,7 @@ lerc==0.1.0
 libpng-bins==0.0.3
 #libpq==12.9
 #libprotobuf==3.13.0.1
-libtiff==4.4.0
+#libtiff==4.4.0
 libwebp==1.2.4
 libwebp-base==1.2.4
 lz4-c==1.9.3
