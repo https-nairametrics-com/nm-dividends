@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'expenses',
     'income',
     'investor',
-    'investment'
+    'investment',
+    # 'whitenoise.runserver_nostatic',
 ]
 
 SWAGGER_SETTINGS = {
@@ -69,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'property.urls'
@@ -96,7 +98,9 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://relaxed-curie-e9a516.netlify.app",
     "http://127.0.0.1:3080",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "https://yields-room.herokuapp.com/",
+    "https://yieldsroom.herokuapp.com/"
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
@@ -197,6 +201,7 @@ USE_L10N = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
