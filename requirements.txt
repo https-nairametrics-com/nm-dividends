@@ -70,7 +70,7 @@ pyopenssl==22.0.0
 pyparsing==2.4.7
 pysocks==1.7.1
 #python==3.7.13
-python-coreapi==2.3.3
+#python-coreapi==2.3.3
 python-coreschema==0.0.4
 python-dateutil==2.8.1
 python-twitter==3.5
