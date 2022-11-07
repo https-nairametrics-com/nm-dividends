@@ -13,6 +13,7 @@ chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
 cryptography==38.0.1
+deflate==0.3.0
 django==2.2.5
 django-cors-headers==3.13.0
 djangorestframework==3.13.1
@@ -37,7 +38,7 @@ jinja2==2.11.2
 #jpeg==9e
 #krb5==1.19.2
 lerc==0.1.0
-libdeflate==1.8
+#libdeflate==1.8
 libpng==1.6.37
 #libpq==12.9
 libprotobuf==3.13.0.1
