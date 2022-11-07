@@ -92,7 +92,7 @@ uritemplate==4.1.1
 urllib3==1.25.9
 vc==14.2
 vs2015_runtime==14.27.29016
-webp=0.1.4
+webp==0.1.4
 wheel==0.24.0
 win_inet_pton==1.1.0
 wincertstore==0.2
