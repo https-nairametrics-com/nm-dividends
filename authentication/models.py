@@ -60,10 +60,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, db_index=True)
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
-    address = models.TextField()
-    phone = models.CharField(max_length=255)
+    address = models.TextField(null=True)
+    phone = models.CharField(max_length=255, null=True)
     referral_code = models.CharField(
-        max_length=255, unique=True, db_index=True)
+        max_length=255, null=True, unique=True, db_index=True)
     is_verified = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
