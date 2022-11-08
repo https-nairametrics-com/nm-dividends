@@ -1,4 +1,4 @@
-Income Expenses API
+Property API
 
 ## Installation steps
 
