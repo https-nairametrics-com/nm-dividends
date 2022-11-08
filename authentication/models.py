@@ -11,16 +11,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, username, email, password=None):
+    def create_user(self, username, firstname, lastname, address, referral_code, phone, email, password=None):
         '''if username is None:
             raise TypeError('Users should have a username')
             '''
         if email is None:
             raise TypeError('Users should have a Email')
 
-        # user = self.model(username=username, firstname=firstname, address=address, lastname=lastname,
-            # phone=phone, referral_code=referral_code, email=self.normalize_email(email))
-        user = self.model(username=username, email=self.normalize_email(email))
+        user = self.model(username=username, firstname=firstname, address=address, lastname=lastname,
+                          phone=phone, referral_code=referral_code, email=self.normalize_email(email))
+        # user = self.model(username=username, #email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
@@ -58,8 +58,8 @@ AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google',
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True, db_index=True)
     email = models.EmailField(max_length=255, unique=True, db_index=True)
-    firstname = models.CharField(max_length=255)
-    lastname = models.CharField(max_length=255)
+    firstname = models.CharField(max_length=255, null=True)
+    lastname = models.CharField(max_length=255, null=True)
     address = models.TextField(null=True)
     phone = models.CharField(max_length=255, null=True)
     referral_code = models.CharField(
