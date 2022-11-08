@@ -28,7 +28,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 # SECRET_KEY = '@6p-h7#oy4unyb4+(@i&3eq(knbkvjkeyv&@*8+a%f45b@mfm1'
 SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 AUTH_USER_MODEL = 'authentication.User'
