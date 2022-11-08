@@ -34,8 +34,8 @@ DEBUG = False
 AUTH_USER_MODEL = 'authentication.User'
 # Application definition
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1',
-                 'yields-room.herokuapp.com', '*.herokuapp.com']
+ALLOWED_HOSTS = ['yields-room.herokuapp.com',
+                 '*.herokuapp.com', 'localhost', '127.0.0.1', ]
 
 
 INSTALLED_APPS = [
