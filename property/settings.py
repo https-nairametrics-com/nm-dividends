@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1',
-                 'yields-room.herokuapp.com', 'https://yields-room.herokuapp.com']
+                 'yields-room.herokuapp.com']
 
 AUTH_USER_MODEL = 'authentication.User'
 # Application definition
