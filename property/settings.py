@@ -16,6 +16,7 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import dj_database_url
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -32,9 +33,6 @@ DEBUG = True
 
 AUTH_USER_MODEL = 'authentication.User'
 # Application definition
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1',
-                 'yields-room.herokuapp.com', '*.herokuapp.com']
 
 
 INSTALLED_APPS = [
