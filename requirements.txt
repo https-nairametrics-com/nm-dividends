@@ -14,7 +14,8 @@ coreapi==2.3.3
 coreschema==0.0.4
 cryptography==38.0.1
 deflate==0.3.0
-django>=2.2.5
+dj-database-url==1.0.0
+django==3.2.16
 django-cors-headers==3.13.0
 djangorestframework==3.13.1
 djangorestframework-simplejwt==5.2.2
@@ -75,6 +76,7 @@ pysocks==1.7.1
 #python-coreapi==2.3.3
 #python-coreschema==0.0.4
 python-dateutil==2.8.1
+python-dotenv==0.21.0
 python-twitter==3.5
 python-xz==0.4.0
 pytz==2020.1
