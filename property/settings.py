@@ -29,11 +29,13 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1',
-                 'yields-room.herokuapp.com', '*.herokuapp.com']
 
 AUTH_USER_MODEL = 'authentication.User'
 # Application definition
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1',
+                 'yields-room.herokuapp.com', '*.herokuapp.com']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
