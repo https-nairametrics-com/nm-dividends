@@ -119,7 +119,6 @@ class SizeListAPIView(ListCreateAPIView):
 class SizeAllListAPIView(ListAPIView):
     serializer_class = SizeSerializer
     queryset = InvestmentSize.objects.all()
-    #permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.all()
