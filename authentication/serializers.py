@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import User, Referrals, Interests
+from .models import User, Referrals
 from django.contrib import auth
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
@@ -209,12 +209,6 @@ class LogoutSerializer(serializers.Serializer):
 
         except TokenError:
             self.fail('bad_token')
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('username', 'email')
 
 
 class UserSerializer(serializers.ModelSerializer):

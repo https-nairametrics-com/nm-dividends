@@ -6,7 +6,6 @@ from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
 
 from django.db import models
-from investor.models import Period, Interest, Risk, InvestmentSize
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -106,21 +105,3 @@ class Referrals(models.Model):
 
     def __str__(self):
         return self.status
-
-
-class Interests(models.Model):
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='interest_authentication_set')
-    risk = models.ForeignKey(
-        Risk, on_delete=models.CASCADE, related_name='interest_risk_set')
-    period = models.ForeignKey(
-        Period, on_delete=models.CASCADE, related_name='interest_period_set')
-    interest = models.ForeignKey(
-        Interest, on_delete=models.CASCADE, related_name='interest_interest_set')
-    investmentsize = models.ForeignKey(
-        InvestmentSize, on_delete=models.CASCADE, related_name='interest_size_set')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.created_at

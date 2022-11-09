@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Referrals, Interests
+from .models import User, Referrals
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -15,4 +15,3 @@ class InterestAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Referrals)
-admin.site.register(Interests, InterestAdmin)

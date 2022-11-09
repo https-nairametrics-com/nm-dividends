@@ -5,6 +5,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework import status
+from investor.models import InitialInterests
+from investor.serializers import InitialInterestSerializer
 #from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
@@ -124,6 +126,7 @@ class CustomRedirect(HttpResponsePermanentRedirect):
 class RegisterView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
+    ini_serializer = InitialInterestSerializer
     renderer_classes = (UserRenderer,)
 
     def post(self, request):
@@ -132,6 +135,7 @@ class RegisterView(generics.GenericAPIView):
             'lastname': request.data.get('lastname'),
             'username': str(username_generator()),
             'address': request.data.get('address'),
+            'linkedln': request.data.get('linkedln'),
             'referral_code': str(referral_generator()),
             'phone': request.data.get('phone'),
             'password': request.data.get('password'),
@@ -141,6 +145,14 @@ class RegisterView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         user_data = serializer.data
+        inidata = {'owner': user_data['id'],
+                   'risk': request.data.get('risk'),
+                   'period': request.data.get('period'),
+                   'interest': request.data.get('interest'),
+                   'investmentsize': request.data.get('investmentsize'), }
+        ini_serial = self.ini_serializer(data=inidata)
+        ini_serial.is_valid(raise_exception=True)
+        ini_serial.save()
         user = User.objects.get(email=user_data['email'])
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
@@ -160,6 +172,7 @@ class RegisterReferralView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
     referal_serializer = ReferralSerializer
+    ini_serializer = InitialInterestSerializer
     renderer_classes = (UserRenderer,)
 
     def post(self, request):
@@ -181,6 +194,7 @@ class RegisterReferralView(generics.GenericAPIView):
                         'lastname': request.data.get('lastname'),
                         'username': str(username_generator()),
                         'address': request.data.get('address'),
+                        'linkedln': request.data.get('linkedln'),
                         'referral_code': str(referral_generator()),
                         'phone': request.data.get('phone'),
                         'password': request.data.get('password'),
@@ -196,6 +210,14 @@ class RegisterReferralView(generics.GenericAPIView):
                     re_serializer = self.referal_serializer(data=refdata)
                     re_serializer.is_valid(raise_exception=True)
                     re_serializer.save()
+                    inidata = {'owner': user_data['id'],
+                               'risk': request.data.get('risk'),
+                               'period': request.data.get('period'),
+                               'interest': request.data.get('interest'),
+                               'investmentsize': request.data.get('investmentsize'), }
+                    ini_serial = self.ini_serializer(data=inidata)
+                    ini_serial.is_valid(raise_exception=True)
+                    ini_serial.save()
                     user = User.objects.get(email=user_data['email'])
                     token = RefreshToken.for_user(user).access_token
                     current_site = get_current_site(request).domain
