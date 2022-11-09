@@ -25,14 +25,22 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class GallerySerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField('get_image_url')
 
     class Meta:
         model = Gallery
         fields = ['id', 'investment', 'gallery',
-                  'is_featured']
+                  'is_featured', 'image_url']
+
+        def get_image_url(self, obj):
+
+            request = self.context.get("request")
+            return request.build_absolute_uri(obj.gallery)
 
 
 class InvestmentSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField('get_image_url')
+
     gallery_set = serializers.StringRelatedField(many=True)
 
     room_name = RoomSerializer()
@@ -44,7 +52,12 @@ class InvestmentSerializer(serializers.ModelSerializer):
         model = Investment
         fields = ['id', 'owner', 'name', 'description',
                   'amount', 'room_name', 'gallery_set', 'user_details', 'period_details', 'roi',
-                  'annualized', 'risk', 'features', 'is_verified']
+                  'annualized', 'risk', 'features', 'is_verified', 'image_url']
+
+    def get_image_url(self, obj):
+
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.gallery)
 
 
 class InvestmentOnlySerializer(serializers.ModelSerializer):
