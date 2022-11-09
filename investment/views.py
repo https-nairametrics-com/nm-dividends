@@ -10,7 +10,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from .serializers import InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
-from investor.models import Risk
+from investor.models import Risk, Period, InvestmentSize, Interest
 # Create your views here.
 
 
@@ -34,7 +34,7 @@ class CategoryListAPIView(ListCreateAPIView):
 class CategoryAllListAPIView(ListAPIView):
     serializer_class = RoomSerializer
     queryset = InvestmentRoom.objects.all()
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.all()

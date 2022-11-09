@@ -26,7 +26,7 @@ class PeriodListAPIView(ListCreateAPIView):
 class PeriodAllListAPIView(ListAPIView):
     serializer_class = PeriodSerializer
     queryset = Period.objects.all()
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.all()
@@ -57,7 +57,7 @@ class RiskListAPIView(ListCreateAPIView):
 class RiskAllListAPIView(ListAPIView):
     serializer_class = RiskSerializer
     queryset = Risk.objects.all()
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.all()
@@ -67,6 +67,68 @@ class RiskDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = RiskSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
     queryset = Risk.objects.all()
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class InterestListAPIView(ListCreateAPIView):
+    serializer_class = InterestSerializer
+    queryset = Interest.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def perform_create(self, serializer):
+        return serializer.save(created_by=self.request.user)
+
+    def get_queryset(self):
+        return self.queryset.filter(created_by=self.request.user)
+
+
+class InterestAllListAPIView(ListAPIView):
+    serializer_class = InterestSerializer
+    queryset = Interest.objects.all()
+    #permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class InterestDetailAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = InterestSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
+    queryset = Interest.objects.all()
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class SizeListAPIView(ListCreateAPIView):
+    serializer_class = SizeSerializer
+    queryset = InvestmentSize.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def perform_create(self, serializer):
+        return serializer.save(created_by=self.request.user)
+
+    def get_queryset(self):
+        return self.queryset.filter(created_by=self.request.user)
+
+
+class SizeAllListAPIView(ListAPIView):
+    serializer_class = SizeSerializer
+    queryset = InvestmentSize.objects.all()
+    #permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class SizeDetailAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = SizeSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
+    queryset = InvestmentSize.objects.all()
     lookup_field = "id"
 
     def get_queryset(self):

@@ -16,7 +16,7 @@ class SizeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvestmentSize
-        fields = ['investment_size', 'period', 'is_verified',
+        fields = ['investment_size', 'is_verified',
                   ]
 
 

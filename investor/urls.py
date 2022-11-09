@@ -11,4 +11,13 @@ urlpatterns = [
     path('risk/<int:id>', views.RiskDetailAPIView.as_view(),
          name="risk-detail"),
     path('risk/all/', views.RiskAllListAPIView.as_view(), name="all-risk"),
+    path('size/', views.SizeListAPIView.as_view(), name="size-list"),
+    path('size/<int:id>', views.SizeDetailAPIView.as_view(),
+         name="size-detail"),
+    path('size/all/', views.SizeAllListAPIView.as_view(), name="all-size"),
+    path('interest/', views.InterestListAPIView.as_view(), name="interest-list"),
+    path('interest/<int:id>', views.InterestDetailAPIView.as_view(),
+         name="interest-detail"),
+    path('interest/all/', views.InterestAllListAPIView.as_view(),
+         name="interest-risk"),
 ]
