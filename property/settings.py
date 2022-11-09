@@ -107,7 +107,6 @@ CORS_ORIGIN_WHITELIST = [
     "http://127.0.0.1:3000",
     "https://yields-room.herokuapp.com",
     "https://yieldsroom.herokuapp.com",
-    "https://yield-room.netlify.app/",
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
