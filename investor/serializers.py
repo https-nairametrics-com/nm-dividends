@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Period, Risk, Expectations, InvestmentSize, Interest, Investor
+from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest, Investor
 from investment.serializers import UserInvestmentSerializer
 
 
@@ -78,3 +78,10 @@ class AdminExpectationsSerializer(serializers.ModelSerializer):
         model = Expectations
         fields = ['interest', 'is_verified', 'created_by', 'user'
                   ]
+
+
+class InitialInterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InitialInterests
+        fields = ('id', 'owner', 'risk', 'period',
+                  'interest', 'investmentsize')

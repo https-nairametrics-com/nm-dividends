@@ -5,7 +5,7 @@ from .models import Risk, Interest, InvestmentSize, Period, Investor
 
 
 class RiskAdmin(admin.ModelAdmin):
-    list_display = ['Risk', 'is_verified']
+    list_display = ['risk', 'is_verified']
 
 
 admin.site.register(Risk, RiskAdmin)
