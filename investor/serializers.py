@@ -14,7 +14,7 @@ class PeriodSerializer(serializers.ModelSerializer):
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvestmentSize
-        fields = ['investment_size', 'is_verified',
+        fields = ['id', 'investment_size', 'is_verified',
                   ]
 
 
@@ -23,7 +23,7 @@ class AdminSizeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvestmentSize
-        fields = ['investment_size', 'is_verified',
+        fields = ['id', 'investment_size', 'is_verified',
                   'created_by', 'user']
 
 
@@ -32,7 +32,7 @@ class RiskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Risk
-        fields = ['risk', 'is_verified',
+        fields = ['id', 'risk', 'is_verified',
                   ]
 
 
@@ -40,7 +40,7 @@ class AdminRiskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Risk
-        fields = ['risk', 'is_verified', 'created_by', 'user'
+        fields = ['id', 'risk', 'is_verified', 'created_by', 'user'
                   ]
 
 
@@ -48,7 +48,7 @@ class InterestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interest
-        fields = ['interest', 'is_verified',
+        fields = ['id', 'interest', 'is_verified',
                   ]
 
 
@@ -57,7 +57,7 @@ class AdminInterestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interest
-        fields = ['interest', 'is_verified', 'created_by', 'user'
+        fields = ['id', 'interest', 'is_verified', 'created_by', 'user'
                   ]
 
 
@@ -65,7 +65,7 @@ class ExpectationsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Expectations
-        fields = ['expectation', 'is_verified',
+        fields = ['id', 'expectation', 'is_verified',
                   ]
 
 
@@ -74,7 +74,7 @@ class AdminExpectationsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Expectations
-        fields = ['interest', 'is_verified', 'created_by', 'user'
+        fields = ['id', 'interest', 'is_verified', 'created_by', 'user'
                   ]
 
 
