@@ -12,8 +12,6 @@ class PeriodSerializer(serializers.ModelSerializer):
 
 
 class SizeSerializer(serializers.ModelSerializer):
-    user = UserInvestmentSerializer(read_only=False)
-
     class Meta:
         model = InvestmentSize
         fields = ['investment_size', 'is_verified',
