@@ -34,7 +34,7 @@ DEBUG = True
 AUTH_USER_MODEL = 'authentication.User'
 # Application definition
 
-ALLOWED_HOSTS = ['yields-room.herokuapp.com',
+ALLOWED_HOSTS = ['yields-room.herokuapp.com', 'yield-room.netlify.app',
                  '*.herokuapp.com', '*.netlify.app', 'localhost', '127.0.0.1', ]
 
 
@@ -105,8 +105,10 @@ CORS_ORIGIN_WHITELIST = [
     "https://relaxed-curie-e9a516.netlify.app",
     "http://127.0.0.1:3080",
     "http://127.0.0.1:3000",
+    "https://yield-room.netlify.app",
     "https://yields-room.herokuapp.com",
     "https://yieldsroom.herokuapp.com",
+
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
