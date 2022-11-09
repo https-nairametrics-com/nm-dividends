@@ -25,11 +25,11 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="INCOME EXPENSES API",
+        title="Yield Room API",
         default_version='v1',
         description="Test description",
         terms_of_service="https://www.ourapp.com/policies/terms/",
-        contact=openapi.Contact(email="contact@expenses.local"),
+        contact=openapi.Contact(email="info@yieldroom.africa"),
         license=openapi.License(name="Test License"),
     ),
     public=True,
