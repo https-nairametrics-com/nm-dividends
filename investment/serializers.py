@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Investment, InvestmentRoom, Gallery, Investors
 from investor.models import Period
 from authentication.models import User
+from django.conf import settings
 
 
 class UserInvestmentSerializer(serializers.ModelSerializer):
@@ -25,12 +26,23 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class GallerySerializer(serializers.ModelSerializer):
-    #gallery = serializers.SerializerMethodField()
+    gallery_url = serializers.SerializerMethodField("get_image_url")
+    # gallery = serializers.ImageField(
+    # max_length=None, allow_empty_file=False, allow_null=False, use_url=True, required=False)
 
     class Meta:
         model = Gallery
-        fields = ['id', 'investment', 'gallery',
+        fields = ['id', 'investment', 'gallery', 'gallery_url',
                   'is_featured']
+
+    def get_image_url(self, obj):
+        return obj.gallery.url
+
+    '''
+    def get_gallery(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.gallery.url)
+        '''
 
 
 class InvestmentSerializer(serializers.ModelSerializer):
