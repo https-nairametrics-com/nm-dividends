@@ -81,7 +81,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return str(self.email)
 
     def tokens(self):
         refresh = RefreshToken.for_user(self)
@@ -91,17 +91,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         }
 
     def refer(self):
-        return self.referral_code
+        return str(self.referral_code)
 
 
 class Referrals(models.Model):
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='owners_authentication_set')
     referred = models.ForeignKey(
-        User, related_name='referral_authentication_set', on_delete=models.CASCADE)
+        User, related_name='referral_authentication_set', on_delete=models.DO_NOTHING)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.status
+        return str(self.created_at)
