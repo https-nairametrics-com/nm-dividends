@@ -7,57 +7,73 @@ from authentication.models import User
 class UserInvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'firstname', 'lastname']
+        fields = ['id', 'firstname', 'lastname', ]
 
 
 class PeriodInvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Period
-        fields = ['period']
+        fields = ['period', ]
 
 
 class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvestmentRoom
-        fields = ['id', 'name', 'description',
-                  'is_verified']
+        fields = ['name', 'description',
+                  'is_verified', ]
 
 
 class GallerySerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField('get_image_url')
+    #gallery = serializers.SerializerMethodField()
 
     class Meta:
         model = Gallery
         fields = ['id', 'investment', 'gallery',
-                  'is_featured', 'image_url']
-
-        def get_image_url(self, obj):
-
-            request = self.context.get("request")
-            return request.build_absolute_uri(obj.gallery)
+                  'is_featured']
 
 
 class InvestmentSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField('get_image_url')
+    image = serializers.SerializerMethodField()
 
-    gallery_set = serializers.StringRelatedField(many=True)
+    #gallery_set = serializers.StringRelatedField(many=True)
 
-    room_name = RoomSerializer()
-    period_details = PeriodInvestmentSerializer(read_only=False)
-    user_details = UserInvestmentSerializer(read_only=False)
-    #images = GallerySerializer()
+    room = RoomSerializer(many=False, read_only=False)
+    period = PeriodInvestmentSerializer(read_only=False)
+    owner = UserInvestmentSerializer(read_only=False)
+    #gallery_investment = GallerySerializer(read_only=False)
+
+    '''
+    def get_image(self, gallery):
+        pesticide_qs = Gallery.objects.filter(
+            gallery__investment=gallery)
+        return GallerySerializer(pesticide_qs, many=True).data
+        '''
 
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'name', 'description',
-                  'amount', 'room_name', 'gallery_set', 'user_details', 'period_details', 'roi',
-                  'annualized', 'risk', 'features', 'is_verified', 'image_url']
+                  'amount', 'room', 'roi', 'period',
+                  'annualized',  'risk', 'features', 'is_verified', 'image']
 
+    def get_image(self, obj):
+        logger_queryset = Gallery.objects.filter(investment=obj.id)
+        return GallerySerializer(logger_queryset, many=True).data
+
+    '''
     def get_image_url(self, obj):
-
         request = self.context.get("request")
-        return request.build_absolute_uri(obj.gallery)
+        return request.build_absolute_uri(obj.image_url)
+        '''
+
+    def get_room(self, instance):
+        return instance.geo_info.room
+
+    def get_owner(self, instance):
+        return instance.geo_info.owner
+
+    def get_userdetails(self, instance):
+        return instance.geo_info.userdetails
 
 
 class InvestmentOnlySerializer(serializers.ModelSerializer):
@@ -75,4 +91,4 @@ class InvestorsSerializer(serializers.ModelSerializer):
         model = InvestmentRoom
         fields = ['investment', 'id', 'investor',
                   'is_approved', 'amount', 'serialkey', 'approved_by',
-                  'is_closed', 'closed_by']
+                  'is_closed', 'closed_by', ]
