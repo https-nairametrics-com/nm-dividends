@@ -10,7 +10,7 @@ from investor.serializers import InitialInterestSerializer
 #from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
-
+from django.core.mail import send_mail
 
 from rest_framework import generics, status, views, permissions
 from .serializers import SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
@@ -163,6 +163,8 @@ class RegisterView(generics.GenericAPIView):
             ' Use the link below to verify your email \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
+        send_mail(data['email_subject'], data['email_body'],
+                  'ssn@nairametrics.com', [data['to_email']])
 
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
