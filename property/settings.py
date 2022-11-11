@@ -222,9 +222,14 @@ MEDIA_URL = '/media/'
 
 EMAIL_FROM_USER = os.getenv("EMAIL_FROM_USER")
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'outlook.office365.com'
-EMAIL_PORT = 995
+#EMAIL_USE_SSL = True
+#EMAIL_HOST = 'smtp@gmail.com'
+#EMAIL_PORT = '587'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_PORT = 995
+EMAIL_HOST = 'outlook.office365.com'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
