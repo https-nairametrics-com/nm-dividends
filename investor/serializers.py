@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest, Investor
+from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest
 from investment.serializers import UserInvestmentSerializer
 
 

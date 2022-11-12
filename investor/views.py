@@ -1,13 +1,16 @@
 from django.shortcuts import render
 from authentication.models import User
 from investment.views import IsSuperUser
+from investment.models import Investors
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
-from rest_framework import generics, status, views, permissions
+from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor
-from .models import Risk, Interest, InvestmentSize, Period, Expectations, Investor
+from .models import Risk, Interest, InvestmentSize, Period, Expectations
+
 from .serializers import PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 
 
@@ -15,6 +18,12 @@ class PeriodListAPIView(ListCreateAPIView):
     serializer_class = PeriodSerializer
     queryset = Period.objects.all()
     permission_classes = (IsAuthenticated, IsSuperUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    filterset_fields = ['period', 'is_verified']
+    search_fields = ['period']
+    ordering_fields = ['period', 'id', 'is_verified']
 
     def perform_create(self, serializer):
         return serializer.save(created_by=self.request.user)
@@ -27,6 +36,12 @@ class PeriodAllListAPIView(ListAPIView):
     serializer_class = PeriodSerializer
     queryset = Period.objects.all()
     #permission_classes = (IsAuthenticated,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    filterset_fields = ['period', 'is_verified']
+    search_fields = ['period']
+    ordering_fields = ['period', 'id', 'is_verified']
 
     def get_queryset(self):
         return self.queryset.all()

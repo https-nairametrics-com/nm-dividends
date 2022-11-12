@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'authentication',
+    'django_filters',
     'expenses',
     'income',
     'investor',
@@ -228,8 +229,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_PORT = 995
-EMAIL_HOST = 'outlook.office365.com'
+#EMAIL_PORT = 995
+#EMAIL_HOST = 'outlook.office365.com'
+EMAIL_PORT = 2525
+EMAIL_HOST = 'smtp.mailtrap.io'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

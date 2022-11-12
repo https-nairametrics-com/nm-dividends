@@ -65,26 +65,6 @@ class Expectations(models.Model):
         return self.expectation
 
 
-class Investor(models.Model):
-    owner = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name='owner_investor_set')
-    expectation = models.ForeignKey(to=Expectations, on_delete=models.CASCADE)
-    period = models.ForeignKey(to=Period, on_delete=models.CASCADE)
-    investment_size = models.ForeignKey(
-        to=InvestmentSize, on_delete=models.CASCADE)
-    serialkey = models.CharField(max_length=255, null=True)
-    risk = models.ForeignKey(to=Risk, on_delete=models.CASCADE)
-    interest = models.ForeignKey(to=Interest, on_delete=models.CASCADE)
-    approved_by = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name='approved_by_investor_set')
-    is_verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return str(self.created_at)
-
-
 class InitialInterests(models.Model):
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='interest_authentication_set')

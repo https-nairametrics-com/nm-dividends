@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import InitialInterests, Risk, Interest, InvestmentSize, Period, Investor
+from .models import InitialInterests, Risk, Interest, InvestmentSize, Period
 
 
 class RiskAdmin(admin.ModelAdmin):
@@ -9,7 +9,6 @@ class RiskAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Risk, RiskAdmin)
-admin.site.register(Investor)
 admin.site.register(Interest)
 admin.site.register(InvestmentSize)
 admin.site.register(Period)

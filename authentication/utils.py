@@ -4,7 +4,6 @@ import random
 
 import threading
 from .models import User
-from investor.models import Investor
 
 
 class EmailThread(threading.Thread):

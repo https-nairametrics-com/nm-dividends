@@ -17,6 +17,7 @@ deflate==0.3.0
 dj-database-url==1.0.0
 django==3.2.16
 django-cors-headers==3.13.0
+django-filter==22.1
 djangorestframework==3.13.1
 djangorestframework-simplejwt==5.2.2
 drf-yasg==1.20.0
