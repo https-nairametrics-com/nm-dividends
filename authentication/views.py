@@ -44,7 +44,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # test
 
 
-class UserDetailsListAPIView(ListAPIView):
+class UserListAPIView(ListAPIView):
     serializer_class = UserInterestSerializer
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
@@ -57,6 +57,16 @@ class UserDetailsListAPIView(ListAPIView):
     search_fields = ['firstname', 'lastname', 'phone']
     ordering_fields = ['firstname', 'lastname', 'created_at', 'details__interest__interest',
                        'details__risk__risk', 'details__period__period', 'details__investmentsize__investment_size']
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserInterestSerializer
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    lookup_field = "id"
 
     def get_queryset(self):
         return self.queryset.all()
