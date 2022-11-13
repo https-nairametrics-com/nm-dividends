@@ -12,12 +12,14 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
 from django.core.mail import send_mail as sender
 
-from rest_framework import generics, status, views, permissions
-from .serializers import SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
+from rest_framework import filters, generics, status, views, permissions
+from .serializers import UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .models import Referrals, User
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
@@ -37,7 +39,27 @@ from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 import os
 import datetime
+from django_filters.rest_framework import DjangoFilterBackend
+
 # test
+
+
+class UserDetailsListAPIView(ListAPIView):
+    serializer_class = UserInterestSerializer
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    filterset_fields = ['firstname', 'lastname',
+                        'phone', 'referral_code', 'details__interest__interest',
+                        'details__risk__risk', 'details__period__period', 'details__investmentsize__investment_size']
+    search_fields = ['firstname', 'lastname', 'phone']
+    ordering_fields = ['firstname', 'lastname', 'created_at', 'details__interest__interest',
+                       'details__risk__risk', 'details__period__period', 'details__investmentsize__investment_size']
+
+    def get_queryset(self):
+        return self.queryset.all()
 
 
 class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
