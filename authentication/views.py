@@ -52,8 +52,8 @@ class UserDetailsListAPIView(ListAPIView):
                        filters.SearchFilter, filters.OrderingFilter]
 
     filterset_fields = ['firstname', 'lastname',
-                        'phone', 'referral_code', 'details__interest__interest',
-                        'details__risk__risk', 'details__period__period', 'details__investmentsize__investment_size']
+                        'phone', 'referral_code',
+                        ]
     search_fields = ['firstname', 'lastname', 'phone']
     ordering_fields = ['firstname', 'lastname', 'created_at', 'details__interest__interest',
                        'details__risk__risk', 'details__period__period', 'details__investmentsize__investment_size']
