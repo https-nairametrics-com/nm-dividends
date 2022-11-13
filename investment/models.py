@@ -78,3 +78,15 @@ class Investors(models.Model):
 
     def __str__(self):
         return self.amount
+
+
+class Mfa(models.Model):
+    user = models.ForeignKey(
+        to=User, related_name='mfa_key', on_delete=models.CASCADE)
+    mfa = models.CharField(max_length=255)
+    is_open = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.mfa

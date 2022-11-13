@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest
-from investment.serializers import UserInvestmentSerializer
+from investment.serializers import UserInvestmentSerializer, RoomSerializer
 
 
 class PeriodSerializer(serializers.ModelSerializer):
@@ -79,7 +79,28 @@ class AdminExpectationsSerializer(serializers.ModelSerializer):
 
 
 class InitialInterestSerializer(serializers.ModelSerializer):
+    investmentsize = SizeSerializer(read_only=False)
+    interest = InterestSerializer(read_only=False)
+    period = PeriodSerializer(read_only=False)
+    risk = RiskSerializer(read_only=False)
+    owner = UserInvestmentSerializer(read_only=False)
+
     class Meta:
         model = InitialInterests
         fields = ('id', 'owner', 'risk', 'period',
                   'interest', 'investmentsize')
+
+    def get_investmentsize(self, instance):
+        return instance.geo_info.investmentsize
+
+    def get_interest(self, instance):
+        return instance.geo_info.interest
+
+    def get_period(self, instance):
+        return instance.geo_info.period
+
+    def get_risk(self, instance):
+        return instance.geo_info.risk
+
+    def get_owner(self, instance):
+        return instance.geo_info.owner
