@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 from .models import User, Referrals
 from django.contrib import auth
@@ -10,6 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from investor.serializers import InitialInterestSerializer
+from investor.models import InitialInterests
 
 
 class InviteSerializer(serializers.ModelSerializer):
@@ -215,3 +216,17 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email')
+
+
+class UserInterestSerializer(serializers.ModelSerializer):
+    details = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'firstname', 'lastname', 'address',
+                  'phone', 'referral_code', 'is_verified', 'is_approved', 'created_at',
+                  'details']
+
+    def get_details(self, obj):
+        logger_queryset = InitialInterests.objects.filter(owner=obj.id)
+        return InitialInterestSerializer(logger_queryset, many=True).data
