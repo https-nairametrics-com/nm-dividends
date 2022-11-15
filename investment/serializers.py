@@ -88,6 +88,13 @@ class InvestmentSerializer(serializers.ModelSerializer):
         return instance.geo_info.userdetails
 
 
+class TotalInvestmentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Investment
+        fields = ['amount']
+
+
 class InvestmentOnlySerializer(serializers.ModelSerializer):
 
     class Meta:

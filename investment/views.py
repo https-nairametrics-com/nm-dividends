@@ -8,9 +8,10 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import TotalInvestmentSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
+from django.db.models import Sum, Aggregate, Avg
 # Create your views here.
 
 
@@ -91,3 +92,20 @@ class InvestmentAPIView(generics.GenericAPIView):
         in_serializer.is_valid(raise_exception=True)
         in_serializer.save()
         return Response(indata, status=status.HTTP_201_CREATED)
+
+
+class TotalInvesmentAmountAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    #permission_classes = (IsAuthenticated)
+
+    def get(self, format=None):
+        try:
+            queryset = Investment.objects.aggregate(amount=Sum('amount'))
+            serializer = TotalInvestmentSerializer(queryset, many=True)
+            print(serializer.data)
+            return Response(serializer.data)
+        except:
+            return Response(
+                {'error': 'Something went wrong when trying to load user'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

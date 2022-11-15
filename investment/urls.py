@@ -12,4 +12,6 @@ urlpatterns = [
     path('room/<int:id>', views.CategoryDetailAPIView.as_view(),
          name="category-detail"),
     path('room/all/', views.CategoryAllListAPIView.as_view(), name="all-category"),
+    path('total/investment/', views.TotalInvesmentAmountAPIView.as_view(),
+         name="total-investment"),
 ]

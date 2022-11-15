@@ -33,7 +33,7 @@ class Investment(models.Model):
     room = models.ForeignKey(to=InvestmentRoom, on_delete=models.CASCADE)
     period = models.ForeignKey(
         to=Period, on_delete=models.CASCADE, related_name='investment_period')
-    amount = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=200, decimal_places=2)
     roi = models.CharField(max_length=255)
     annualized = models.CharField(max_length=255)
     risk = models.ForeignKey(to=Risk, on_delete=models.CASCADE)
@@ -65,7 +65,7 @@ class Investors(models.Model):
         to=Investment, related_name='investment', on_delete=models.CASCADE)
     investor = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='investor')
-    amount = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=200, decimal_places=2)
     serialkey = models.CharField(max_length=255, null=True)
     is_approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey(
