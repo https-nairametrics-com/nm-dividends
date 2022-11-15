@@ -269,6 +269,9 @@ class RegisterReferralView(generics.GenericAPIView):
             else:
                 return Response({"status": "error",  "error": "Referral code does not exists"},
                                 status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"status": "error",  "error": "No referral code entered"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyEmail(views.APIView):
