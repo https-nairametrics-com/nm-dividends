@@ -104,3 +104,10 @@ class InitialInterestSerializer(serializers.ModelSerializer):
 
     def get_owner(self, instance):
         return instance.geo_info.owner
+
+
+class RegistrationInitialInterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InitialInterests
+        fields = ('id', 'owner', 'risk', 'period',
+                  'interest', 'investmentsize')

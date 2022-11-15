@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from investor.models import InitialInterests
-from investor.serializers import InitialInterestSerializer
+from investor.serializers import RegistrationInitialInterestSerializer, InitialInterestSerializer
 #from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
@@ -158,7 +158,7 @@ class CustomRedirect(HttpResponsePermanentRedirect):
 class RegisterView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
-    ini_serializer = InitialInterestSerializer
+    ini_serializer = RegistrationInitialInterestSerializer
     renderer_classes = (UserRenderer,)
 
     def post(self, request):
@@ -206,7 +206,7 @@ class RegisterReferralView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
     referal_serializer = ReferralSerializer
-    ini_serializer = InitialInterestSerializer
+    ini_serializer = RegistrationInitialInterestSerializer
     renderer_classes = (UserRenderer,)
 
     def post(self, request):
