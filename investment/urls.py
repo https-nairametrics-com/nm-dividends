@@ -14,4 +14,8 @@ urlpatterns = [
     path('room/all/', views.CategoryAllListAPIView.as_view(), name="all-category"),
     path('total/investment/', views.TotalInvesmentAmountAPIView.as_view(),
          name="total-investment"),
+    path('total/investment/verified/', views.TotalVerifiedInvesmentAmountAPIView.as_view(),
+         name="total-verified-investment"),
+    path('total/investment/not-verified/', views.TotalNVerifiedInvesmentAmountAPIView.as_view(),
+         name="total-notverified-investment"),
 ]

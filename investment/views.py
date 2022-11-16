@@ -115,12 +115,43 @@ class TotalInvesmentAmountAPIView(generics.GenericAPIView):
     def get(self, format=None):
 
         queryset = list(Investment.objects.all())
-        querys = list(Investment.objects.aggregate(Sum('amount')))
+        querys = Investment.objects.aggregate(amount=Sum('amount'))
         # data = queryset + querys
         #serializer = TotalInvestmentSerializer(querys, many=True)
         # print(serializer.data)
+        # return Response(serializer.data)
         #combine = chain(querys, queryset)
         return Response(querys, status=status.HTTP_200_OK)
         # HttpResponse(json.dumps(something))
         #json_str = json.dumps({'amount': querys})
         # return JsonResponse(json_str, safe=False, status=status.HTTP_200_OK)
+
+
+class TotalVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    # permission_classes = (IsAuthenticated)
+
+    def get(self, format=None):
+
+        item = Investment.objects.filter(
+            is_verified=True).aggregate(amount=Sum('amount'))
+        if item:
+            return Response(item, status=status.HTTP_200_OK)
+        else:
+            return Response({"amount": "0",  "error": "Object with referral code does not exists"},
+                            status=status.HTTP_200_OK)
+
+
+class TotalNVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    # permission_classes = (IsAuthenticated)
+
+    def get(self, format=None):
+
+        item = Investment.objects.filter(
+            is_verified=False).aggregate(amount=Sum('amount'))
+        if item:
+            return Response(item, status=status.HTTP_200_OK)
+        else:
+            return Response({"amount": "0",  "error": "Object with referral code does not exists"},
+                            status=status.HTTP_200_OK)
