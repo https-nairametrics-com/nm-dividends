@@ -3,6 +3,7 @@ from .models import Investment, InvestmentRoom, Gallery, Investors
 from investor.models import Period
 from authentication.models import User
 from django.conf import settings
+from django.db.models import Sum, Aggregate, Avg
 
 
 class UserInvestmentSerializer(serializers.ModelSerializer):
@@ -89,10 +90,17 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
 
 class TotalInvestmentSerializer(serializers.ModelSerializer):
+    amount = serializers.IntegerField()
+    #amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Investment
         fields = ['amount']
+
+    '''
+    def get_amount(self, obj):
+        queryset = Investment.objects.aggregate(Sum(obj.amount))
+        return queryset'''
 
 
 class InvestmentOnlySerializer(serializers.ModelSerializer):

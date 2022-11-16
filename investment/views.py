@@ -12,7 +12,21 @@ from .serializers import TotalInvestmentSerializer, InvestmentOnlySerializer, Ro
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
+from django.http import JsonResponse
+import json
+from itertools import chain
+from decimal import *
 # Create your views here.
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        # 👇️ if passed in object is instance of Decimal
+        # convert it to a string
+        if isinstance(obj, Decimal):
+            return str(obj)
+        # 👇️ otherwise use the default behavior
+        return json.JSONEncoder.default(self, obj)
 
 
 class IsSuperUser(IsAdminUser):
@@ -35,7 +49,7 @@ class CategoryListAPIView(ListCreateAPIView):
 class CategoryAllListAPIView(ListAPIView):
     serializer_class = RoomSerializer
     queryset = InvestmentRoom.objects.all()
-    #permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.all()
@@ -55,7 +69,7 @@ class InvestmentListAPIView(ListAPIView):
     serializer_class = InvestmentSerializer
     queryset = Investment.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
-    #parser_classes = [MultiPartParser, FormParser]
+    # parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user)
@@ -96,16 +110,17 @@ class InvestmentAPIView(generics.GenericAPIView):
 
 class TotalInvesmentAmountAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
-    #permission_classes = (IsAuthenticated)
+    # permission_classes = (IsAuthenticated)
 
     def get(self, format=None):
-        try:
-            queryset = Investment.objects.aggregate(amount=Sum('amount'))
-            serializer = TotalInvestmentSerializer(queryset, many=True)
-            print(serializer.data)
-            return Response(serializer.data)
-        except:
-            return Response(
-                {'error': 'Something went wrong when trying to load user'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+
+        queryset = list(Investment.objects.all())
+        querys = list(Investment.objects.aggregate(Sum('amount')))
+        # data = queryset + querys
+        #serializer = TotalInvestmentSerializer(querys, many=True)
+        # print(serializer.data)
+        #combine = chain(querys, queryset)
+        return Response(querys, status=status.HTTP_200_OK)
+        # HttpResponse(json.dumps(something))
+        #json_str = json.dumps({'amount': querys})
+        # return JsonResponse(json_str, safe=False, status=status.HTTP_200_OK)
