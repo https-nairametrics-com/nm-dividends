@@ -15,6 +15,7 @@ from django.db.models import Sum, Aggregate, Avg
 from django.http import JsonResponse
 import json
 from itertools import chain
+from .helpers import modify_input_for_multiple_files
 from decimal import *
 # Create your views here.
 
@@ -105,6 +106,16 @@ class InvestmentAPIView(generics.GenericAPIView):
         in_serializer = self.gallery_serializer(data=imagedata)
         in_serializer.is_valid(raise_exception=True)
         in_serializer.save()
+        #images = dict((request.data).lists())['image']
+        galleries = dict((request.data).lists())['galleries']
+        if galleries:
+            arr = []
+            for gallery in galleries:
+                modified_data = modify_input_for_multiple_files(
+                    investment_data['id'], gallery, False)
+                file_serializer = GallerySerializer(data=modified_data)
+                file_serializer.is_valid(raise_exception=True)
+                file_serializer.save()
         return Response(indata, status=status.HTTP_201_CREATED)
 
 
