@@ -129,7 +129,7 @@ class TotalInvesmentAmountAPIView(generics.GenericAPIView):
 
 class TotalVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
-    # permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated, IsAdminUser)
 
     def get(self, format=None):
 
@@ -144,7 +144,7 @@ class TotalVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
 
 class TotalNVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
-    # permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated, IsAdminUser)
 
     def get(self, format=None):
 
@@ -154,4 +154,34 @@ class TotalNVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
             return Response(item, status=status.HTTP_200_OK)
         else:
             return Response({"amount": "0",  "error": "Object with referral code does not exists"},
+                            status=status.HTTP_200_OK)
+
+
+class TotalVerifiedInvesmentsAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get(self, format=None):
+
+        item = Investment.objects.filter(
+            is_verified=True).count()
+        if item:
+            return Response({"investments": item}, status=status.HTTP_200_OK)
+        else:
+            return Response({"investments": "0",  "error": "No verified investment"},
+                            status=status.HTTP_200_OK)
+
+
+class TotalNVerifiedInvesmentsAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get(self, format=None):
+
+        item = Investment.objects.filter(
+            is_verified=False).count()
+        if item:
+            return Response({"investments": item}, status=status.HTTP_200_OK)
+        else:
+            return Response({"invesments": "0",  "error": "No un-verified investment"},
                             status=status.HTTP_200_OK)

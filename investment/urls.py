@@ -18,4 +18,8 @@ urlpatterns = [
          name="total-verified-investment"),
     path('total/investment/not-verified/', views.TotalNVerifiedInvesmentAmountAPIView.as_view(),
          name="total-notverified-investment"),
+    path('verified/', views.TotalVerifiedInvesmentsAPIView.as_view(),
+         name="verified-investment"),
+    path('not-verified/', views.TotalNVerifiedInvesmentsAPIView.as_view(),
+         name="verified-investment"),
 ]
