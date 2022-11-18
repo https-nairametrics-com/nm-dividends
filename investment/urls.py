@@ -8,6 +8,8 @@ urlpatterns = [
          name="investment-list"),
     path('invest/', views.InvestmentAPIView.as_view(),
          name="post-investment"),
+    path('invest/room/', views.InvestmentRoomAPIView.as_view(),
+         name="room-investment"),
 
     path('room/<int:id>', views.CategoryDetailAPIView.as_view(),
          name="category-detail"),

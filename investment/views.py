@@ -2,13 +2,13 @@ from django.shortcuts import render
 from authentication.models import User
 from .models import InvestmentRoom, Investment, Gallery, Investors
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
-from rest_framework import generics, status, views, permissions
+from rest_framework import filters, generics, status, views, permissions
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import TotalInvestmentSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
@@ -17,6 +17,8 @@ import json
 from itertools import chain
 from .helpers import modify_input_for_multiple_files
 from decimal import *
+from django_filters.rest_framework import DjangoFilterBackend
+
 # Create your views here.
 
 
@@ -76,18 +78,42 @@ class InvestmentListAPIView(ListAPIView):
         return self.queryset.filter(owner=self.request.user)
 
 
-class InvestmentListRoomAPIView(RetrieveAPIView):
-    serializer_class = InvestmentSerializer
+class InvestmentRoomAPIView(ListAPIView):
+    serializer_class = InvestmentRoomSerializer
+    #serializer_all = InvestmentRoomSerializer
+    gallery_serializer = GallerySerializer
     queryset = Investment.objects.all()
-    permission_classes = (IsAuthenticated)
-    lookup_field = "room__slug"
+    #permission_classes = (IsAuthenticated,)
+    parser_classes = [MultiPartParser, FormParser]
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    filterset_fields = ['room__slug', 'risk__risk', ]
 
     def get_queryset(self):
         return self.queryset.all()
 
 
+'''
+    def get(self, request):
+        slug = request.GET.get('room')
+        if slug:
+            check_slug = Investment.objects.all().filter(room__slug=slug)
+            print(check_slug)
+            if check_slug:
+                serializer = InvestmentRoomSerializer(check_slug)
+                return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'No data for this category'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Room does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+            '''
+
+
 class InvestmentAPIView(generics.GenericAPIView):
     serializer_class = InvestmentOnlySerializer
+    serializer_all = InvestmentSerializer
     gallery_serializer = GallerySerializer
     permission_classes = (IsAuthenticated, IsAdminUser,)
     parser_classes = [MultiPartParser, FormParser]
@@ -127,6 +153,18 @@ class InvestmentAPIView(generics.GenericAPIView):
                 file_serializer.is_valid(raise_exception=True)
                 file_serializer.save()
         return Response(indata, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        slug = request.Get.get('room')
+        if slug:
+            check_slug = Investment.objects.filter(room__slug=slug)
+            if check_slug:
+                serializer = self.serializer_all(data=check_slug)
+                return Response(serializer, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'No data for this category'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Room does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TotalInvesmentAmountAPIView(generics.GenericAPIView):
