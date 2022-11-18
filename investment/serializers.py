@@ -71,7 +71,7 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'owner', 'name', 'description',
+        fields = ['id', 'owner', 'slug', 'name', 'description',
                   'amount', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image']
 
@@ -117,7 +117,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'owner', 'name', 'description',
+        fields = ['id', 'slug', 'owner', 'name', 'description',
                   'amount', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image']
 

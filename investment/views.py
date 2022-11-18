@@ -78,12 +78,24 @@ class InvestmentListAPIView(ListAPIView):
         return self.queryset.filter(owner=self.request.user)
 
 
+class InvestmentDetailAPIView(RetrieveAPIView):
+    serializer_class = InvestmentRoomSerializer
+    gallery_serializer = GallerySerializer
+    queryset = Investment.objects.all()
+    permission_classes = (IsAuthenticated,)
+    parser_classes = [MultiPartParser, FormParser]
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
 class InvestmentRoomAPIView(ListAPIView):
     serializer_class = InvestmentRoomSerializer
     #serializer_all = InvestmentRoomSerializer
     gallery_serializer = GallerySerializer
     queryset = Investment.objects.all()
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     parser_classes = [MultiPartParser, FormParser]
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
@@ -92,23 +104,6 @@ class InvestmentRoomAPIView(ListAPIView):
 
     def get_queryset(self):
         return self.queryset.all()
-
-
-'''
-    def get(self, request):
-        slug = request.GET.get('room')
-        if slug:
-            check_slug = Investment.objects.all().filter(room__slug=slug)
-            print(check_slug)
-            if check_slug:
-                serializer = InvestmentRoomSerializer(check_slug)
-                return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-            else:
-                return Response({'error': 'No data for this category'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Room does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-
-            '''
 
 
 class InvestmentAPIView(generics.GenericAPIView):

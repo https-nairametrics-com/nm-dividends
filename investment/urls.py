@@ -10,7 +10,8 @@ urlpatterns = [
          name="post-investment"),
     path('invest/room/', views.InvestmentRoomAPIView.as_view(),
          name="room-investment"),
-
+    path('portfolio/<slug:slug>', views.InvestmentDetailAPIView.as_view(),
+         name="investment-portfolio"),
     path('room/<int:id>', views.CategoryDetailAPIView.as_view(),
          name="category-detail"),
     path('room/all/', views.CategoryAllListAPIView.as_view(), name="all-category"),
