@@ -76,6 +76,16 @@ class InvestmentListAPIView(ListAPIView):
         return self.queryset.filter(owner=self.request.user)
 
 
+class InvestmentListRoomAPIView(RetrieveAPIView):
+    serializer_class = InvestmentSerializer
+    queryset = Investment.objects.all()
+    permission_classes = (IsAuthenticated)
+    lookup_field = "room__slug"
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
 class InvestmentAPIView(generics.GenericAPIView):
     serializer_class = InvestmentOnlySerializer
     gallery_serializer = GallerySerializer

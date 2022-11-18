@@ -4,7 +4,8 @@ from authentication.models import User
 from investor.models import Period, Risk
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields.jsonb import JSONField
-
+from django.utils.text import slugify
+from django.urls import reverse
 # Create your models here.
 
 
@@ -14,7 +15,8 @@ def upload_to(instance, filename):
 
 class InvestmentRoom(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    slug = models.SlugField(max_length=255, null=True, unique=True)
+    description = models.TextField(null=True)
     is_verified = models.BooleanField(default=False)
     created_by = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='created_by')
@@ -24,11 +26,20 @@ class InvestmentRoom(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('room_detail', kwargs={'slug': self.slug})
+
 
 class Investment(models.Model):
     owner = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='owner')
     name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, null=True, unique=True)
     description = models.TextField()
     room = models.ForeignKey(to=InvestmentRoom, on_delete=models.CASCADE)
     period = models.ForeignKey(
@@ -37,13 +48,21 @@ class Investment(models.Model):
     roi = models.CharField(max_length=255)
     annualized = models.CharField(max_length=255)
     risk = models.ForeignKey(to=Risk, on_delete=models.CASCADE)
-    features = models.TextField()
+    features = models.TextField(null=True)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('investment_detail', kwargs={'slug': self.slug})
 
 
 class Gallery(models.Model):
