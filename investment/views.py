@@ -12,7 +12,7 @@ from .serializers import TotalInvestmentSerializer, InvestmentRoomSerializer, In
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 import json
 from itertools import chain
 from .helpers import modify_input_for_multiple_files
@@ -106,12 +106,84 @@ class InvestmentRoomAPIView(ListAPIView):
         return self.queryset.all()
 
 
+class GalleryAPIView(generics.GenericAPIView):
+    serializer_class = GallerySerializer
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(pk=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request):
+        snippet = self.get_object(request.data.get('investment'))
+        if request.data.get('gallery'):
+            imagedata = {'investment': request.data.get('investment'),
+                         'gallery': request.data.get('gallery'),
+                         'is_featured': request.data.get('is_featured')}
+            in_serializer = self.serializer_class(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+            return Response(imagedata, status=status.HTTP_201_CREATED)
+        galleries = dict((request.data).lists())['galleries']
+        if galleries:
+            arr = []
+            for img in galleries:
+                modified_data = modify_input_for_multiple_files(
+                    request.data.get('investment'), img, False)
+                file_serializer = GallerySerializer(data=modified_data)
+                if file_serializer.is_valid(raise_exception=True):
+                    file_serializer.save()
+                    arr.append(file_serializer.data)
+            return Response(arr, status=status.HTTP_201_CREATED)
+
+
+class GalleryUDAPIView(generics.GenericAPIView):
+    serializer_class = GallerySerializer
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Gallery.objects.get(pk=pk)
+        except Gallery.DoesNotExist:
+            raise Http404
+
+    def get_investment(self, investment):
+        try:
+            return Investment.objects.get(pk=investment)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        check_image = self.get_investment(request.data.get('investment'))
+        serializer = GallerySerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class InvestmentAPIView(generics.GenericAPIView):
     serializer_class = InvestmentOnlySerializer
     serializer_all = InvestmentSerializer
     gallery_serializer = GallerySerializer
     permission_classes = (IsAuthenticated, IsAdminUser,)
     parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(pk=pk)
+        except Investment.DoesNotExist:
+            raise Http404
 
     def post(self, request):
         indata = {
@@ -149,17 +221,32 @@ class InvestmentAPIView(generics.GenericAPIView):
                 file_serializer.save()
         return Response(indata, status=status.HTTP_201_CREATED)
 
-    def get(self, request):
-        slug = request.Get.get('room')
-        if slug:
-            check_slug = Investment.objects.filter(room__slug=slug)
-            if check_slug:
-                serializer = self.serializer_all(data=check_slug)
-                return Response(serializer, status=status.HTTP_200_OK)
-            else:
-                return Response({'error': 'No data for this category'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Room does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+class InvestmentUDAPIView(generics.GenericAPIView):
+    serializer_class = InvestmentOnlySerializer
+    serializer_all = InvestmentSerializer
+    gallery_serializer = GallerySerializer
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(pk=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = InvestmentOnlySerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TotalInvesmentAmountAPIView(generics.GenericAPIView):
