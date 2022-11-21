@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
@@ -170,6 +170,28 @@ class GalleryUDAPIView(generics.GenericAPIView):
         snippet = self.get_object(pk)
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ApproveInvestmentAPIView(generics.GenericAPIView):
+    serializer_class = InvestmentOnlySerializer
+    serializer_all = InvestmentSerializer
+    gallery_serializer = GallerySerializer
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(pk=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        snippet = self.get_object(id)
+        isdata = {'is_verified': request.data.get('is_verified')}
+        serializer = ApproveInvestmentSerializer(snippet, data=isdata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class InvestmentAPIView(generics.GenericAPIView):

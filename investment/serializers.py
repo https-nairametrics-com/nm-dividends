@@ -102,7 +102,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
     #gallery_set = serializers.StringRelatedField(many=True)
-
+    risk = RiskRoomSerializer(many=False, read_only=False)
     room = RoomSerializer(many=False, read_only=False)
     period = PeriodInvestmentSerializer(read_only=False)
     owner = UserInvestmentSerializer(read_only=False)
@@ -134,6 +134,9 @@ class InvestmentSerializer(serializers.ModelSerializer):
     def get_room(self, instance):
         return instance.geo_info.room
 
+    def get_risk(self, instance):
+        return instance.geo_info.risk
+
     def get_owner(self, instance):
         return instance.geo_info.owner
 
@@ -162,6 +165,13 @@ class InvestmentOnlySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description',
                   'amount', 'room', 'period', 'roi',
                   'annualized', 'risk', 'features', 'is_verified']
+
+
+class ApproveInvestmentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Investment
+        fields = ['id', 'is_verified']
 
 
 class InvestorsSerializer(serializers.ModelSerializer):
