@@ -15,20 +15,20 @@ class UserInvestmentSerializer(serializers.ModelSerializer):
 class PeriodInvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Period
-        fields = ['period', ]
+        fields = ['id', 'period', ]
 
 
 class RiskRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Risk
-        fields = ['risk', ]
+        fields = ['id', 'risk', ]
 
 
 class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvestmentRoom
-        fields = ['name', 'description',
+        fields = ['id', 'name', 'description',
                   'is_verified', ]
 
 
@@ -41,6 +41,25 @@ class GallerySerializer(serializers.ModelSerializer):
         model = Gallery
         fields = ['id', 'investment', 'gallery', 'gallery_url',
                   'is_featured']
+
+    def get_image_url(self, obj):
+        return obj.gallery.url
+
+    '''
+    def get_gallery(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.gallery.url)
+        '''
+
+
+class GalleryUDSerializer(serializers.ModelSerializer):
+    gallery_url = serializers.SerializerMethodField("get_image_url")
+    # gallery = serializers.ImageField(
+    # max_length=None, allow_empty_file=False, allow_null=False, use_url=True, required=False)
+
+    class Meta:
+        model = Gallery
+        fields = ['id',  'is_featured']
 
     def get_image_url(self, obj):
         return obj.gallery.url
