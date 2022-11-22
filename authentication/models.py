@@ -61,7 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     firstname = models.CharField(max_length=255, null=True)
     lastname = models.CharField(max_length=255, null=True)
     address = models.TextField(null=True)
-    linkedln = models.TextField(null=True)
+    linkedin = models.TextField(null=True)
     phone = models.CharField(max_length=255, null=True)
     referral_code = models.CharField(
         max_length=255, null=True, unique=True, db_index=True)

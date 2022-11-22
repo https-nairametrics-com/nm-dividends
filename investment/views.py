@@ -162,20 +162,20 @@ class GalleryUDAPIView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated, IsAdminUser,)
     parser_classes = [MultiPartParser, FormParser]
 
-    def get_object(self, pk):
+    def get_object(self, id):
         try:
-            return Gallery.objects.get(pk=pk)
+            return Gallery.objects.get(id=id)
         except Gallery.DoesNotExist:
             raise Http404
 
     def get_investment(self, investment):
         try:
-            return Investment.objects.get(pk=investment)
+            return Investment.objects.get(id=investment)
         except Investment.DoesNotExist:
             raise Http404
 
-    def put(self, request, pk, format=None):
-        snippet = self.get_object(pk)
+    def patch(self, request, id, format=None):
+        snippet = self.get_object(id)
         check_image = self.get_investment(request.data.get('investment'))
         serializer = GallerySerializer(snippet, data=request.data)
         if serializer.is_valid():
