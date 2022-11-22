@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
@@ -108,6 +108,7 @@ class InvestmentRoomAPIView(ListAPIView):
 
 class GalleryAPIView(generics.GenericAPIView):
     serializer_class = GallerySerializer
+    serializerud_class = GalleryUDSerializer
     permission_classes = (IsAuthenticated, IsAdminUser,)
     parser_classes = [MultiPartParser, FormParser]
 
@@ -117,16 +118,32 @@ class GalleryAPIView(generics.GenericAPIView):
         except Investment.DoesNotExist:
             raise Http404
 
+    def get_image_object(self, pk,):
+        try:
+            return Gallery.objects.get(pk=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
     def post(self, request):
         snippet = self.get_object(request.data.get('investment'))
         if request.data.get('gallery'):
+            '''
+
+            updata = {'id': request.data.get('id'),
+                      'is_featured': False}
+            serializer = self.serializerud_class(
+                request.data.get('id'), data=updata)
+
             imagedata = {'investment': request.data.get('investment'),
                          'gallery': request.data.get('gallery'),
-                         'is_featured': request.data.get('is_featured')}
+                         'is_featured': True}
             in_serializer = self.serializer_class(data=imagedata)
             in_serializer.is_valid(raise_exception=True)
             in_serializer.save()
             return Response(imagedata, status=status.HTTP_201_CREATED)
+            '''
+            return Response({"status": "error",  "error": "Cannot create a new featured image, please update featured image"},
+                            status=status.HTTP_400_BAD_REQUEST)
         galleries = dict((request.data).lists())['galleries']
         if galleries:
             arr = []
