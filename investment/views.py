@@ -245,7 +245,7 @@ class InvestmentAPIView(generics.GenericAPIView):
         investment_data = serializer.data
         imagedata = {'investment': investment_data['id'],
                      'gallery': request.data.get('gallery'),
-                     'is_featured': request.data.get('is_featured')}
+                     'is_featured': True}
         in_serializer = self.gallery_serializer(data=imagedata)
         in_serializer.is_valid(raise_exception=True)
         in_serializer.save()
