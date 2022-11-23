@@ -103,6 +103,8 @@ WSGI_APPLICATION = 'property.wsgi.application'
 # CORS WHITELIST
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
     "https://relaxed-curie-e9a516.netlify.app",
     "http://127.0.0.1:3080",
     "http://127.0.0.1:3000",
@@ -138,6 +140,7 @@ DATABASES = {
         'PORT': ''
     }
 } '''
+
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
