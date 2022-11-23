@@ -13,7 +13,7 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.core.mail import send_mail as sender
 
 from rest_framework import filters, generics, status, views, permissions
-from .serializers import UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
+from .serializers import ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
@@ -36,7 +36,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util, username_generator, referral_generator
 from django.shortcuts import redirect
-from django.http import HttpResponsePermanentRedirect
+from django.http import HttpResponsePermanentRedirect, Http404
 import os
 import datetime
 from django_filters.rest_framework import DjangoFilterBackend
@@ -478,3 +478,49 @@ class LoginView3(APIView):
         }
 
         return response
+
+
+class ApproveUserAPIView(generics.GenericAPIView):
+    serializer_class = ApproveUserSerializer
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        snippet = self.get_object(id)
+        isdata = {'is_approved': request.data.get('is_approved')}
+        serializer = ApproveUserSerializer(snippet, data=isdata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifiedUserAPIView(generics.GenericAPIView):
+    serializer_class = VerifiedUserSerializer
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        snippet = self.get_object(id)
+        isdata = {'is_verified': request.data.get('is_verified')}
+        serializer = VerifiedUserSerializer(snippet, data=isdata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

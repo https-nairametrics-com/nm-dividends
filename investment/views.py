@@ -197,7 +197,7 @@ class ApproveInvestmentAPIView(generics.GenericAPIView):
 
     def get_object(self, pk):
         try:
-            return Investment.objects.get(pk=pk)
+            return Investment.objects.get(id=pk)
         except Investment.DoesNotExist:
             raise Http404
 

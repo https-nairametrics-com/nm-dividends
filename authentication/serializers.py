@@ -218,6 +218,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email')
 
 
+class ApproveUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'is_approved')
+
+
+class VerifiedUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'is_verified')
+
+
 class UserInterestSerializer(serializers.ModelSerializer):
     details = serializers.SerializerMethodField()
 
