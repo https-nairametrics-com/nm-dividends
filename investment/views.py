@@ -237,7 +237,7 @@ class InvestmentAPIView(generics.GenericAPIView):
             'risk': request.data.get('risk'),
             'amount': request.data.get('amount'),
             'features': request.data.get('features'),
-            'is_verified': request.data.get('is_verified'),
+            'is_verified': False,
         }
         serializer = self.serializer_class(data=indata)
         serializer.is_valid(raise_exception=True)
