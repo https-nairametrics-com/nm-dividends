@@ -91,7 +91,7 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description',
-                  'amount', 'room', 'roi', 'period',
+                  'amount', 'location', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image']
 
     def get_image(self, obj):
@@ -137,7 +137,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'slug', 'owner', 'name', 'description',
-                  'amount', 'room', 'roi', 'period',
+                  'amount', 'location', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image']
 
     def get_image(self, obj):
@@ -182,7 +182,7 @@ class InvestmentOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'name', 'description',
-                  'amount', 'room', 'period', 'roi',
+                  'amount', 'location', 'room', 'period', 'roi',
                   'annualized', 'risk', 'features', 'is_verified']
 
 

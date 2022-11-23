@@ -232,6 +232,7 @@ class InvestmentAPIView(generics.GenericAPIView):
             'room': request.data.get('room'),
             'period': request.data.get('period'),
             'roi': request.data.get('roi'),
+            'location': request.data.get('location'),
             'annualized': request.data.get('annualized'),
             'risk': request.data.get('risk'),
             'amount': request.data.get('amount'),

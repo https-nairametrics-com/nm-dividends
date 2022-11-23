@@ -41,6 +41,7 @@ class Investment(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, null=True, unique=True)
     description = models.TextField()
+    location = models.CharField(max_length=255, null=True)
     room = models.ForeignKey(to=InvestmentRoom, on_delete=models.CASCADE)
     period = models.ForeignKey(
         to=Period, on_delete=models.CASCADE, related_name='investment_period')
