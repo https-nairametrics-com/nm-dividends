@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
@@ -238,6 +238,7 @@ class InvestmentAPIView(generics.GenericAPIView):
             'amount': request.data.get('amount'),
             'features': request.data.get('features'),
             'is_verified': False,
+            'is_closed': False,
         }
         serializer = self.serializer_class(data=indata)
         serializer.is_valid(raise_exception=True)
@@ -299,7 +300,7 @@ class InvestmentUDAPIView(generics.GenericAPIView):
 
     def get_object(self, pk):
         try:
-            return Investment.objects.get(pk=pk)
+            return Investment.objects.get(id=pk)
         except Investment.DoesNotExist:
             raise Http404
 
@@ -315,6 +316,42 @@ class InvestmentUDAPIView(generics.GenericAPIView):
         snippet = self.get_object(pk)
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class VerifyInvestmentAPIView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = ApproveInvestmentSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CloseInvestmentAPIView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = CloseInvestmentSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TotalInvesmentAmountAPIView(generics.GenericAPIView):

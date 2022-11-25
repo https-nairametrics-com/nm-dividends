@@ -51,6 +51,7 @@ class Investment(models.Model):
     risk = models.ForeignKey(to=Risk, on_delete=models.CASCADE)
     features = models.TextField(null=True)
     is_verified = models.BooleanField(default=False)
+    is_closed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
