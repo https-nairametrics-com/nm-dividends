@@ -71,11 +71,11 @@ class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
 class InvestmentListAPIView(ListAPIView):
     serializer_class = InvestmentSerializer
     queryset = Investment.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
     # parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        return self.queryset.filter(owner=self.request.user)
+        return self.queryset.all()
 
 
 class InvestmentDetailAPIView(RetrieveAPIView):
