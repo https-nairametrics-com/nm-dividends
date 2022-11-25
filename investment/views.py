@@ -250,7 +250,35 @@ class InvestmentAPIView(generics.GenericAPIView):
         in_serializer.is_valid(raise_exception=True)
         in_serializer.save()
         #images = dict((request.data).lists())['image']
-        galleries = dict((request.data).lists())['galleries']
+        if request.data.get('galleries_1'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_1'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_2'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_2'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_3'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_3'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_4'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_4'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        '''galleries = dict((request.data).lists())['galleries']
         if galleries:
             arr = []
             for gallery in galleries:
@@ -258,7 +286,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                     investment_data['id'], gallery, False)
                 file_serializer = GallerySerializer(data=modified_data)
                 file_serializer.is_valid(raise_exception=True)
-                file_serializer.save()
+                file_serializer.save()'''
         return Response(indata, status=status.HTTP_201_CREATED)
 
 
