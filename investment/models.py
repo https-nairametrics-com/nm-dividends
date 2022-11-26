@@ -87,13 +87,14 @@ class Investors(models.Model):
     investor = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='investor')
     amount = models.IntegerField(null=True)
+    slug = models.CharField(max_length=255, null=True)
     serialkey = models.CharField(max_length=255, null=True)
     is_approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name='approved_by')
+        to=User, on_delete=models.CASCADE, null=True, related_name='approved_by')
     is_closed = models.BooleanField(default=False)
     closed_by = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name='closed_by')
+        to=User, on_delete=models.CASCADE, null=True, related_name='closed_by')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

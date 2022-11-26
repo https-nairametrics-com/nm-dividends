@@ -10,6 +10,8 @@ urlpatterns = [
          name="investment-list"),
     path('approve/<int:id>', views.ApproveInvestmentAPIView.as_view(),
          name="approve-investment"),
+    path('close/<int:id>', views.CloseInvestmentAPIView.as_view(),
+         name="close-investment"),
     path('invest/', views.InvestmentAPIView.as_view(),
          name="post-investment"),
     path('invest/<int:id>', views.InvestmentUDAPIView.as_view(),
@@ -30,5 +32,7 @@ urlpatterns = [
     path('verified/', views.TotalVerifiedInvesmentsAPIView.as_view(),
          name="verified-investment"),
     path('not-verified/', views.TotalNVerifiedInvesmentsAPIView.as_view(),
+         name="verified-investment"),
+    path('verify/', views.TotalNVerifiedInvesmentsAPIView.as_view(),
          name="verified-investment"),
 ]

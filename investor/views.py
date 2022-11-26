@@ -1,16 +1,18 @@
 from django.shortcuts import render
 from authentication.models import User
 from investment.views import IsSuperUser
-from investment.models import Investors
+from investment.models import Investors, Investment
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from authentication.utils import serial_investor
+from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-
-from .serializers import PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner
+from django.db.models import Sum, Aggregate, Avg
+from django.http import JsonResponse, Http404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 # Create your views here.
 
 
@@ -147,3 +149,84 @@ class SizeDetailAPIView(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return self.queryset.all()
+
+
+class InvestmentAPIView(generics.GenericAPIView):
+    serializer_class = InvestorSerializer
+    queryset = Investors.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, pk, format=None):
+        investment_id = self.get_object(pk)
+        investordata = {
+            'amount': request.data.get('amount'),
+            'slug': str(investor_slug()),
+            'investment': investment_id,
+            'serialkey': str(serial_investor()),
+            'is_approved': False,
+            'is_closed': False,
+        }
+        serializer = self.serializer_class(data=investordata)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(investor=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ApproveInvestmentAPIView(generics.GenericAPIView):
+    serializer_class = ApproveInvestorSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, pk, format=None):
+        investment_id = self.get_object(pk)
+        investordata = {
+            'is_approved': request.data.get('is_closed'),
+            'approved_by': self.request.user,
+        }
+        serializer = self.serializer_class(investment_id, data=investordata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CloseInvestmentAPIView(generics.GenericAPIView):
+    serializer_class = ApproveInvestorSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, pk, format=None):
+        investment_id = self.get_object(pk)
+        investordata = {
+            'is_closed': request.data.get('is_closed'),
+            'closed_by': self.request.user,
+        }
+        serializer = self.serializer_class(investment_id, data=investordata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

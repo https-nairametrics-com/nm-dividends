@@ -70,7 +70,7 @@ class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
 
 class InvestmentListAPIView(ListAPIView):
     serializer_class = InvestmentSerializer
-    queryset = Investment.objects.all()
+    queryset = Investment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated,)
     # parser_classes = [MultiPartParser, FormParser]
 
@@ -327,7 +327,7 @@ class VerifyInvestmentAPIView(generics.GenericAPIView):
         except Investment.DoesNotExist:
             raise Http404
 
-    def put(self, request, pk, format=None):
+    def patch(self, request, pk, format=None):
         snippet = self.get_object(pk)
         serializer = ApproveInvestmentSerializer(snippet, data=request.data)
         if serializer.is_valid():

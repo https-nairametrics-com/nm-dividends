@@ -1,6 +1,20 @@
 from rest_framework import serializers
 from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest
 from investment.serializers import UserInvestmentSerializer, RoomSerializer
+from investment.models import Investors, Investment
+from authentication.models import User
+
+
+class investmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investment
+        fields = ['id', 'slug', 'name', 'amount', 'location', 'roi']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'firstname', 'lastname', 'username', 'referral_code']
 
 
 class PeriodSerializer(serializers.ModelSerializer):
@@ -111,3 +125,55 @@ class RegistrationInitialInterestSerializer(serializers.ModelSerializer):
         model = InitialInterests
         fields = ('id', 'owner', 'risk', 'period',
                   'interest', 'investmentsize')
+
+
+class ApproveInvestorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investors
+        fields = ('id', 'approved_by', 'is_approved')
+
+
+class CloseInvestorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investors
+        fields = ('id', 'closed_by', 'is_closed')
+
+
+class InvestorSerializer(serializers.ModelSerializer):
+    investment = investmentSerializer(many=False, read_only=False)
+    investor = UserInvestmentSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Investors
+        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'serialkey',
+                  'is_approved', 'is_closed', 'created_at')
+
+    def get_investment(self, instance):
+        return instance.geo_info.investment
+
+    def get_investor(self, instance):
+        return instance.geo_info.investor
+
+
+class AdminInvestorSerializer(serializers.ModelSerializer):
+    investment = investmentSerializer(many=False, read_only=False)
+    investor = UserInvestmentSerializer(many=False, read_only=False)
+    approved_by = UserInvestmentSerializer(many=False, read_only=False)
+    closed_by = UserInvestmentSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Investors
+        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'serialkey',
+                  'is_approved', 'approved_by', 'is_closed', 'closed_by', 'created_at')
+
+    def get_investment(self, instance):
+        return instance.geo_info.investment
+
+    def get_investor(self, instance):
+        return instance.geo_info.investor
+
+    def get_approved_by(self, instance):
+        return instance.geo_info.approved_by
+
+    def get_closed_by(self, instance):
+        return instance.geo_info.closed_by
