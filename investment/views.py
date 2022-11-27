@@ -306,7 +306,21 @@ class InvestmentUDAPIView(generics.GenericAPIView):
 
     def put(self, request, pk, format=None):
         snippet = self.get_object(pk)
-        serializer = InvestmentOnlySerializer(snippet, data=request.data)
+        indata = {
+            'name': request.data.get('name'),
+            'description': request.data.get('description'),
+            'amount': request.data.get('amount'),
+            'location': request.data.get('location'),
+            'room': request.data.get('room'),
+            'period': request.data.get('period'),
+            'roi': request.data.get('roi'),
+            'risk': request.data.get('risk'),
+            'annualized': request.data.get('annualized'),
+            'features': request.data.get('features'),
+            'is_verified': request.data.get('is_verified'),
+            'is_closed': request.data.get('is_closed'),
+        }
+        serializer = InvestmentOnlySerializer(snippet, data=indata)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
