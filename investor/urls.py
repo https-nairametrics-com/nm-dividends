@@ -22,10 +22,14 @@ urlpatterns = [
          name="interest-risk"),
     path('investment/<int:id>', views.InvestmentAPIView.as_view(),
          name="create-investment"),
+
     path('list/investment/', views.InvestorListAPIView.as_view(),
          name="list-investment"),
     path('approve/<int:id>', views.ApproveInvestmentAPIView.as_view(),
          name="approve-investment"),
     path('close/<int:id>', views.CloseInvestmentAPIView.as_view(),
          name="close-investment"),
+
+    path('admin/create/investment/<int:id>', views.AdminInvestmentAPIView.as_view(),
+         name="create-investment"),
 ]

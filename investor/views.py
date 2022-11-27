@@ -200,6 +200,51 @@ class InvestmentAPIView(generics.GenericAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class AdminInvestmentAPIView(generics.GenericAPIView):
+    serializer_class = CreateInvestorSerializer
+    queryset = Investors.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, id):
+        try:
+            return Investment.objects.get(id=id)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def get_user_object(self, id):
+        try:
+            return User.objects.get(id=id)
+        except User.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id, format=None):
+
+        if (isApproved(request.user.id) == False):
+            return Response({"status": "error",  "error": "User account not approved"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        investment_id = self.get_object(id)
+        user_id = self.get_user_object(request.data.get('investor'))
+        if (request.data.get('amount') > getInvesmentAmount(id)):
+            investordata = {
+                'amount': request.data.get('amount'),
+                'slug': str(investor_slug()),
+                'investment': id,
+                'investor': request.data.get('investor'),
+                'serialkey': str(serial_investor()),
+                'is_approved': False,
+                'is_closed': False,
+            }
+            serializer = self.serializer_class(data=investordata)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"status": "error",  "error": "Amount cannot exceed Invesment amount"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 class InvestorListAPIView(ListAPIView):
     serializer_class = InvestorSerializer
     queryset = Investors.objects.all().order_by('-created_at')
