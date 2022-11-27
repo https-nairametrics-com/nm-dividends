@@ -46,7 +46,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 class UserListAPIView(ListAPIView):
     serializer_class = UserInterestSerializer
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated, IsAdminUser,)
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
