@@ -16,6 +16,17 @@ from rest_framework.response import Response
 # Create your views here.
 
 
+def isApproved(id):
+    query = User.objects.filter(id=id).values_list('is_approved', flat=True)[0]
+    return query
+
+
+def getInvesmentAmount(id):
+    query = Investment.objects.filter(
+        id=id).values_list('amount', flat=True)[0]
+    return query
+
+
 class PeriodListAPIView(ListCreateAPIView):
     serializer_class = PeriodSerializer
     queryset = Period.objects.all()
@@ -165,20 +176,28 @@ class InvestmentAPIView(generics.GenericAPIView):
             raise Http404
 
     def post(self, request, id, format=None):
+
+        if (isApproved(request.user.id) == False):
+            return Response({"status": "error",  "error": "User account not approved"},
+                            status=status.HTTP_400_BAD_REQUEST)
         investment_id = self.get_object(id)
-        investordata = {
-            'amount': request.data.get('amount'),
-            'slug': str(investor_slug()),
-            'investment': id,
-            'investor': request.user.id,
-            'serialkey': str(serial_investor()),
-            'is_approved': False,
-            'is_closed': False,
-        }
-        serializer = self.serializer_class(data=investordata)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if (request.data.get('amount') > getInvesmentAmount(id)):
+            investordata = {
+                'amount': request.data.get('amount'),
+                'slug': str(investor_slug()),
+                'investment': id,
+                'investor': request.user.id,
+                'serialkey': str(serial_investor()),
+                'is_approved': False,
+                'is_closed': False,
+            }
+            serializer = self.serializer_class(data=investordata)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"status": "error",  "error": "Amount cannot exceed Invesment amount"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class InvestorListAPIView(ListAPIView):
