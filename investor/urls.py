@@ -32,4 +32,6 @@ urlpatterns = [
 
     path('admin/create/investment/<int:id>', views.AdminInvestmentAPIView.as_view(),
          name="create-investment"),
+    path('admin/list/investment/', views.AdminInvestorListAPIView.as_view(),
+         name="admin-list-investment"),
 ]
