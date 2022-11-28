@@ -112,38 +112,30 @@ class GalleryAPIView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated, IsAdminUser,)
     parser_classes = [MultiPartParser, FormParser]
 
-    def get_object(self, pk):
+    def get_object(self, id):
         try:
-            return Investment.objects.get(pk=pk)
+            return Investment.objects.get(id=id)
         except Investment.DoesNotExist:
             raise Http404
 
-    def get_image_object(self, pk,):
+    def get_image_object(self, id):
         try:
-            return Gallery.objects.get(pk=pk)
+            return Gallery.objects.get(id=id)
         except Investment.DoesNotExist:
             raise Http404
 
     def post(self, request):
         snippet = self.get_object(request.data.get('investment'))
         if request.data.get('gallery'):
-            '''
-
-            updata = {'id': request.data.get('id'),
-                      'is_featured': False}
-            serializer = self.serializerud_class(
-                request.data.get('id'), data=updata)
 
             imagedata = {'investment': request.data.get('investment'),
                          'gallery': request.data.get('gallery'),
-                         'is_featured': True}
+                         'is_featured': False}
             in_serializer = self.serializer_class(data=imagedata)
             in_serializer.is_valid(raise_exception=True)
             in_serializer.save()
             return Response(imagedata, status=status.HTTP_201_CREATED)
-            '''
-            return Response({"status": "error",  "error": "Cannot create a new featured image, please update featured image"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        '''
         galleries = dict((request.data).lists())['galleries']
         if galleries:
             arr = []
@@ -155,6 +147,7 @@ class GalleryAPIView(generics.GenericAPIView):
                     file_serializer.save()
                     arr.append(file_serializer.data)
             return Response(arr, status=status.HTTP_201_CREATED)
+            '''
 
 
 class GalleryUDAPIView(generics.GenericAPIView):
