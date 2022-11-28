@@ -59,12 +59,32 @@ class GalleryUDSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Gallery
-        fields = ['id',  'is_featured']
+        fields = ['id', 'gallery',  'is_featured']
 
     def get_image_url(self, obj):
         return obj.gallery.url
 
     '''
+    def get_gallery(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.gallery.url)
+        '''
+
+
+class GalleryUpdateSerializer(serializers.ModelSerializer):
+    #gallery_url = serializers.SerializerMethodField("get_image_url")
+    # gallery = serializers.ImageField(
+    # max_length=None, allow_empty_file=False, allow_null=False, use_url=True, required=False)
+
+    class Meta:
+        model = Gallery
+        fields = ['id', 'gallery',  'is_featured']
+
+    '''
+    def get_image_url(self, obj):
+        return obj.gallery.url
+
+    
     def get_gallery(self, obj):
         request = self.context.get("request")
         return request.build_absolute_uri(obj.gallery.url)
