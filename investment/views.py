@@ -353,14 +353,14 @@ class VerifyInvestmentAPIView(generics.GenericAPIView):
 class CloseInvestmentAPIView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated, IsAdminUser,)
 
-    def get_object(self, pk):
+    def get_object(self, id):
         try:
-            return Investment.objects.get(id=pk)
+            return Investment.objects.get(id=id)
         except Investment.DoesNotExist:
             raise Http404
 
-    def put(self, request, pk, format=None):
-        snippet = self.get_object(pk)
+    def patch(self, request, id, format=None):
+        snippet = self.get_object(id)
         serializer = CloseInvestmentSerializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
