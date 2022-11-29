@@ -155,6 +155,14 @@ class InvestorSerializer(serializers.ModelSerializer):
         return instance.geo_info.investor
 
 
+class AdminUInvestorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Investors
+        fields = ('id', 'closed_by', 'approved_by', 'investment', 'investor', 'amount',
+                  'is_approved', 'is_closed')
+
+
 class CreateInvestorSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -172,7 +180,7 @@ class AdminInvestorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investors
         fields = ('id', 'slug', 'investment', 'investor', 'amount', 'serialkey',
-                  'is_approved', 'approved_by', 'is_closed', 'closed_by', 'created_at')
+                  'is_approved', 'approved_by', 'is_closed', 'closed_by', 'created_at', 'updated_at')
 
     def get_investment(self, instance):
         return instance.geo_info.investment

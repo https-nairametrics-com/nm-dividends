@@ -7,7 +7,7 @@ from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-from .serializers import CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg
 from django.http import JsonResponse, Http404
@@ -281,8 +281,8 @@ class InvestorAdminListAPIView(generics.GenericAPIView):
             raise Http404
 
 
-class ApproveInvestmentAPIView(generics.GenericAPIView):
-    serializer_class = ApproveInvestorSerializer
+class AdminUInvestorAPIView(generics.GenericAPIView):
+    serializer_class = AdminUInvestorSerializer
     queryset = Investors.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
     filter_backends = [DjangoFilterBackend,
@@ -294,10 +294,55 @@ class ApproveInvestmentAPIView(generics.GenericAPIView):
         except Investment.DoesNotExist:
             raise Http404
 
-    def patch(self, request, pk, format=None):
-        investment_id = self.get_object(pk)
+    def check_investor(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def check_user(self, pk):
+        try:
+            return User.objects.get(id=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def put(self, request, id, format=None):
+        investment_id = self.check_investor(id)
+        investor = self.check_user(request.data.get('investor'))
+        investment = self.get_object(request.data.get('investment'))
         investordata = {
-            'is_approved': request.data.get('is_closed'),
+            'amount': request.data.get('amount'),
+            'investor': request.data.get('investor'),
+            'investment': request.data.get('investment'),
+            'is_approved': request.data.get('is_approved'),
+            'approved_by': self.request.user,
+            'is_closed': request.data.get('is_closed'),
+            'closed_by': self.request.user,
+        }
+        serializer = self.serializer_class(investment_id, data=investordata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminApproveInvestorAPIView(generics.GenericAPIView):
+    serializer_class = ApproveInvestorSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def check_investor(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        investment_id = self.check_investor(id)
+        investordata = {
+            'is_approved': request.data.get('is_approved'),
             'approved_by': self.request.user,
         }
         serializer = self.serializer_class(investment_id, data=investordata)
@@ -307,7 +352,33 @@ class ApproveInvestmentAPIView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CloseInvestmentAPIView(generics.GenericAPIView):
+class AdminCloseInvestorAPIView(generics.GenericAPIView):
+    serializer_class = CloseInvestorSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def check_investor(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        investment_id = self.check_investor(id)
+        investordata = {
+            'is_closed': request.data.get('is_closed'),
+            'closed_by': self.request.user,
+        }
+        serializer = self.serializer_class(investment_id, data=investordata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApproveInvestorAPIView(generics.GenericAPIView):
     serializer_class = ApproveInvestorSerializer
     queryset = Investors.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
@@ -316,12 +387,38 @@ class CloseInvestmentAPIView(generics.GenericAPIView):
 
     def get_object(self, pk):
         try:
-            return Investment.objects.get(id=pk)
-        except Investment.DoesNotExist:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
             raise Http404
 
-    def patch(self, request, pk, format=None):
-        investment_id = self.get_object(pk)
+    def patch(self, request, id, format=None):
+        investment_id = self.get_object(id)
+        investordata = {
+            'is_approved': request.data.get('is_approved'),
+            'approved_by': self.request.user,
+        }
+        serializer = self.serializer_class(investment_id, data=investordata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CloseInvestorAPIView(generics.GenericAPIView):
+    serializer_class = ApproveInvestorSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        investment_id = self.get_object(id)
         investordata = {
             'is_closed': request.data.get('is_closed'),
             'closed_by': self.request.user,

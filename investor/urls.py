@@ -25,13 +25,15 @@ urlpatterns = [
 
     path('list/investment/', views.InvestorListAPIView.as_view(),
          name="list-investment"),
-    path('approve/<int:id>', views.ApproveInvestmentAPIView.as_view(),
+    path('approve/<int:id>', views.ApproveInvestorAPIView.as_view(),
          name="approve-investment"),
-    path('close/<int:id>', views.CloseInvestmentAPIView.as_view(),
+    path('close/<int:id>', views.CloseInvestorAPIView.as_view(),
          name="close-investment"),
 
     path('admin/create/investment/<int:id>', views.AdminInvestmentAPIView.as_view(),
          name="create-investment"),
+    path('admin/update/<int:id>', views.AdminUInvestorAPIView.as_view(),
+         name="update-investor"),
     path('admin/list/investment/', views.AdminInvestorListAPIView.as_view(),
          name="admin-list-investment"),
 ]
