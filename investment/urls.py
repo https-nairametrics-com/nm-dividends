@@ -35,4 +35,6 @@ urlpatterns = [
          name="verified-investment"),
     path('verify/', views.TotalNVerifiedInvesmentsAPIView.as_view(),
          name="verified-investment"),
+    path('count/users/', views.UserInvestmentListAPIView.as_view(),
+         name="users-investment"),
 ]

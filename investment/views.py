@@ -12,13 +12,14 @@ from .serializers import GalleryUpdateSerializer, CloseInvestmentSerializer, Gal
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 import json
 from itertools import chain
 from .helpers import modify_input_for_multiple_files
 from decimal import *
 from django_filters.rest_framework import DjangoFilterBackend
-
+import csv
+from . import serializers
 # Create your views here.
 
 
@@ -63,6 +64,16 @@ class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
     queryset = InvestmentRoom.objects.all()
     lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class UserInvestmentListAPIView(ListAPIView):
+    serializer_class = serializers.UserInvestmentSerializer
+    queryset = User.objects.all().order_by('-firstname')
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    # parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         return self.queryset.all()
@@ -438,3 +449,31 @@ class TotalNVerifiedInvesmentsAPIView(generics.GenericAPIView):
         else:
             return Response({"invesments": "0",  "error": "No un-verified investment"},
                             status=status.HTTP_200_OK)
+
+
+class ExportInvestmentAPIView(generics.GenericAPIView):
+    serializer_class = InvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get_serializer(self, queryset, many=True):
+        return self.serializer_class(
+            queryset,
+            many=many,
+        )
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="export.csv"'
+
+        serializer = self.get_serializer(
+            User.objects.all(),
+            many=True
+        )
+        header = InvestmentSerializer.Meta.fields
+
+        writer = csv.DictWriter(response, fieldnames=header)
+        writer.writeheader()
+        for row in serializer.data:
+            writer.writerow(row)
+
+        return response
