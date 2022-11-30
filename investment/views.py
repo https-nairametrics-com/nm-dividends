@@ -297,8 +297,8 @@ class InvestmentUDAPIView(generics.GenericAPIView):
         except Investment.DoesNotExist:
             raise Http404
 
-    def put(self, request, pk, format=None):
-        snippet = self.get_object(pk)
+    def put(self, request, id, format=None):
+        snippet = self.get_object(id)
         indata = {
             'name': request.data.get('name'),
             'description': request.data.get('description'),
