@@ -25,6 +25,7 @@ from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
+import csv
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -36,11 +37,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util, username_generator, referral_generator
 from django.shortcuts import redirect
-from django.http import HttpResponsePermanentRedirect, Http404
+from django.http import HttpResponsePermanentRedirect, HttpResponse, Http404
 import os
 import datetime
 from django_filters.rest_framework import DjangoFilterBackend
-
 # test
 
 
@@ -524,3 +524,31 @@ class VerifiedUserAPIView(generics.GenericAPIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExportUserAPIView(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get_serializer(self, queryset, many=True):
+        return self.serializer_class(
+            queryset,
+            many=many,
+        )
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="export.csv"'
+
+        serializer = self.get_serializer(
+            User.objects.all(),
+            many=True
+        )
+        header = RegisterSerializer.Meta.fields
+
+        writer = csv.DictWriter(response, fieldnames=header)
+        writer.writeheader()
+        for row in serializer.data:
+            writer.writerow(row)
+
+        return response

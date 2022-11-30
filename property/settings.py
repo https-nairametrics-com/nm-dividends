@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'income',
     'investor',
     'investment',
+    'comment',
 ]
 
 SWAGGER_SETTINGS = {
