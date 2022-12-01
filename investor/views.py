@@ -442,14 +442,14 @@ class ExportInvestorsCount(generics.GenericAPIView):
 
         for user in User.objects.all():
             approved_portfolio = Investors.objects.filter(
-                investor=user.id, is_approved=True)
-            completed_portfolio = approved_portfolio.filter(is_closed=True)
+                investor=user.id)
+            #completed_portfolio = approved_portfolio.filter(is_closed=True)
 
             row = ','.join([
                 user.firstname,
-                user.lastname,
-                approved_portfolio.count(),
-                completed_portfolio.count()
+                user.lastname
+                # approved_portfolio.count()
+                # completed_portfolio.count()
             ])
 
             writer.writerow(row)
