@@ -10,9 +10,10 @@ from .models import Risk, Interest, InvestmentSize, Period, Expectations
 from .serializers import AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
+import csv
 # Create your views here.
 
 
@@ -48,7 +49,7 @@ class PeriodListAPIView(ListCreateAPIView):
 class PeriodAllListAPIView(ListAPIView):
     serializer_class = PeriodSerializer
     queryset = Period.objects.all()
-    #permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
 
@@ -85,7 +86,7 @@ class RiskListAPIView(ListCreateAPIView):
 class RiskAllListAPIView(ListAPIView):
     serializer_class = RiskSerializer
     queryset = Risk.objects.all()
-    #permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.all()
@@ -116,7 +117,7 @@ class InterestListAPIView(ListCreateAPIView):
 class InterestAllListAPIView(ListAPIView):
     serializer_class = InterestSerializer
     queryset = Interest.objects.all()
-    #permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.all()
@@ -428,3 +429,29 @@ class CloseInvestorAPIView(generics.GenericAPIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExportInvestorsCount(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="export.csv"'
+
+        writer = csv.writer(response)
+
+        for user in User.objects.all():
+            approved_portfolio = Investors.objects.filter(
+                investor=user.id, is_approved=True)
+            completed_portfolio = approved_portfolio.filter(is_closed=True)
+
+            row = ','.join([
+                user.firstname,
+                user.lastname,
+                approved_portfolio.count(),
+                completed_portfolio.count()
+            ])
+
+            writer.writerow(row)
+
+        return response
