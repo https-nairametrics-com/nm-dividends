@@ -74,6 +74,11 @@ class UserInvestmentListAPIView(ListAPIView):
     queryset = User.objects.all().order_by('-firstname')
     permission_classes = (IsAuthenticated, IsAdminUser,)
     # parser_classes = [MultiPartParser, FormParser]
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    filterset_fields = ['firstname', 'lastname', 'email']
+    search_fields = ['firstname', 'lastname', 'email']
 
     def get_queryset(self):
         return self.queryset.all()
