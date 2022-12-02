@@ -17,6 +17,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'firstname', 'lastname', 'username', 'referral_code']
 
 
+class UserInvestorSerializer(serializers.ModelSerializer):
+    totalinvestment = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'firstname', 'lastname', 'email', 'totalinvestment']
+
+    def get_totalinvestment(self, obj):
+        return Investors.objects.filter(investor=obj.id).count()
+        # return GallerySerializer(logger_queryset, many=True).data
+
+
 class PeriodSerializer(serializers.ModelSerializer):
 
     class Meta:

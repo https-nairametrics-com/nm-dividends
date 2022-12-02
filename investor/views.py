@@ -7,7 +7,7 @@ from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-from .serializers import AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg
 from django.http import JsonResponse, Http404, HttpResponse
@@ -455,3 +455,18 @@ class ExportInvestorsCount(generics.GenericAPIView):
             writer.writerow(row)
 
         return response
+
+
+class AdminUserInvestorListAPIView(ListAPIView):
+    serializer_class = UserInvestorSerializer
+    queryset = User.objects.all().order_by('-firstname')
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    # parser_classes = [MultiPartParser, FormParser]
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    filterset_fields = ['firstname', 'lastname', 'email']
+    search_fields = ['firstname', 'lastname', 'email']
+
+    def get_queryset(self):
+        return self.queryset.all()

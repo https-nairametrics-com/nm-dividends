@@ -36,6 +36,8 @@ urlpatterns = [
          name="update-investor"),
     path('admin/list/investment/', views.AdminInvestorListAPIView.as_view(),
          name="admin-list-investment"),
-    path('count/investors/', views.ExportInvestorsCount.as_view(),
+    path('admin/list/investors/', views.AdminInvestorListAPIView.as_view(),
+         name="admin-list-investors"),
+    path('admin/export/investors/', views.ExportInvestorsCount.as_view(),
          name="count-investors"),
 ]
