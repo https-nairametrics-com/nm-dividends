@@ -604,6 +604,6 @@ class ExportPDFUsersAPIView(generics.GenericAPIView):
         c.drawText(textob)
         c.showPage()
         c.save()
-        buf.seek(4)
+        buf.seek(0)
 
         return FileResponse(buf, as_attachment=True, filename='venue.pdf')
