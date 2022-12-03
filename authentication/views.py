@@ -578,12 +578,24 @@ class ExportPDFUsersAPIView(generics.GenericAPIView):
         textob.setFont("Helvetica", 14)
 
         # add some lines of text
-        lines = [
-            "This is line 1",
-            "This is line 2",
-            "This is line 3",
-        ]
+        # lines = [
+        #    "This is line 1",
+        #    "This is line 2",
+        #    "This is line 3",
+        # ]
+        lines = []
 
+        users = User.objects.all()
+
+        for user in users:
+            lines.append(user.firstname)
+            lines.append(user.lastname)
+            lines.append(user.email)
+            lines.append(user.referral_code)
+            lines.append(user.address)
+            lines.append(user.phone)
+            lines.append(user.linkedin)
+            lines.append(" ")
         # Loop
         for line in lines:
             textob.textLine(line)
