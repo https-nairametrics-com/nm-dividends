@@ -4,7 +4,7 @@
 asgiref==3.5.0
 autopep8==1.5.4
 blinker==1.4
-brotli==0.7.0
+brotli==1.0.9
 brotlipy==0.7.0
 #ca-certificates=2022.10.11=haa95532_0
 cachetools==4.1.1
