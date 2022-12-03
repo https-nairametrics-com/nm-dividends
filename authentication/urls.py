@@ -31,6 +31,8 @@ urlpatterns = [
     path('verify/<int:id>', ApproveUserAPIView.as_view(), name="verify-user"),
     path('export/users/', views.ExportUserAPIView.as_view(),
          name="export-user-data"),
+    path('export/users/pdf/', views.ExportPDFUsersAPIView.as_view(),
+         name="export-user-data"),
 
 
 

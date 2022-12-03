@@ -11,7 +11,6 @@ from investor.serializers import RegistrationInitialInterestSerializer, InitialI
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
 from django.core.mail import send_mail as sender
-
 from rest_framework import filters, generics, status, views, permissions
 from .serializers import ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
 from rest_framework.response import Response
@@ -26,6 +25,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
 import csv
+import io
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -37,9 +37,12 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util, username_generator, referral_generator
 from django.shortcuts import redirect
-from django.http import HttpResponsePermanentRedirect, HttpResponse, Http404
+from django.http import FileResponse, HttpResponsePermanentRedirect, HttpResponse, Http404
 import os
 import datetime
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
 from django_filters.rest_framework import DjangoFilterBackend
 # test
 
@@ -552,3 +555,43 @@ class ExportUserAPIView(generics.GenericAPIView):
             writer.writerow(row)
 
         return response
+
+
+class ExportPDFUsersAPIView(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def get_serializer(self, queryset, many=True):
+        return self.serializer_class(
+            queryset,
+            many=many,
+        )
+
+    def get(self, request, *args, **kwargs):
+        # create bytestream buffer
+        buf = io.BytesIO()
+        # create canvas
+        c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+        # create text object
+        textob = c.beginText()
+        textob.setTextOrigin(inch, inch)
+        textob.setFont("Helvetica", 14)
+
+        # add some lines of text
+        lines = [
+            "This is line 1",
+            "This is line 2",
+            "This is line 3",
+        ]
+
+        # Loop
+        for line in lines:
+            textob.textLine(line)
+
+        # finish up
+        c.drawText(textob)
+        c.showPage()
+        c.save()
+        buf.seek(0)
+
+        return FileResponse(buf, as_attachment=True, filename='venue.pdf')
