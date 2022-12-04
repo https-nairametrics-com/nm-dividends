@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from authentication.models import User
 from .models import Comment
-from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveDestroyAPIView, CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import filters, generics, status, views, permissions
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor
@@ -43,7 +43,7 @@ class CreateCommentAPIView(generics.GenericAPIView):
 
 
 class AdminCreateCommentAPIView(generics.GenericAPIView):
-    serializer_class = serializers.CommentSerializer
+    serializer_class = serializers.AdminCommentSerializer
     queryset = Comment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated,)
     # parser_classes = [MultiPartParser, FormParser]
@@ -59,11 +59,11 @@ class AdminCreateCommentAPIView(generics.GenericAPIView):
         except Investors.DoesNotExist:
             raise Http404
 
-    def post(self, id, request):
+    def post(self, request, id):
         snippet = self.get_object(id)
         commentdata = {'investor': id,
                        'comment': request.data.get('comment'),
-                       'is_closed': True,
+                       'is_closed': request.data.get('is_closed'),
                        'responded_by': request.user,
                        'slug': str(transaction_generator())}
         in_serializer = self.serializer_class(data=commentdata)
@@ -72,7 +72,17 @@ class AdminCreateCommentAPIView(generics.GenericAPIView):
         return Response(commentdata, status=status.HTTP_201_CREATED)
 
 
-class AdminUserCommentListAPIView(ListAPIView):
+class InvestorDetailAPIView(RetrieveAPIView):
+    serializer_class = serializers.DetailInvestorSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
+    queryset = Investors.objects.all()
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class AdminGroupCommentListAPIView(ListAPIView):
     serializer_class = serializers.UserInvestmentSerializer
     queryset = Investors.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated, IsAdminUser,)

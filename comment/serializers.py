@@ -31,6 +31,18 @@ class AdminCommentSerializer(serializers.ModelSerializer):
                   'is_closed', 'responded_by', 'created_at']
 
 
+class AdminDetailCommentSerializer(serializers.ModelSerializer):
+    responded_by = UserSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'comment', 'investor',
+                  'is_closed', 'responded_by', 'created_at']
+
+    def get_responded_by(self, instance):
+        return instance.geo_info.responded_by
+
+
 class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -60,6 +72,23 @@ class UserInvestmentSerializer(serializers.ModelSerializer):
 
     def get_totalcomments(self, obj):
         return Comment.objects.filter(investor=obj.id).count()
+
+    def get_investor(self, instance):
+        return instance.geo_info.investor
+
+
+class DetailInvestorSerializer(serializers.ModelSerializer):
+    comments = serializers.SerializerMethodField()
+    investor = UserSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Investors
+        fields = ['id', 'investor', 'amount',
+                  'serialkey', 'totalComments', 'created_at']
+
+    def get_comments(self, obj):
+        logger_request = Comment.objects.filter(investor=obj.id)
+        return AdminDetailCommentSerializer(logger_request, many=True).data
 
     def get_investor(self, instance):
         return instance.geo_info.investor

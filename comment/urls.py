@@ -3,7 +3,7 @@ from . import views
 
 
 urlpatterns = [
-    path('admin/list/', views.AdminUserCommentListAPIView.as_view(),
+    path('admin/list/', views.AdminGroupCommentListAPIView.as_view(),
          name="comment-list"),
     path('create/<int:id>', views.CreateCommentAPIView.as_view(),
          name="create-comment"),
