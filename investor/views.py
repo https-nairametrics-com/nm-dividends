@@ -396,7 +396,7 @@ class ApproveInvestorAPIView(generics.GenericAPIView):
         investment_id = self.get_object(id)
         investordata = {
             'is_approved': request.data.get('is_approved'),
-            'approved_by': self.request.user,
+            'approved_by': self.request.user.id,
         }
         serializer = self.serializer_class(investment_id, data=investordata)
         if serializer.is_valid():
