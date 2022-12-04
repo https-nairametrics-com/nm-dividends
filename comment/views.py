@@ -24,14 +24,14 @@ class CreateCommentAPIView(generics.GenericAPIView):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
 
-    def get_object(self, id):
+    def get_object(self, id, user):
         try:
-            return Investors.objects.get(id=id)
+            return Investors.objects.get(id=id, investor=user)
         except Investors.DoesNotExist:
             raise Http404
 
-    def post(self, id, request):
-        snippet = self.get_object(id)
+    def post(self, request, id):
+        snippet = self.get_object(id, request.user)
         commentdata = {'investor': id,
                        'comment': request.data.get('comment'),
                        'is_closed': False,

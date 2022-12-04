@@ -32,12 +32,10 @@ class AdminCommentSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    investor = InvestorSerializer(many=False, read_only=False)
-    responded_by = UserSerializer
 
     class Meta:
         model = Comment
-        fields = ['id', 'comment', 'investor',
+        fields = ['id', 'slug', 'comment', 'investor',
                   'is_closed', 'created_at']
 
 

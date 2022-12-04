@@ -31,7 +31,7 @@ def transaction_generator(size=8, chars=string.digits):
     the_id = "".join(random.choice(chars) for x in range(size))
     # Check if ID exist in database
     try:
-        order_gen = Comment.objects.get(referral_code=the_id)
+        order_gen = Comment.objects.get(slug=the_id)
         transaction_generator
     except Comment.DoesNotExist:
         return the_id
