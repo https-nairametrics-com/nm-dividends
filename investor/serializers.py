@@ -173,7 +173,7 @@ class InvestorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investors
         fields = ('id', 'slug', 'investment', 'investor', 'amount', 'serialkey',
-                  'is_approved', 'is_closed', 'created_at')
+                  'is_approved', 'is_closed', 'comment', 'created_at')
 
     def get_investment(self, instance):
         return instance.geo_info.investment
