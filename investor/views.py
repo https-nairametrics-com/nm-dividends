@@ -422,7 +422,7 @@ class CloseInvestorAPIView(generics.GenericAPIView):
         investment_id = self.get_object(id)
         investordata = {
             'is_closed': request.data.get('is_closed'),
-            'closed_by': self.request.user,
+            'closed_by': self.request.user.id,
         }
         serializer = self.serializer_class(investment_id, data=investordata)
         if serializer.is_valid():
