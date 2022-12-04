@@ -51,6 +51,14 @@ class PeriodSerializer(serializers.ModelSerializer):
                   ]
 
 
+class InvestmentLSerializer(serializers.ModelSerializer):
+    period = PeriodSerializer(read_only=False)
+
+    class Meta:
+        model = Investment
+        fields = ['id', 'slug', 'name', 'amount', 'location', 'roi', 'period']
+
+
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvestmentSize
@@ -166,7 +174,7 @@ class CloseInvestorSerializer(serializers.ModelSerializer):
 
 
 class InvestorSerializer(serializers.ModelSerializer):
-    investment = investmentSerializer(many=False, read_only=False)
+    investment = InvestmentLSerializer(many=False, read_only=False)
     investor = UserInvestmentSerializer(many=False, read_only=False)
     comment = serializers.SerializerMethodField()
 
