@@ -316,9 +316,9 @@ class AdminUInvestorAPIView(generics.GenericAPIView):
             'investor': request.data.get('investor'),
             'investment': request.data.get('investment'),
             'is_approved': request.data.get('is_approved'),
-            'approved_by': self.request.user,
+            'approved_by': self.request.user.id,
             'is_closed': request.data.get('is_closed'),
-            'closed_by': self.request.user,
+            'closed_by': self.request.user.id,
         }
         serializer = self.serializer_class(investment_id, data=investordata)
         if serializer.is_valid():
