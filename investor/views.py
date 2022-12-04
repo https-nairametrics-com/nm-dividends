@@ -406,7 +406,7 @@ class ApproveInvestorAPIView(generics.GenericAPIView):
 
 
 class CloseInvestorAPIView(generics.GenericAPIView):
-    serializer_class = ApproveInvestorSerializer
+    serializer_class = CloseInvestorSerializer
     queryset = Investors.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
     filter_backends = [DjangoFilterBackend,
