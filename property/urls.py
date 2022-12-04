@@ -46,6 +46,8 @@ urlpatterns = [
     path('social_auth/', include(('social_auth.urls',
                                   'social_auth'), namespace="social_auth")),
     path('investor/', include('investor.urls')),
+    path('comment/', include('comment.urls')),
+
     path('investment/', include('investment.urls')),
     path('', schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),
