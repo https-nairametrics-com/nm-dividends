@@ -7,9 +7,15 @@ from django.db.models import Sum, Aggregate, Avg
 
 
 class UserInvestmentSerializer(serializers.ModelSerializer):
+    totalinvestment = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'firstname', 'lastname', ]
+        fields = ['id', 'firstname', 'lastname', 'email', 'totalinvestment']
+
+    def get_totalinvestment(self, obj):
+        return Investment.objects.filter(owner=obj.id).count()
+        # return GallerySerializer(logger_queryset, many=True).data
 
 
 class PeriodInvestmentSerializer(serializers.ModelSerializer):
@@ -135,18 +141,6 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
 
     def get_userdetails(self, instance):
         return instance.geo_info.userdetails
-
-
-class UserInvestmentSerializer(serializers.ModelSerializer):
-    totalinvestment = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ['id', 'firstname', 'lastname', 'email', 'totalinvestment']
-
-    def get_totalinvestment(self, obj):
-        return Investment.objects.filter(owner=obj.id).count()
-        # return GallerySerializer(logger_queryset, many=True).data
 
 
 class InvestmentSerializer(serializers.ModelSerializer):

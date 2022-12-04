@@ -9,4 +9,6 @@ urlpatterns = [
          name="create-comment"),
     path('admin/create/<int:id>', views.AdminCreateCommentAPIView.as_view(),
          name="admin-create-comment"),
+    path('investor/<int:id>', views.InvestorDetailAPIView.as_view(),
+         name="investor-comment"),
 ]

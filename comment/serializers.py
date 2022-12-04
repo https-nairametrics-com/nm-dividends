@@ -61,14 +61,14 @@ class ListCommentSerializer(serializers.ModelSerializer):
                   'comment', 'investor', 'is_closed']
 
 
-class UserInvestmentSerializer(serializers.ModelSerializer):
+class UserInvestorSerializer(serializers.ModelSerializer):
     totalcomments = serializers.SerializerMethodField()
     investor = UserSerializer(many=False, read_only=False)
 
     class Meta:
         model = Investors
         fields = ['id', 'investor', 'amount',
-                  'serialkey', 'totalComments', 'created_at']
+                  'serialkey', 'totalcomments', 'created_at']
 
     def get_totalcomments(self, obj):
         return Comment.objects.filter(investor=obj.id).count()
@@ -84,7 +84,7 @@ class DetailInvestorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investors
         fields = ['id', 'investor', 'amount',
-                  'serialkey', 'totalComments', 'created_at']
+                  'serialkey', 'comments', 'created_at']
 
     def get_comments(self, obj):
         logger_request = Comment.objects.filter(investor=obj.id)

@@ -531,6 +531,7 @@ class VerifiedUserAPIView(generics.GenericAPIView):
 
 class ExportUserAPIView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
+    queryset = User.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser)
 
     def get_serializer(self, queryset, many=True):
@@ -557,6 +558,7 @@ class ExportUserAPIView(generics.GenericAPIView):
         return response
 
 
+'''
 class ExportPDFUsersAPIView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (IsAuthenticated, IsAdminUser,)
@@ -607,3 +609,5 @@ class ExportPDFUsersAPIView(generics.GenericAPIView):
         buf.seek(0)
 
         return FileResponse(buf, as_attachment=True, filename='venue.pdf')
+
+        '''
