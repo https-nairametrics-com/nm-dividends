@@ -18,7 +18,7 @@ from .utils import transaction_generator
 
 class CreateCommentAPIView(generics.GenericAPIView):
     serializer_class = serializers.CommentSerializer
-    queryset = User.objects.all().order_by('-created_at')
+    queryset = Comment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated,)
     # parser_classes = [MultiPartParser, FormParser]
     filter_backends = [DjangoFilterBackend,
@@ -44,7 +44,7 @@ class CreateCommentAPIView(generics.GenericAPIView):
 
 class AdminCreateCommentAPIView(generics.GenericAPIView):
     serializer_class = serializers.CommentSerializer
-    queryset = User.objects.all().order_by('-created_at')
+    queryset = Comment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated,)
     # parser_classes = [MultiPartParser, FormParser]
     filter_backends = [DjangoFilterBackend,
