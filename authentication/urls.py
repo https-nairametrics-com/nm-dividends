@@ -28,7 +28,7 @@ urlpatterns = [
     path('list-users/', UserListAPIView.as_view(), name="user-details"),
     path('user/<int:id>', UserDetailAPIView.as_view(), name="user-data"),
     path('approve/<int:id>', ApproveUserAPIView.as_view(), name="approve-data"),
-    path('verify/<int:id>', ApproveUserAPIView.as_view(), name="verify-user"),
+    path('verify/<int:id>', VerifiedUserAPIView.as_view(), name="verify-user"),
     path('export/users/', views.ExportUserAPIView.as_view(),
          name="export-user-data"),
     path('export/users/pdf/', views.ExportPDFUsersAPIView.as_view(),
