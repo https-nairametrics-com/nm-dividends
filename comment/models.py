@@ -9,7 +9,7 @@ from authentication.models import User
 
 class Comment(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
-    message = models.TextField(null=True)
+    comment = models.TextField(null=True)
     investor = models.ForeignKey(
         to=Investors, on_delete=models.CASCADE, related_name='investment_comment')
     responded_by = models.ForeignKey(null=True,
