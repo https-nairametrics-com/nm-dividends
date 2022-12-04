@@ -3,9 +3,11 @@ from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize
 from investment.serializers import UserInvestmentSerializer, RoomSerializer
 from investment.models import Investors, Investment
 from authentication.models import User
+from comment.models import Comment
 
 
 class investmentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Investment
         fields = ['id', 'slug', 'name', 'amount', 'location', 'roi']
@@ -15,6 +17,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'firstname', 'lastname', 'username', 'referral_code']
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    responded_by = UserSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'slug', 'message',
+                  'investor', 'is_closed', 'responded_by']
+
+    def get_responsed_by(self, instance):
+        return instance.geo_info.responded_by
 
 
 class UserInvestorSerializer(serializers.ModelSerializer):
@@ -154,6 +168,7 @@ class CloseInvestorSerializer(serializers.ModelSerializer):
 class InvestorSerializer(serializers.ModelSerializer):
     investment = investmentSerializer(many=False, read_only=False)
     investor = UserInvestmentSerializer(many=False, read_only=False)
+    comment = serializers.SerializerMethodField()
 
     class Meta:
         model = Investors
@@ -165,6 +180,10 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     def get_investor(self, instance):
         return instance.geo_info.investor
+
+    def get_comment(self, obj):
+        queryset = Comment.objects.filter(investor=obj.id)
+        return CommentSerializer(queryset, many=True).data
 
 
 class AdminUInvestorSerializer(serializers.ModelSerializer):
