@@ -11,7 +11,8 @@ class UserInvestmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'firstname', 'lastname', 'email', 'totalinvestment']
+        fields = ['id', 'firstname', 'phone',
+                  'lastname', 'email', 'totalinvestment']
 
     def get_totalinvestment(self, obj):
         return Investment.objects.filter(owner=obj.id).count()

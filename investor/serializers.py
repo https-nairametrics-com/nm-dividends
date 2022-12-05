@@ -186,7 +186,7 @@ class CloseInvestorSerializer(serializers.ModelSerializer):
 
 class InvestorSerializer(serializers.ModelSerializer):
     investment = InvestmentLSerializer(many=False, read_only=False)
-    investor = UserInvestmentSerializer(many=False, read_only=False)
+    investor = UserInvestorSerializer(many=False, read_only=False)
     comment = serializers.SerializerMethodField()
 
     class Meta:
