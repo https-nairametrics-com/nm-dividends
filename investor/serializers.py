@@ -19,6 +19,15 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug']
 
 
+class RiskSerializer(serializers.ModelSerializer):
+    #user = UserInvestmentSerializer(read_only=False)
+
+    class Meta:
+        model = Risk
+        fields = ['id', 'risk', 'is_verified',
+                  ]
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -62,6 +71,7 @@ class PeriodSerializer(serializers.ModelSerializer):
 class InvestmentLSerializer(serializers.ModelSerializer):
     period = PeriodSerializer(read_only=False)
     room = RoomSerializer(read_only=False)
+    risk = RiskSerializer(read_only=False)
 
     class Meta:
         model = Investment
@@ -83,15 +93,6 @@ class AdminSizeSerializer(serializers.ModelSerializer):
         model = InvestmentSize
         fields = ['id', 'investment_size', 'is_verified',
                   'created_by', 'user']
-
-
-class RiskSerializer(serializers.ModelSerializer):
-    #user = UserInvestmentSerializer(read_only=False)
-
-    class Meta:
-        model = Risk
-        fields = ['id', 'risk', 'is_verified',
-                  ]
 
 
 class AdminRiskSerializer(serializers.ModelSerializer):
