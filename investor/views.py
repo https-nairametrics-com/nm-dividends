@@ -432,6 +432,8 @@ class CloseInvestorAPIView(generics.GenericAPIView):
 
 
 class ExportInvestorsCount(generics.GenericAPIView):
+    serializer_class = InvestorSerializer
+    queryset = Investors.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser)
 
     def get(self, request, *args, **kwargs):
