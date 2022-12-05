@@ -22,7 +22,8 @@ class RoomSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'firstname', 'lastname', 'username', 'referral_code']
+        fields = ['id', 'firstname', 'lastname',
+                  'username', 'referral_code', 'phone']
 
 
 class CommentSerializer(serializers.ModelSerializer):
