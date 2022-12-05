@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest
 from investment.serializers import UserInvestmentSerializer, RoomSerializer
-from investment.models import Investors, Investment
+from investment.models import Investors, Investment, InvestmentRoom
 from authentication.models import User
 from comment.models import Comment
 
@@ -11,6 +11,12 @@ class investmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'slug', 'name', 'amount', 'location', 'roi']
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvestmentRoom
+        fields = ['id', 'name', 'slug']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -53,10 +59,12 @@ class PeriodSerializer(serializers.ModelSerializer):
 
 class InvestmentLSerializer(serializers.ModelSerializer):
     period = PeriodSerializer(read_only=False)
+    room = RoomSerializer(read_only=False)
 
     class Meta:
         model = Investment
-        fields = ['id', 'slug', 'name', 'amount', 'location', 'roi', 'period']
+        fields = ['id', 'slug', 'name', 'amount',
+                  'location', 'roi', 'period', 'room']
 
 
 class SizeSerializer(serializers.ModelSerializer):
