@@ -249,9 +249,19 @@ class AdminInvestmentAPIView(generics.GenericAPIView):
 class InvestorListAPIView(ListAPIView):
     serializer_class = InvestorSerializer
     queryset = Investors.objects.all().order_by('-created_at')
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsUserApproved, )
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
+
+    def get_queryset(self):
+        return self.queryset.filter(investor=self.request.user)
+
+
+class InvestorDetailAPIView(RetrieveAPIView):
+    serializer_class = InvestorSerializer
+    queryset = Investors.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsUserApproved,)
+    lookup_field = "id"
 
     def get_queryset(self):
         return self.queryset.filter(investor=self.request.user)
