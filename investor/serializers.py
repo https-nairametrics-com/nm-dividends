@@ -76,7 +76,7 @@ class InvestmentLSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'slug', 'name', 'amount',
-                  'location', 'roi', 'period', 'room']
+                  'location', 'roi', 'period', 'room', 'risk']
 
 
 class SizeSerializer(serializers.ModelSerializer):
