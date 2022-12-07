@@ -13,12 +13,6 @@ class investmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'slug', 'name', 'amount', 'location', 'roi']
 
 
-class RoomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InvestmentRoom
-        fields = ['id', 'name', 'slug']
-
-
 class RiskSerializer(serializers.ModelSerializer):
     #user = UserInvestmentSerializer(read_only=False)
 

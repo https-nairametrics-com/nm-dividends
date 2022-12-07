@@ -83,7 +83,7 @@ class InvestorDetailAPIView(RetrieveAPIView):
 
 
 class AdminGroupCommentListAPIView(ListAPIView):
-    serializer_class = serializers.UserInvestorSerializer
+    serializer_class = serializers.UserInvestorsSerializer
     queryset = Investors.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated, IsAdminUser,)
     # parser_classes = [MultiPartParser, FormParser]

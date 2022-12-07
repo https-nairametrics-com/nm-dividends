@@ -61,7 +61,7 @@ class ListCommentSerializer(serializers.ModelSerializer):
                   'comment', 'investor', 'is_closed']
 
 
-class UserInvestorSerializer(serializers.ModelSerializer):
+class UserInvestorsSerializer(serializers.ModelSerializer):
     totalcomments = serializers.SerializerMethodField()
     investor = UserSerializer(many=False, read_only=False)
 

@@ -35,7 +35,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvestmentRoom
-        fields = ['id', 'name', 'description',
+        fields = ['id', 'slug', 'name', 'description',
                   'is_verified', ]
 
 
