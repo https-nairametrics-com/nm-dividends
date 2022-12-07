@@ -299,13 +299,13 @@ class AdminUInvestorAPIView(generics.GenericAPIView):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
 
-    def get_object(self, pk):
+    def check_investment(self, pk):
         try:
             return Investment.objects.get(id=pk)
         except Investment.DoesNotExist:
             raise Http404
 
-    def check_investor(self, pk):
+    def get_object(self, pk):
         try:
             return Investors.objects.get(id=pk)
         except Investors.DoesNotExist:
@@ -318,9 +318,9 @@ class AdminUInvestorAPIView(generics.GenericAPIView):
             raise Http404
 
     def put(self, request, id, format=None):
-        investment_id = self.check_investor(id)
+        investment_id = self.get_object(id)
         investor = self.check_user(request.data.get('investor'))
-        investment = self.get_object(request.data.get('investment'))
+        investment = self.check_investment(request.data.get('investment'))
         investordata = {
             'amount': request.data.get('amount'),
             'investor': request.data.get('investor'),
@@ -335,6 +335,11 @@ class AdminUInvestorAPIView(generics.GenericAPIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id, format=None):
+        snippet = self.get_object(id)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AdminApproveInvestorAPIView(generics.GenericAPIView):
