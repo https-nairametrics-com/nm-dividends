@@ -42,9 +42,33 @@ import os
 import datetime
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import Image
 from django_filters.rest_framework import DjangoFilterBackend
+from django.template.loader import render_to_string, get_template
+from xhtml2pdf import pisa
+from fpdf import FPDF
+'''
+
+from weasyprint import HTML
+import tempfile
+'''
 # test
+
+
+def fetch_resources(uri, rel):
+    path = os.path.join(uri.replace(settings.STATIC_URL, ""))
+    return path
+
+
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.error:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
 
 
 class UserListAPIView(ListAPIView):
@@ -610,4 +634,84 @@ class ExportPDFUsersAPIView(generics.GenericAPIView):
 
         return FileResponse(buf, as_attachment=True, filename='venue.pdf')
 
+        '''
+
+
+class ExportUsersPDFAPIView(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def get(self, request):
+        user_db = User.objects.values()
+        print(user_db)
+        sales = [
+            {"item": "Keyboard", "amount": "$120,00"},
+            {"item": "Mouse", "amount": "$10,00"},
+            {"item": "House", "amount": "$1 000 000,00"},
+        ]
+        pdf = FPDF('P', 'mm', 'A4')
+        pdf.add_page()
+        pdf.set_font('courier', 'B', 16)
+        pdf.cell(40, 10, 'This is what you have sold this month so far:', 0, 1)
+        pdf.cell(40, 10, '', 0, 1)
+        pdf.set_font('courier', '', 12)
+        pdf.cell(200, 8, f"{'Item'.ljust(30)} {'Amount'.rjust(20)}", 0, 1)
+        pdf.line(10, 30, 150, 30)
+        pdf.line(10, 38, 150, 38)
+        for line in user_db:
+            pdf.cell(
+                200, 8, f"{line['firstname'].ljust(30)} {line['updated_at'].rjust(20)}", 0, 1)
+        pdf.output('report.pdf', 'F')
+        return FileResponse(open('report.pdf', 'rb'), as_attachment=False, content_type='application/pdf')
+
+    '''
+    def get(self, request, *args, **kwargs):
+        try:
+            user_db = User.objects.get(id=4)
+            #user = RegisterSerializer(user_db)
+            print(user_db)
+        except:
+            return HttpResponse("505 Not Found")
+        data = {
+            'firstname': user_db.firstname,
+            'lastname': user_db.lastname,
+        }
+
+        pdf = render_to_pdf('auth/users.html', data)
+        # return HttpResponse(pdf, content_type='applicatiion/pdf')
+
+        # force download
+        if pdf:
+            response = HttpResponse(pdf, content_type='applicatiion/pdf')
+            #filename = "Users_%s.pdf" %(data['order_id'])
+            filename = "Users.pdf"
+            content = "inline; filename='%s'" % (filename)
+            content = "attachment; filename=%s" % (filename)
+            response['Content-Disposition'] = content
+            return response
+        return Http404
+        '''
+
+    '''
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename=Users' + \
+            str(datetime.date.now())+'.pdf'
+        response['Content-Transfer-Encoding'] = 'binary'
+
+        html_string = render_to_string(
+            'auth/users.html', {'auth': [], 'total': 0}
+        )
+        html = HTML(string=html_string)
+
+        result = html.write_pdf()
+
+        # Preview PDF file in memory
+        with tempfile.NamedTemporaryFile(delete=True) as output:
+            output.write(result)
+            output.flush()
+            output = open(output.name, 'rb')
+            response.write(output.read())
+
+        return response
         '''
