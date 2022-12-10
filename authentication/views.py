@@ -46,7 +46,7 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import Image
 from django_filters.rest_framework import DjangoFilterBackend
 from django.template.loader import render_to_string, get_template
-from xhtml2pdf import pisa
+#from xhtml2pdf import pisa
 from fpdf import FPDF
 '''
 

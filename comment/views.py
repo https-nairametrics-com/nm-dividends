@@ -45,13 +45,13 @@ class CreateCommentAPIView(generics.GenericAPIView):
 class AdminCreateCommentAPIView(generics.GenericAPIView):
     serializer_class = serializers.AdminCommentSerializer
     queryset = Comment.objects.all().order_by('-created_at')
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAdminUser,)
     # parser_classes = [MultiPartParser, FormParser]
-    filter_backends = [DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
+    # filter_backends = [DjangoFilterBackend,
+    #                   filters.SearchFilter, filters.OrderingFilter]
 
-    filterset_fields = ['firstname', 'lastname', 'email']
-    search_fields = ['firstname', 'lastname', 'email']
+    #filterset_fields = ['firstname', 'lastname', 'email']
+    #search_fields = ['firstname', 'lastname', 'email']
 
     def get_object(self, id):
         try:
@@ -64,7 +64,7 @@ class AdminCreateCommentAPIView(generics.GenericAPIView):
         commentdata = {'investor': id,
                        'comment': request.data.get('comment'),
                        'is_closed': request.data.get('is_closed'),
-                       'responded_by': request.user,
+                       'responded_by': request.user.id,
                        'slug': str(transaction_generator())}
         in_serializer = self.serializer_class(data=commentdata)
         in_serializer.is_valid(raise_exception=True)

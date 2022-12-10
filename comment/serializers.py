@@ -27,7 +27,7 @@ class AdminCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'comment', 'investor',
+        fields = ['id', 'slug', 'comment', 'investor',
                   'is_closed', 'responded_by', 'created_at']
 
 
