@@ -8,7 +8,7 @@ urlpatterns = [
     path('create/<int:id>', views.CreateCommentAPIView.as_view(),
          name="create-comment"),
     path('admin/create/<int:id>', views.AdminCreateCommentAPIView.as_view(),
-         name="admin-create-comment"),
+         name="admin-comment"),
     path('investor/<int:id>', views.InvestorDetailAPIView.as_view(),
          name="investor-comment"),
 ]
