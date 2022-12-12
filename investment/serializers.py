@@ -31,6 +31,20 @@ class RiskRoomSerializer(serializers.ModelSerializer):
         fields = ['id', 'risk', ]
 
 
+class DealTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DealType
+        fields = ['id', 'name', 'is_active', ]
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Currency
+        fields = ['id', 'name', 'is_active', ]
+
+
 class MainRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -39,12 +53,24 @@ class MainRoomSerializer(serializers.ModelSerializer):
                   'is_verified', ]
 
 
-class RoomSerializer(serializers.ModelSerializer):
+class CreateRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvestmentRoom
-        fields = ['id', 'slug', 'name', 'description',
+        fields = ['id', 'main_room', 'slug', 'name', 'description',
                   'is_verified', ]
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    main_room = MainRoomSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = InvestmentRoom
+        fields = ['id', 'main_room', 'slug', 'name', 'description',
+                  'is_verified', ]
+
+    def get_main_room(self, instance):
+        return instance.geo_info.main_room
 
 
 class GallerySerializer(serializers.ModelSerializer):
@@ -108,7 +134,8 @@ class GalleryUpdateSerializer(serializers.ModelSerializer):
 
 class InvestmentRoomSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
-
+    currency = CurrencySerializer(many=False, read_only=False)
+    dealtype = DealTypeSerializer(many=False, read_only=False)
     #gallery_set = serializers.StringRelatedField(many=True)
     risk = RiskRoomSerializer(many=False, read_only=False)
     room = RoomSerializer(many=False, read_only=False)
@@ -125,9 +152,9 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'owner', 'slug', 'name', 'description',
-                  'amount', 'location', 'room', 'roi', 'period',
-                  'annualized',  'risk', 'features', 'is_verified', 'image', 'created_at']
+        fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+                  'volume', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
+                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(investment=obj.id)
@@ -154,7 +181,8 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
 
 class InvestmentSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
-
+    currency = CurrencySerializer(many=False, read_only=False)
+    dealtype = DealTypeSerializer(many=False, read_only=False)
     #gallery_set = serializers.StringRelatedField(many=True)
     risk = RiskRoomSerializer(many=False, read_only=False)
     room = RoomSerializer(many=False, read_only=False)
@@ -171,8 +199,8 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'slug', 'owner', 'name', 'description',
-                  'amount', 'location', 'room', 'roi', 'period',
+        fields = ['id', 'slug', 'owner', 'name', 'description', 'volume', 'offer_price',
+                  'amount', 'currency', 'dealtype', 'location', 'room', 'roi', 'period', 'video', 'spot_price', 'unit_price',
                   'annualized',  'risk', 'features', 'is_verified', 'is_closed', 'image', 'created_at']
 
     def get_image(self, obj):
@@ -216,9 +244,9 @@ class InvestmentOnlySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'name', 'description', 'is_closed',
-                  'amount', 'location', 'room', 'period', 'roi',
-                  'annualized', 'risk', 'features', 'is_verified', 'created_at']
+        fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+                  'volume', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
+                  'annualized',  'risk', 'is_closed', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
 
 class ApproveInvestmentSerializer(serializers.ModelSerializer):
@@ -239,6 +267,6 @@ class InvestorsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvestmentRoom
-        fields = ['investment', 'id', 'investor', 'is_closed',
+        fields = ['investment', 'id', 'investor', 'is_closed', 'bid_price',
                   'is_approved', 'amount', 'serialkey', 'approved_by',
                   'is_closed', 'closed_by', 'created_at']
