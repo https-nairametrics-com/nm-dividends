@@ -57,7 +57,7 @@ class MainRoom(models.Model):
 
 class InvestmentRoom(models.Model):
     name = models.CharField(max_length=255)
-    main_category = models.ForeignKey(
+    main_room = models.ForeignKey(
         to=MainRoom, null=True, on_delete=models.CASCADE, related_name='main_room')
     slug = models.SlugField(max_length=255, null=True, unique=True)
     description = models.TextField(null=True)

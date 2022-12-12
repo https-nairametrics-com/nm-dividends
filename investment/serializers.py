@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Investment, InvestmentRoom, Gallery, Investors
+from .models import Investment, MainRoom, DealType, Currency, InvestmentRoom, Gallery, Investors
 from investor.models import Period, Risk
 from authentication.models import User
 from django.conf import settings
@@ -29,6 +29,14 @@ class RiskRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Risk
         fields = ['id', 'risk', ]
+
+
+class MainRoomSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MainRoom
+        fields = ['id', 'slug', 'name', 'description',
+                  'is_verified', ]
 
 
 class RoomSerializer(serializers.ModelSerializer):
