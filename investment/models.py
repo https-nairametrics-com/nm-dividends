@@ -97,7 +97,6 @@ class Investment(models.Model):
     amount = models.IntegerField(null=True)
     volume = models.IntegerField(null=True)
     offer_price = models.IntegerField(null=True)
-    bid_price = models.IntegerField(null=True)
     spot_price = models.IntegerField(null=True)
     unit_price = models.IntegerField(null=True)
     roi = models.CharField(max_length=255)
@@ -143,6 +142,7 @@ class Investors(models.Model):
     investor = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='investor')
     amount = models.IntegerField(null=True)
+    bid_price = models.IntegerField(null=True)
     slug = models.CharField(max_length=255, null=True)
     serialkey = models.CharField(max_length=255, null=True)
     is_approved = models.BooleanField(default=False)
