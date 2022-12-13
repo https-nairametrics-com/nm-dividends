@@ -268,6 +268,20 @@ class InvestorDetailAPIView(RetrieveAPIView):
         return self.queryset.filter(investor=self.request.user)
 
 
+class TotalAmountAPIView(generics.GenericAPIView):
+    serializer_class = InvestorSerializer
+    permission_classes = (IsAuthenticated, IsUserApproved,)
+
+    def get(self, format=None):
+        item = Investors.objects.filter(
+            is_approved=True, investor=self.request.user.id).aggregate(amount=Sum('amount'))
+        if item:
+            return Response(item, status=status.HTTP_200_OK)
+        else:
+            return Response({"amount": "0",  "error": "No verified investment"},
+                            status=status.HTTP_200_OK)
+
+
 class AdminInvestorListAPIView(ListAPIView):
     serializer_class = InvestorSerializer
     queryset = Investors.objects.all().order_by('-created_at')
