@@ -255,12 +255,13 @@ class InvestmentAPIView(generics.GenericAPIView):
             'features': request.data.get('features'),
             'is_verified': False,
             'is_closed': False,
+            'owner': self.request.user,
             'start_date': request.data.get('start_date'),
             'end_date': request.data.get('end_date'),
         }
         serializer = self.serializer_class(data=indata)
         serializer.is_valid(raise_exception=True)
-        serializer.save(owner=self.request.user)
+        serializer.save()
         investment_data = serializer.data
         imagedata = {'investment': investment_data['id'],
                      'gallery': request.data.get('gallery'),
