@@ -105,8 +105,8 @@ class Investment(models.Model):
     features = models.TextField(null=True)
     is_verified = models.BooleanField(default=False)
     is_closed = models.BooleanField(default=False)
-    start_date = models.DateTimeField(null=True)
-    end_date = models.DateTimeField(null=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
