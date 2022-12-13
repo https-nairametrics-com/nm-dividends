@@ -182,7 +182,7 @@ class InvestmentAPIView(generics.GenericAPIView):
             return Response({"status": "error",  "error": "User account not approved"},
                             status=status.HTTP_400_BAD_REQUEST)
         investment_id = self.get_object(id)
-        if (request.data.get('amount') > getInvesmentAmount(id)):
+        if (int(request.data.get('amount')) > getInvesmentAmount(id)):
             investordata = {
                 'amount': request.data.get('amount'),
                 'bid_price': request.data.get('bid_price'),
