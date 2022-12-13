@@ -306,7 +306,7 @@ class TotalInvestmentRoomAPIView(generics.GenericAPIView):
         item = Investors.objects.filter(
             is_approved=True).annotate(unique_names=Count('investment', distinct=True))
         if item:
-            return Response({"investments": item}, status=status.HTTP_200_OK)
+            return Response(item, status=status.HTTP_200_OK)
         else:
             return Response({"investments": "0",  "error": "No verified investment"},
                             status=status.HTTP_200_OK)
