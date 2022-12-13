@@ -185,6 +185,7 @@ class InvestmentAPIView(generics.GenericAPIView):
         if (request.data.get('amount') > getInvesmentAmount(id)):
             investordata = {
                 'amount': request.data.get('amount'),
+                'bid_price': request.data.get('bid_price'),
                 'slug': str(investor_slug()),
                 'investment': id,
                 'investor': request.user.id,
@@ -323,6 +324,7 @@ class AdminUInvestorAPIView(generics.GenericAPIView):
         investment = self.check_investment(request.data.get('investment'))
         investordata = {
             'amount': request.data.get('amount'),
+            'bid_price': request.data.get('bid_price'),
             'investor': request.data.get('investor'),
             'investment': request.data.get('investment'),
             'is_approved': request.data.get('is_approved'),

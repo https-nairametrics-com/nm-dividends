@@ -1,16 +1,33 @@
 from rest_framework import serializers
 from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest
 from investment.serializers import UserInvestmentSerializer, RoomSerializer
-from investment.models import Investors, Investment, InvestmentRoom
+from investment.models import Currency, DealType, Investors, Investment, InvestmentRoom
 from authentication.models import User
 from comment.models import Comment
 
 
+class DealTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DealType
+        fields = ['id', 'name']
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Currency
+        fields = ['id', 'name']
+
+
 class investmentSerializer(serializers.ModelSerializer):
+    dealtype = DealTypeSerializer(many=False, read_only=False)
+    currency = CurrencySerializer(many=False, read_only=False)
 
     class Meta:
         model = Investment
-        fields = ['id', 'slug', 'name', 'amount', 'location', 'roi']
+        fields = ['id', 'slug', 'name', 'unit_price', 'spot_price', 'offer_price',
+                  'amount', 'currency', 'dealtype', 'video', 'location', 'roi']
 
 
 class RiskSerializer(serializers.ModelSerializer):
@@ -66,11 +83,15 @@ class InvestmentLSerializer(serializers.ModelSerializer):
     period = PeriodSerializer(read_only=False)
     room = RoomSerializer(read_only=False)
     risk = RiskSerializer(read_only=False)
+    dealtype = DealTypeSerializer(many=False, read_only=False)
+    currency = CurrencySerializer(many=False, read_only=False)
 
     class Meta:
         model = Investment
-        fields = ['id', 'slug', 'name', 'amount',
-                  'location', 'roi', 'period', 'room', 'risk']
+        fields = ['id', 'slug', 'name', 'amount', 'currency', 'dealtype',
+                  'volume', 'offer_price', 'spot_price', 'unit_price',
+                  'location', 'roi', 'period', 'room', 'risk', 'start_date',
+                  'end_date', 'created_at', 'is_verified', 'is_closed']
 
 
 class SizeSerializer(serializers.ModelSerializer):
@@ -185,7 +206,7 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investors
-        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'serialkey',
+        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'bid_price', 'serialkey',
                   'is_approved', 'is_closed', 'comment', 'created_at')
 
     def get_investment(self, instance):
@@ -203,7 +224,7 @@ class AdminUInvestorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investors
-        fields = ('id', 'closed_by', 'approved_by', 'investment', 'investor', 'amount',
+        fields = ('id', 'closed_by', 'approved_by', 'investment', 'investor', 'bid_price', 'amount',
                   'is_approved', 'is_closed')
 
 
@@ -211,7 +232,7 @@ class CreateInvestorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investors
-        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'serialkey',
+        fields = ('id', 'slug', 'investment', 'investor', 'bid_price', 'amount', 'serialkey',
                   'is_approved', 'is_closed', 'created_at')
 
 
@@ -223,7 +244,7 @@ class AdminInvestorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investors
-        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'serialkey',
+        fields = ('id', 'slug', 'investment', 'investor', 'bid_price', 'amount', 'serialkey',
                   'is_approved', 'approved_by', 'is_closed', 'closed_by', 'created_at', 'updated_at')
 
     def get_investment(self, instance):
