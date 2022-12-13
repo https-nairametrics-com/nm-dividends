@@ -31,6 +31,8 @@ urlpatterns = [
          name="amount-investor"),
     path('total/investments/', views.TotalInvestmentsAPIView.as_view(),
          name="investor-investments"),
+    path('total/rooms/', views.TotalInvestmentRoomAPIView.as_view(),
+         name="investor-investments"),
     path('approve/<int:id>', views.ApproveInvestorAPIView.as_view(),
          name="approve-investment"),
     path('close/<int:id>', views.CloseInvestorAPIView.as_view(),

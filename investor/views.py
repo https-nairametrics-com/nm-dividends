@@ -9,7 +9,7 @@ from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
 from .serializers import UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
-from django.db.models import Sum, Aggregate, Avg
+from django.db.models import Sum, Aggregate, Avg, Count
 from django.http import JsonResponse, Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -290,6 +290,21 @@ class TotalInvestmentsAPIView(generics.GenericAPIView):
 
         item = Investors.objects.filter(
             is_approved=True).count()
+        if item:
+            return Response({"investments": item}, status=status.HTTP_200_OK)
+        else:
+            return Response({"investments": "0",  "error": "No verified investment"},
+                            status=status.HTTP_200_OK)
+
+
+class TotalInvestmentRoomAPIView(generics.GenericAPIView):
+    serializer_class = InvestorSerializer
+    permission_classes = (IsAuthenticated, IsUserApproved,)
+
+    def get(self, format=None):
+
+        item = Investors.objects.filter(
+            is_approved=True).annotate(unique_names=Count('investment', distinct=True))
         if item:
             return Response({"investments": item}, status=status.HTTP_200_OK)
         else:
