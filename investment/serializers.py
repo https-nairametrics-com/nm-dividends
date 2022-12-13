@@ -201,7 +201,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
         model = Investment
         fields = ['id', 'slug', 'owner', 'name', 'description', 'volume', 'offer_price',
                   'amount', 'currency', 'dealtype', 'location', 'room', 'roi', 'period', 'video', 'spot_price', 'unit_price',
-                  'annualized',  'risk', 'features', 'is_verified', 'is_closed', 'image', 'created_at']
+                  'annualized',  'risk', 'features', 'is_verified', 'is_closed', 'image', 'start_date', 'end_date', 'created_at']
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(investment=obj.id)
@@ -246,7 +246,7 @@ class InvestmentOnlySerializer(serializers.ModelSerializer):
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
                   'volume', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
-                  'annualized',  'risk', 'is_closed', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
+                  'annualized',  'risk', 'is_closed', 'features', 'is_verified', 'start_date', 'end_date', 'created_at']
 
 
 class ApproveInvestmentSerializer(serializers.ModelSerializer):

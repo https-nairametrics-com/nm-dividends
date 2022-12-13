@@ -240,7 +240,14 @@ class InvestmentAPIView(generics.GenericAPIView):
             'description': request.data.get('description'),
             'room': request.data.get('room'),
             'period': request.data.get('period'),
+            'video': request.data.get('video'),
+            'dealtype': request.data.get('dealtype'),
             'roi': request.data.get('roi'),
+            'volume': request.data.get('volume'),
+            'currency': request.data.get('currency'),
+            'offer_price': request.data.get('offer_price'),
+            'spot_price': request.data.get('spot_price'),
+            'unit_price': request.data.get('unit_price'),
             'location': request.data.get('location'),
             'annualized': request.data.get('annualized'),
             'risk': request.data.get('risk'),
@@ -248,6 +255,8 @@ class InvestmentAPIView(generics.GenericAPIView):
             'features': request.data.get('features'),
             'is_verified': False,
             'is_closed': False,
+            'start_date': request.data.get('start_date'),
+            'end_date': request.data.get('end_date'),
         }
         serializer = self.serializer_class(data=indata)
         serializer.is_valid(raise_exception=True)
