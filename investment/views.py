@@ -337,6 +337,15 @@ class InvestmentUDAPIView(generics.GenericAPIView):
             'features': request.data.get('features'),
             'is_verified': request.data.get('is_verified'),
             'is_closed': request.data.get('is_closed'),
+            'video': request.data.get('video'),
+            'dealtype': request.data.get('dealtype'),
+            'volume': request.data.get('volume'),
+            'currency': request.data.get('currency'),
+            'offer_price': request.data.get('offer_price'),
+            'spot_price': request.data.get('spot_price'),
+            'unit_price': request.data.get('unit_price'),
+            'start_date': request.data.get('start_date'),
+            'end_date': request.data.get('end_date'),
         }
         serializer = InvestmentOnlySerializer(snippet, data=indata)
         if serializer.is_valid():
