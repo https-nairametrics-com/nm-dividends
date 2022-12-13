@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from authentication.models import User
-from .models import InvestmentRoom, Investment, Gallery, Investors
+from .models import MainRoom, InvestmentRoom, Investment, Gallery, Investors
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import filters, generics, status, views, permissions
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
@@ -36,6 +36,37 @@ class DecimalEncoder(json.JSONEncoder):
 class IsSuperUser(IsAdminUser):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_superuser)
+
+
+class MainRoomListAPIView(ListCreateAPIView):
+    serializer_class = MainRoomSerializer
+    queryset = MainRoom.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def perform_create(self, serializer):
+        return serializer.save(created_by=self.request.user)
+
+    def get_queryset(self):
+        return self.queryset.filter(created_by=self.request.user)
+
+
+class MainRoomAllListAPIView(ListAPIView):
+    serializer_class = MainRoomSerializer
+    queryset = MainRoom.objects.all()
+    # permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class MainRoomDetailAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = MainRoomSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
+    queryset = MainRoom.objects.all()
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.all()
 
 
 class CategoryListAPIView(ListCreateAPIView):
