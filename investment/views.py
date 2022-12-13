@@ -255,7 +255,7 @@ class InvestmentAPIView(generics.GenericAPIView):
             'features': request.data.get('features'),
             'is_verified': False,
             'is_closed': False,
-            'owner': self.request.user,
+            'owner': self.request.user.id,
             'start_date': request.data.get('start_date'),
             'end_date': request.data.get('end_date'),
         }
