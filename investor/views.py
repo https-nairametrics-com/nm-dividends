@@ -274,7 +274,7 @@ class TotalAmountAPIView(generics.GenericAPIView):
 
     def get(self, format=None):
         item = Investors.objects.filter(
-            is_approved=True, investor=self.request.user.id).aggregate(amount=Sum('amount'))
+            is_approved=True, investment__currency__name="NGN", investor=self.request.user.id).aggregate(amount=Sum('amount'))
         if item:
             return Response(item, status=status.HTTP_200_OK)
         else:
