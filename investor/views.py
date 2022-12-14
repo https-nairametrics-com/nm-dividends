@@ -282,6 +282,20 @@ class TotalAmountAPIView(generics.GenericAPIView):
                             status=status.HTTP_200_OK)
 
 
+class TotalAmountClosedAPIView(generics.GenericAPIView):
+    serializer_class = InvestorSerializer
+    permission_classes = (IsAuthenticated, IsUserApproved,)
+
+    def get(self, format=None):
+        item = Investors.objects.filter(
+            is_approved=True, is_closed=True, investor=self.request.user.id).aggregate(amount=Sum('amount'))
+        if item:
+            return Response(item, status=status.HTTP_200_OK)
+        else:
+            return Response({"amount": "0",  "error": "No verified investment"},
+                            status=status.HTTP_200_OK)
+
+
 class TotalInvestmentsAPIView(generics.GenericAPIView):
     serializer_class = InvestorSerializer
     permission_classes = (IsAuthenticated, IsUserApproved,)
@@ -303,8 +317,10 @@ class TotalInvestmentRoomAPIView(generics.GenericAPIView):
 
     def get(self, format=None):
 
-        item = Investors.objects.filter(
-            is_approved=True).annotate(unique_names=Count('investment', distinct=True))
+        # item = Investors.objects.filter(
+        #    is_approved=True).annotate(unique_names=Count('investment', distinct=True))
+        item = Investors.objects.filter(is_approved=True).values(
+            'investment').distinct().count()
         if item:
             return Response(item, status=status.HTTP_200_OK)
         else:
