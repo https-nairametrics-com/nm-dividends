@@ -1,23 +1,9 @@
 from rest_framework import serializers
 from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest
-from investment.serializers import UserInvestmentSerializer, RoomSerializer
+from investment.serializers import DealTypeSerializer, CurrencySerializer, UserInvestmentSerializer, RoomSerializer
 from investment.models import Currency, DealType, Investors, Investment, InvestmentRoom
 from authentication.models import User
 from comment.models import Comment
-
-
-class DealTypeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DealType
-        fields = ['id', 'name']
-
-
-class CurrencySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Currency
-        fields = ['id', 'name']
 
 
 class investmentSerializer(serializers.ModelSerializer):
