@@ -204,7 +204,8 @@ class InvestmentSerializer(serializers.ModelSerializer):
                   'annualized',  'risk', 'features', 'is_verified', 'is_closed', 'image', 'start_date', 'end_date', 'created_at']
 
     def get_image(self, obj):
-        logger_queryset = Gallery.objects.filter(investment=obj.id)
+        logger_queryset = Gallery.objects.filter(
+            investment=obj.id).order_by('-is_featured')
         return GallerySerializer(logger_queryset, many=True).data
 
     '''
