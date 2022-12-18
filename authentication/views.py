@@ -54,7 +54,7 @@ from weasyprint import HTML
 import tempfile
 '''
 # test
-
+'''
 
 def fetch_resources(uri, rel):
     path = os.path.join(uri.replace(settings.STATIC_URL, ""))
@@ -69,6 +69,7 @@ def render_to_pdf(template_src, context_dict={}):
     if not pdf.error:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
+'''
 
 
 class UserListAPIView(ListAPIView):
