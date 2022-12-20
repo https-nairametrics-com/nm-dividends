@@ -3,6 +3,7 @@ from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize
 from investment.serializers import DealTypeSerializer, CurrencySerializer, UserInvestmentSerializer, RoomSerializer
 from investment.models import Currency, DealType, Investors, Investment, InvestmentRoom
 from authentication.models import User
+from django.db.models import Sum, Aggregate, Avg
 from comment.models import Comment
 
 
@@ -45,21 +46,44 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class UserInvestorSerializer(serializers.ModelSerializer):
-    totalinvestment = serializers.SerializerMethodField()
+    totalactiveinvestment = serializers.SerializerMethodField()
+    totalpendinginvestment = serializers.SerializerMethodField()
+    totalclosedinvestment = serializers.SerializerMethodField()
     totalcomment = serializers.SerializerMethodField()
-    amountNGN = serializers.SerializerMethodField()
+    amountngn = serializers.SerializerMethodField()
+    amountusd = serializers.SerializerMethodField()
+    amounteuro = serializers.SerializerMethodField()
+    amountgbp = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'firstname', 'lastname',
-                  'email', 'phone', 'totalinvestment']
+        fields = ['id', 'firstname', 'lastname', 'email', 'phone', 'totalactiveinvestment', 'totalpendinginvestment', 'totalclosedinvestment', 'totalcomment',
+                  'amountngn', 'amountusd', 'amounteuro', 'amountgbp', 'created_at']
 
-    def get_totalinvestment(self, obj):
-        return Investors.objects.filter(investor=obj.id).count()
+    def get_totalactiveinvestment(self, obj):
+        return Investors.objects.filter(investor=obj.id, is_approved=True, is_closed=False).count()
         # return GallerySerializer(logger_queryset, many=True).data
 
+    def get_totalpendinginvestment(self, obj):
+        return Investors.objects.filter(investor=obj.id, is_approved=False).count()
+
+    def get_totalclosedinvestment(self, obj):
+        return Investors.objects.filter(investor=obj.id, is_approved=True, is_closed=True).count()
+
     def get_totalcomment(self, obj):
-        return Investors.objects.filter(investor=obj.id).count()
+        return Comment.objects.filter(investor__investor=obj.id).count()
+
+    def get_amountngn(self, obj):
+        return Investors.objects.filter(investor=obj.id, investment__currency__name='NGN').aggregate(amount=Sum('amount'))
+
+    def get_amountusd(self, obj):
+        return Investors.objects.filter(investor=obj.id, investment__currency__name='USD').aggregate(amount=Sum('amount'))
+
+    def get_amounteuro(self, obj):
+        return Investors.objects.filter(investor=obj.id, investment__currency__name='EURO').aggregate(amount=Sum('amount'))
+
+    def get_amountgbp(self, obj):
+        return Investors.objects.filter(investor=obj.id, investment__currency__name='GBP').aggregate(amount=Sum('amount'))
 
 
 class PeriodSerializer(serializers.ModelSerializer):
