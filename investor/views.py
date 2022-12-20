@@ -339,6 +339,31 @@ class AdminInvestorListAPIView(ListAPIView):
         return self.queryset.all()
 
 
+class AdminSingleInvestorListAPIView(ListAPIView):
+    serializer_class = InvestorSerializer
+    queryset = Investors.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_queryset(self):
+        return self.queryset.filter(investor=self.kwargs['id'])
+    '''
+    lookup_field = "investor"
+
+    def get(self, request, id):
+        query = Investors.objects.filter(investor=id).values()
+        if query.exists():
+            print(query)
+            ser = InvestorSerializer(query)
+
+            return Response({"status": "success", "data": ser.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"res": "User has no investment"},
+                            status=status.HTTP_200_OK)
+    '''
+
+
 class InvestorAdminListAPIView(generics.GenericAPIView):
     serializer_class = InvestorSerializer
     queryset = Investors.objects.all().order_by('-created_at')
