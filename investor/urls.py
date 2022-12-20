@@ -46,6 +46,9 @@ urlpatterns = [
          name="admin-list-investment"),
     path('admin/list/investors/', views.AdminInvestorListAPIView.as_view(),
          name="admin-list-investors"),
+    path('admin/investors/', views.AdminUserInvestorListAPIView.as_view(),
+         name="admin-list-investors"),
     path('admin/export/investors/', views.ExportInvestorsCount.as_view(),
          name="count-investors"),
+
 ]

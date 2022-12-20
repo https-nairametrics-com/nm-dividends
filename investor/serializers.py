@@ -46,6 +46,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class UserInvestorSerializer(serializers.ModelSerializer):
     totalinvestment = serializers.SerializerMethodField()
+    totalcomment = serializers.SerializerMethodField()
+    amountNGN = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -55,6 +57,9 @@ class UserInvestorSerializer(serializers.ModelSerializer):
     def get_totalinvestment(self, obj):
         return Investors.objects.filter(investor=obj.id).count()
         # return GallerySerializer(logger_queryset, many=True).data
+
+    def get_totalcomment(self, obj):
+        return Investors.objects.filter(investor=obj.id).count()
 
 
 class PeriodSerializer(serializers.ModelSerializer):
@@ -186,6 +191,27 @@ class CloseInvestorSerializer(serializers.ModelSerializer):
 
 
 class InvestorSerializer(serializers.ModelSerializer):
+    investment = InvestmentLSerializer(many=False, read_only=False)
+    investor = UserInvestorSerializer(many=False, read_only=False)
+    comment = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Investors
+        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'bid_price', 'serialkey',
+                  'is_approved', 'is_closed', 'comment', 'created_at')
+
+    def get_investment(self, instance):
+        return instance.geo_info.investment
+
+    def get_investor(self, instance):
+        return instance.geo_info.investor
+
+    def get_comment(self, obj):
+        queryset = Comment.objects.filter(investor=obj.id)
+        return CommentSerializer(queryset, many=True).data
+
+
+class AdminInvestorSerializer(serializers.ModelSerializer):
     investment = InvestmentLSerializer(many=False, read_only=False)
     investor = UserInvestorSerializer(many=False, read_only=False)
     comment = serializers.SerializerMethodField()

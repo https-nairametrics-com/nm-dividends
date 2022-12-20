@@ -538,7 +538,7 @@ class ExportInvestorsCount(generics.GenericAPIView):
 
 class AdminUserInvestorListAPIView(ListAPIView):
     serializer_class = UserInvestorSerializer
-    queryset = User.objects.all().order_by('-firstname')
+    queryset = User.objects.filter(is_approved=True).order_by('-firstname')
     permission_classes = (IsAuthenticated, IsAdminUser,)
     # parser_classes = [MultiPartParser, FormParser]
     filter_backends = [DjangoFilterBackend,
