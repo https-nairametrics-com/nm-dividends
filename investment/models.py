@@ -83,6 +83,12 @@ class Investment(models.Model):
     owner = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='owner')
     name = models.CharField(max_length=255)
+    project_value = models.IntegerField(null=True)
+    project_cost = models.IntegerField(null=True)
+    project_raise = models.IntegerField(null=True)
+    milestone = models.IntegerField(null=True)
+    minimum_allotment = models.IntegerField(null=True)
+    maximum_allotment = models.IntegerField(null=True)
     slug = models.SlugField(max_length=255, null=True, unique=True)
     description = models.TextField()
     location = models.CharField(max_length=255, null=True)
