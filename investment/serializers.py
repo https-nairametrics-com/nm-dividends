@@ -224,12 +224,24 @@ class InvestmentSerializer(serializers.ModelSerializer):
         return GallerySerializer(logger_queryset, many=True).data
 
     def get_amountAlloted(self, obj):
-        return Investors.objects.filter(investment=obj.id, is_approved=True).aggregate(Sum('amount'))
+        return Investors.objects.filter(investment=int(obj.id), is_approved=True).aggregate(Sum('amount'))
 
     def get_balanceToBeAlloted(self, obj):
         totalamount = Investors.objects.filter(
-            investment=obj.id, is_approved=True).aggregate(Sum('amount'))
-        totalBalance = int(obj.project_raise) - int(totalamount)
+            investment=int(obj.id), is_approved=True).aggregate(Sum('amount'))
+
+        print(type(obj.project_raise))
+        print(totalamount.get('amount__sum'))
+        print('Chima')
+        print(type(totalamount))
+
+        if totalamount.get('amount__sum') is None:
+
+            totalBalance = int(obj.project_raise) - 0
+        else:
+            totalBalance = int(obj.project_raise) - \
+                int(totalamount.get('amount__sum'))
+
         return totalBalance
 
     '''
