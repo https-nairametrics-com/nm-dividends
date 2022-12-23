@@ -113,7 +113,7 @@ class GalleryUDSerializer(serializers.ModelSerializer):
 
 
 class GalleryUpdateSerializer(serializers.ModelSerializer):
-    #gallery_url = serializers.SerializerMethodField("get_image_url")
+    # gallery_url = serializers.SerializerMethodField("get_image_url")
     # gallery = serializers.ImageField(
     # max_length=None, allow_empty_file=False, allow_null=False, use_url=True, required=False)
 
@@ -125,7 +125,7 @@ class GalleryUpdateSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         return obj.gallery.url
 
-    
+
     def get_gallery(self, obj):
         request = self.context.get("request")
         return request.build_absolute_uri(obj.gallery.url)
@@ -138,12 +138,12 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
     balanceToBeAlloted = serializers.SerializerMethodField()
     currency = CurrencySerializer(many=False, read_only=False)
     dealtype = DealTypeSerializer(many=False, read_only=False)
-    #gallery_set = serializers.StringRelatedField(many=True)
+    # gallery_set = serializers.StringRelatedField(many=True)
     risk = RiskRoomSerializer(many=False, read_only=False)
     room = RoomSerializer(many=False, read_only=False)
     period = PeriodInvestmentSerializer(read_only=False)
     owner = UserInvestmentSerializer(read_only=False)
-    #gallery_investment = GallerySerializer(read_only=False)
+    # gallery_investment = GallerySerializer(read_only=False)
 
     '''
     def get_image(self, gallery):
@@ -156,7 +156,7 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
                   'volume', 'project_raise', 'project_cost', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
-                  'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
+                  'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
     def get_image(self, obj):
@@ -193,14 +193,16 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
 
 class InvestmentSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+    amountAlloted = serializers.SerializerMethodField()
+    balanceToBeAlloted = serializers.SerializerMethodField()
     currency = CurrencySerializer(many=False, read_only=False)
     dealtype = DealTypeSerializer(many=False, read_only=False)
-    #gallery_set = serializers.StringRelatedField(many=True)
+    # gallery_set = serializers.StringRelatedField(many=True)
     risk = RiskRoomSerializer(many=False, read_only=False)
     room = RoomSerializer(many=False, read_only=False)
     period = PeriodInvestmentSerializer(read_only=False)
     owner = UserInvestmentSerializer(read_only=False)
-    #gallery_investment = GallerySerializer(read_only=False)
+    # gallery_investment = GallerySerializer(read_only=False)
 
     '''
     def get_image(self, gallery):
@@ -211,14 +213,24 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'slug', 'owner', 'name', 'description', 'volume', 'offer_price',
-                  'amount', 'currency', 'dealtype', 'location', 'room', 'roi', 'period', 'video', 'spot_price', 'unit_price',
-                  'annualized',  'risk', 'features', 'is_verified', 'is_closed', 'image', 'start_date', 'end_date', 'created_at']
+        fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+                  'volume', 'project_raise', 'project_cost', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
+                  'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
+                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(
             investment=obj.id).order_by('-is_featured')
         return GallerySerializer(logger_queryset, many=True).data
+
+    def get_amountAlloted(self, obj):
+        return Investors.objects.filter(investment=obj.id, is_approved=True).aggregate(Sum('amount'))
+
+    def get_balanceToBeAlloted(self, obj):
+        totalamount = Investors.objects.filter(
+            investment=obj.id, is_approved=True).aggregate(Sum('amount'))
+        totalBalance = obj.project_raise - totalamount
+        return totalBalance
 
     '''
     def get_image_url(self, obj):
@@ -241,7 +253,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
 class TotalInvestmentSerializer(serializers.ModelSerializer):
     amount = serializers.IntegerField()
-    #amount = serializers.SerializerMethodField()
+    # amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Investment
@@ -258,6 +270,7 @@ class InvestmentOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+                  'project_cost', 'project_raise', 'milestone', 'minimum_allotment', 'maximum_allotment',
                   'volume', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'is_closed', 'features', 'is_verified', 'start_date', 'end_date', 'created_at']
 
