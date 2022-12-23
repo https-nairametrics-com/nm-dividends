@@ -83,7 +83,7 @@ class Investment(models.Model):
     owner = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='owner')
     name = models.CharField(max_length=255)
-    project_value = models.IntegerField(null=True)
+    amount = models.IntegerField(null=True)
     project_cost = models.IntegerField(null=True)
     project_raise = models.IntegerField(null=True)
     milestone = models.IntegerField(null=True)
@@ -94,13 +94,13 @@ class Investment(models.Model):
     location = models.CharField(max_length=255, null=True)
     video = models.CharField(max_length=255, null=True)
     room = models.ForeignKey(to=InvestmentRoom, on_delete=models.CASCADE)
+    offer_period = models.DateField(null=True)
     period = models.ForeignKey(
         to=Period, on_delete=models.CASCADE, related_name='investment_period')
     currency = models.ForeignKey(
         to=Currency, null=True, on_delete=models.CASCADE, related_name='investment_currency')
     dealtype = models.ForeignKey(
         to=DealType, null=True, on_delete=models.CASCADE, related_name='investment_dealtype')
-    amount = models.IntegerField(null=True)
     volume = models.IntegerField(null=True)
     offer_price = models.IntegerField(null=True)
     spot_price = models.IntegerField(null=True)

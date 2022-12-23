@@ -134,6 +134,8 @@ class GalleryUpdateSerializer(serializers.ModelSerializer):
 
 class InvestmentRoomSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+    amountAlloted = serializers.SerializerMethodField()
+    balanceToBeAlloted = serializers.SerializerMethodField()
     currency = CurrencySerializer(many=False, read_only=False)
     dealtype = DealTypeSerializer(many=False, read_only=False)
     #gallery_set = serializers.StringRelatedField(many=True)
@@ -153,12 +155,22 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
-                  'volume', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
+                  'volume', 'project_raise', 'project_cost', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
+                  'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(investment=obj.id)
         return GallerySerializer(logger_queryset, many=True).data
+
+    def get_amountAlloted(self, obj):
+        return Investors.objects.filter(investment=obj.id, is_approved=True).aggregate(Sum('amount'))
+
+    def get_balanceToBeAlloted(self, obj):
+        totalamount = Investors.objects.filter(
+            investment=obj.id, is_approved=True).aggregate(Sum('amount'))
+        totalBalance = obj.project_raise - totalamount
+        return totalBalance
 
     '''
     def get_image_url(self, obj):
