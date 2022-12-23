@@ -229,7 +229,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     def get_balanceToBeAlloted(self, obj):
         totalamount = Investors.objects.filter(
             investment=obj.id, is_approved=True).aggregate(Sum('amount'))
-        totalBalance = obj.project_raise - totalamount
+        totalBalance = int(obj.project_raise) - int(totalamount)
         return totalBalance
 
     '''
