@@ -378,6 +378,12 @@ class InvestmentUDAPIView(generics.GenericAPIView):
             'unit_price': request.data.get('unit_price'),
             'start_date': request.data.get('start_date'),
             'end_date': request.data.get('end_date'),
+            'project_cost': request.data.get('project_cost'),
+            'project_raise': request.data.get('project_raise'),
+            'milestone': request.data.get('milestone'),
+            'minimum_allotment': request.data.get('minimum_allotment'),
+            'maximum_allotment': request.data.get('maximum_allotment'),
+            'offer_period': request.data.get('offer_period'),
         }
         serializer = InvestmentOnlySerializer(snippet, data=indata)
         if serializer.is_valid():
