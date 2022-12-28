@@ -237,12 +237,15 @@ class InvestorSerializer(serializers.ModelSerializer):
         return CommentSerializer(queryset, many=True).data
 
     def get_portfolio_value(self, obj):
+        rob = Investors.objects.filter(
+            id=obj.id).values_list('investment', flat=True)[0]
         roi = Investment.objects.filter(
-            id=obj.investment).values_list('roi', flat=True)[0]
+            id=rob).values_list('roi', flat=True)[0]
         amount = Investors.objects.filter(
             id=obj.id).values_list('amount', flat=True)[0]
-        returns_on_i = decimal.Decimal(roi) * decimal.Decimal(amount)
-        return returns_on_i
+        returns_on_i = ((decimal.Decimal(roi) / decimal.Decimal(100))
+                        * decimal.Decimal(amount)) + decimal.Decimal(amount)
+        return returns_on_i.quantize(decimal.Decimal('0.00'))
 
 
 class AdminInvestorSerializer(serializers.ModelSerializer):
