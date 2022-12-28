@@ -5,6 +5,7 @@ from investment.models import Currency, DealType, Investors, Investment, Investm
 from authentication.models import User
 from django.db.models import Sum, Aggregate, Avg
 from comment.models import Comment
+import decimal
 
 
 class investmentSerializer(serializers.ModelSerializer):
@@ -236,9 +237,12 @@ class InvestorSerializer(serializers.ModelSerializer):
         return CommentSerializer(queryset, many=True).data
 
     def get_portfolio_value(self, obj):
-        rois = Investment.objects.filter(investor=obj.id)
         roi = Investment.objects.filter(
             id=obj.investment).values_list('roi', flat=True)[0]
+        amount = Investors.objects.filter(
+            id=obj.id).values_list('amount', flat=True)[0]
+        returns_on_i = decimal.Decimal(roi) * decimal.Decimal(amount)
+        return returns_on_i
 
 
 class AdminInvestorSerializer(serializers.ModelSerializer):
