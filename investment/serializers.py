@@ -155,7 +155,7 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
-                  'volume', 'project_raise', 'project_cost', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
+                  'volume', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
@@ -214,7 +214,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
-                  'volume', 'project_raise', 'project_cost', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
+                  'volume', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
@@ -277,7 +277,7 @@ class InvestmentOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
-                  'project_cost', 'project_raise', 'milestone', 'minimum_allotment', 'maximum_allotment',
+                  'project_cost', 'project_raise', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment',
                   'volume', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'is_closed', 'features', 'is_verified', 'start_date', 'end_date', 'created_at']
 
