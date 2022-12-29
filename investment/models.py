@@ -97,6 +97,8 @@ class Investment(models.Model):
     offer_period = models.DateField(null=True)
     period = models.ForeignKey(
         to=Period, on_delete=models.CASCADE, related_name='investment_period')
+    periodic_payment = models.DecimalField(
+        max_digits=6, default=1, decimal_places=2)
     currency = models.ForeignKey(
         to=Currency, null=True, on_delete=models.CASCADE, related_name='investment_currency')
     dealtype = models.ForeignKey(
