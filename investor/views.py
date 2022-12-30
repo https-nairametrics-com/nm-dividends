@@ -185,7 +185,7 @@ class InvestmentAPIView(generics.GenericAPIView):
         if (int(request.data.get('amount')) < getInvesmentAmount(id)):
             investordata = {
                 'amount': request.data.get('amount'),
-                'bid_price': request.data.get('bid_price'),
+                'bid_price': request.data.get('amount'),
                 'slug': str(investor_slug()),
                 'investment': id,
                 'investor': self.request.user.id,
