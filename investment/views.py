@@ -99,6 +99,28 @@ class DealTypeListAPIView(ListAPIView):
         return self.queryset.all()
 
 
+class DealTypeAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = DealTypeSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
+    queryset = DealType.objects.all()
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class DealTypeAListAPIView(ListCreateAPIView):
+    serializer_class = DealTypeSerializer
+    queryset = DealType.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
 class MainRoomDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = MainRoomSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
