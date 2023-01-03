@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from authentication.models import User
-from .models import MainRoom, InvestmentRoom, Investment, Gallery, Investors
+from .models import Currency, DealType, MainRoom, InvestmentRoom, Investment, Gallery, Investors
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import filters, generics, status, views, permissions
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg
@@ -53,6 +53,24 @@ class MainRoomListAPIView(ListCreateAPIView):
 class MainRoomAllListAPIView(ListAPIView):
     serializer_class = MainRoomSerializer
     queryset = MainRoom.objects.all()
+    # permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class CurrencyListAPIView(ListAPIView):
+    serializer_class = CurrencySerializer
+    queryset = Currency.objects.all()
+    # permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class DealTypeListAPIView(ListAPIView):
+    serializer_class = DealTypeSerializer
+    queryset = DealType.objects.all()
     # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
