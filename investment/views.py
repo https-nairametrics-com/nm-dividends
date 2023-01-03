@@ -68,6 +68,28 @@ class CurrencyListAPIView(ListAPIView):
         return self.queryset.all()
 
 
+class CurrencyAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CurrencySerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdminUser,)
+    queryset = Currency.objects.all()
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class CurrencyAListAPIView(ListCreateAPIView):
+    serializer_class = CurrencySerializer
+    queryset = Currency.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
 class DealTypeListAPIView(ListAPIView):
     serializer_class = DealTypeSerializer
     queryset = DealType.objects.all()
