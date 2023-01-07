@@ -213,7 +213,7 @@ class InvestmentRoomAPIView(ListAPIView):
     serializer_class = InvestmentRoomSerializer
     #serializer_all = InvestmentRoomSerializer
     gallery_serializer = GallerySerializer
-    queryset = Investment.objects.all()
+    queryset = Investment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated,)
     parser_classes = [MultiPartParser, FormParser]
     filter_backends = [DjangoFilterBackend,
