@@ -548,6 +548,36 @@ class TotalVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
                             status=status.HTTP_200_OK)
 
 
+class TotalAmountRaiseAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get(self, format=None):
+
+        item = Investment.objects.filter(
+            is_verified=True).aggregate(amount=Sum('project_raise'))
+        if item:
+            return Response(item, status=status.HTTP_200_OK)
+        else:
+            return Response({"amount": "0",  "error": "Object with referral code does not exists"},
+                            status=status.HTTP_200_OK)
+
+
+class TotalAmountReceivedAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get(self, format=None):
+
+        item = Investors.objects.filter(
+            is_approved=True).aggregate(amount=Sum('amount'))
+        if item:
+            return Response(item, status=status.HTTP_200_OK)
+        else:
+            return Response({"amount": "0",  "error": "Object with referral code does not exists"},
+                            status=status.HTTP_200_OK)
+
+
 class TotalNVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
