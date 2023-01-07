@@ -169,7 +169,14 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
     def get_balanceToBeAlloted(self, obj):
         totalamount = Investors.objects.filter(
             investment=obj.id, is_approved=True).aggregate(Sum('amount'))
-        totalBalance = obj.project_raise - totalamount
+        print(obj.project_raise)
+        print(totalamount)
+        print(totalamount.get('amount__sum'))
+        if totalamount.get('amount__sum') is None:
+            amount = 0
+        else:
+            amount = totalamount.get('amount__sum')
+        totalBalance = int(obj.project_raise) - amount
         return totalBalance
 
     '''
