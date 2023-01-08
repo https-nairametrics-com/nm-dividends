@@ -623,7 +623,7 @@ class TotalNVerifiedInvesmentsAPIView(generics.GenericAPIView):
                             status=status.HTTP_200_OK)
 
 
-class ExportInvestmentAPIView(generics.GenericAPIView):
+class AdminExportInvestmentAPIView(generics.GenericAPIView):
     serializer_class = InvestmentSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
 
