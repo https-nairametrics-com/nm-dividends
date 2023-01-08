@@ -61,4 +61,6 @@ urlpatterns = [
          name="verified-investment"),
     path('count/users/', views.UserInvestmentListAPIView.as_view(),
          name="users-investment"),
+    path('admin/export/', views.AdminExportInvestmentAPIView.as_view(),
+         name="admin-export-investments"),
 ]
