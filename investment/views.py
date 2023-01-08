@@ -638,7 +638,7 @@ class AdminExportInvestmentAPIView(generics.GenericAPIView):
         response['Content-Disposition'] = 'attachment; filename="export.csv"'
 
         serializer = self.get_serializer(
-            User.objects.all(),
+            Investment.objects.all(),
             many=True
         )
         header = InvestmentSerializer.Meta.fields
