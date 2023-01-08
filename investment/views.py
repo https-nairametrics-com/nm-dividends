@@ -635,7 +635,7 @@ class AdminExportInvestmentAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="export.csv"'
+        response['Content-Disposition'] = 'attachment; filename="investment_export.csv"'
 
         serializer = self.get_serializer(
             Investment.objects.all(),
