@@ -307,3 +307,36 @@ class AdminInvestorSerializer(serializers.ModelSerializer):
 
     def get_closed_by(self, instance):
         return instance.geo_info.closed_by
+
+
+class InvestorExportSerializer(serializers.ModelSerializer):
+    investment = InvestmentLSerializer(many=False, read_only=False)
+    investor = UserInvestorSerializer(many=False, read_only=False)
+    comment = serializers.SerializerMethodField()
+    portfolio_value = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Investors
+        fields = ('id', 'slug', 'investment', 'investor', 'amount', 'bid_price', 'serialkey',
+                  'portfolio_value', 'is_approved', 'is_closed', 'comment', 'created_at')
+
+    def get_investment(self, instance):
+        return instance.geo_info.investment
+
+    def get_investor(self, instance):
+        return instance.geo_info.investor
+
+    def get_comment(self, obj):
+        queryset = Comment.objects.filter(investor=obj.id).count()
+        return queryset
+
+    def get_portfolio_value(self, obj):
+        rob = Investors.objects.filter(
+            id=obj.id).values_list('investment', flat=True)[0]
+        roi = Investment.objects.filter(
+            id=rob).values_list('roi', flat=True)[0]
+        amount = Investors.objects.filter(
+            id=obj.id).values_list('amount', flat=True)[0]
+        returns_on_i = ((decimal.Decimal(roi) / decimal.Decimal(100))
+                        * decimal.Decimal(amount)) + decimal.Decimal(amount)
+        return returns_on_i.quantize(decimal.Decimal('0.00'))
