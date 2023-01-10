@@ -209,6 +209,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     room = RoomSerializer(many=False, read_only=False)
     period = PeriodInvestmentSerializer(read_only=False)
     owner = UserInvestmentSerializer(read_only=False)
+    investorsCount = serializers.SerializerMethodField()
     # gallery_investment = GallerySerializer(read_only=False)
 
     '''
@@ -223,12 +224,16 @@ class InvestmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
                   'volume', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
-                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
+                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'investorsCount']
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(
             investment=obj.id).order_by('-is_featured')
         return GallerySerializer(logger_queryset, many=True).data
+
+    def get_investorsCount(self, obj):
+        in_queryset = Investors.objects.filter(investment=obj.id).count()
+        return in_queryset
 
     def get_amountAlloted(self, obj):
         return Investors.objects.filter(investment=int(obj.id), is_approved=True).aggregate(Sum('amount'))
