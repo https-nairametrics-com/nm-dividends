@@ -538,21 +538,37 @@ class TotalReturnsAPIView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, format=None):
-        tem = Investors.objects.filter(
-            investor=self.request.user.id, is_approved=True)
-        print(tem)
-        tem2 = Investment.objects.filter(
-            is_verified=True).values('roi')
 
-        print(tem2)
+        ngn = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='NGN', is_approved=True).aggregate(NGN=Sum((F('investment__roi') / 100 * F('amount')) + F('amount')))
+        usd = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='USD', is_approved=True).aggregate(USD=Sum((F('investment__roi') / 100 * F('amount')) + F('amount')))
+        gbp = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='GBP', is_approved=True).aggregate(GBP=Sum((F('investment__roi') / 100 * F('amount')) + F('amount')))
+        euro = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='EURO', is_approved=True).aggregate(EURO=Sum((F('investment__roi') / 100 * F('amount')) + F('amount')))
 
-        item = Investors.objects.filter(
-            investor=self.request.user.id, is_approved=True).aggregate(amount=Sum((F('investment__roi') / 100 * F('amount')) + F('amount')))
-        if item:
-            return Response(item, status=status.HTTP_200_OK)
-        else:
-            return Response({"amount": "0",  "error": "Object with referral code does not exists"},
-                            status=status.HTTP_200_OK)
+        ab = {**ngn, **usd, **gbp, **euro}
+        return Response(ab, status=status.HTTP_200_OK)
+
+
+class TotalAmountInvestedAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, format=None):
+
+        ngn = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='NGN', is_approved=True).aggregate(NGN=Sum(F('amount')))
+        usd = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='USD', is_approved=True).aggregate(USD=Sum(F('amount')))
+        gbp = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='GBP', is_approved=True).aggregate(GBP=Sum(F('amount')))
+        euro = Investors.objects.filter(
+            investor=self.request.user.id, investment__currency__name='EURO', is_approved=True).aggregate(EURO=Sum(F('amount')))
+
+        ab = {**ngn, **usd, **gbp, **euro}
+        return Response(ab, status=status.HTTP_200_OK)
 
 
 class TotalVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
