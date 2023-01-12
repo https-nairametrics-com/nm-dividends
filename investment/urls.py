@@ -9,7 +9,7 @@ urlpatterns = [
          name="investment-list"),
     path('investor/returns/', views.TotalReturnsAPIView.as_view(),
          name="investment-returns"),
-    path('investor/amounts/', views.TotalReturnsAPIView.as_view(),
+    path('investor/amounts/', views.TotalAmountInvestedAPIView.as_view(),
          name="investment-returns"),
     path('investment/room/<slug:slug>', views.RoomInvestmentListAPIView.as_view(),
          name="investment-list"),
