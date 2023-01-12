@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from .serializers import CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
-from django.db.models import Sum, Aggregate, Avg
+from django.db.models import Sum, Aggregate, Avg, Count, F
 from django.http import JsonResponse, Http404, HttpResponse
 import json
 from itertools import chain
@@ -531,6 +531,28 @@ class TotalInvesmentAmountAPIView(generics.GenericAPIView):
         # HttpResponse(json.dumps(something))
         #json_str = json.dumps({'amount': querys})
         # return JsonResponse(json_str, safe=False, status=status.HTTP_200_OK)
+
+
+class TotalReturnsAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, format=None):
+        tem = Investors.objects.filter(
+            investor=self.request.user.id, is_approved=True)
+        print(tem)
+        tem2 = Investment.objects.filter(
+            is_verified=True).values('roi')
+
+        print(tem2)
+
+        item = Investors.objects.filter(
+            investor=self.request.user.id, is_approved=True).aggregate(amount=Sum((F('investment__roi') / 100 * F('amount')) + F('amount')))
+        if item:
+            return Response(item, status=status.HTTP_200_OK)
+        else:
+            return Response({"amount": "0",  "error": "Object with referral code does not exists"},
+                            status=status.HTTP_200_OK)
 
 
 class TotalVerifiedInvesmentAmountAPIView(generics.GenericAPIView):
