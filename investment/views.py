@@ -533,6 +533,21 @@ class TotalInvesmentAmountAPIView(generics.GenericAPIView):
         # return JsonResponse(json_str, safe=False, status=status.HTTP_200_OK)
 
 
+class InvestmentsByInvestorAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, format=None):
+
+        item = Investors.objects.filter(
+            is_approved=True, investor=self.request.user.id).count()
+        if item:
+            return Response({"investments": item}, status=status.HTTP_200_OK)
+        else:
+            return Response({"investments": "0",  "error": "No verified investment"},
+                            status=status.HTTP_200_OK)
+
+
 class TotalReturnsAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
     permission_classes = (IsAuthenticated,)
