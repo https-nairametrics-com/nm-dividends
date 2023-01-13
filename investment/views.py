@@ -557,9 +557,9 @@ class InvestmentsByInvestorNAPIView(generics.GenericAPIView):
         item = Investors.objects.filter(
             is_approved=False, investor=self.request.user.id).count()
         if item:
-            return Response({"investments": item}, status=status.HTTP_200_OK)
+            return Response({"pendingInvestments": item}, status=status.HTTP_200_OK)
         else:
-            return Response({"investments": "0",  "error": "No verified investment"},
+            return Response({"pendingInvestments": "0",  "error": "No verified investment"},
                             status=status.HTTP_200_OK)
 
 
