@@ -11,6 +11,8 @@ urlpatterns = [
          name="investment-returns"),
     path('investor/subscriptions/', views.InvestmentsByInvestorAPIView.as_view(),
          name="investment-by-investors"),
+    path('investor/subscriptions/n/', views.InvestmentsByInvestorNAPIView.as_view(),
+         name="investment-by-investors"),
     path('investor/amounts/', views.TotalAmountInvestedAPIView.as_view(),
          name="investment-returns"),
     path('investment/room/<slug:slug>', views.RoomInvestmentListAPIView.as_view(),
