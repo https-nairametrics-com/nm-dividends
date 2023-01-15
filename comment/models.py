@@ -11,7 +11,7 @@ class Comment(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
     comment = models.TextField(null=True)
     investment = models.ForeignKey(
-        to=Investors, null=True, on_delete=models.CASCADE, related_name='investments_comment')
+        to=Investment, null=True, on_delete=models.CASCADE, related_name='investments_comment')
     investor = models.ForeignKey(
         to=Investors, null=True, on_delete=models.CASCADE, related_name='investment_comment')
     responded_by = models.ForeignKey(null=True,
