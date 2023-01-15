@@ -155,7 +155,8 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
-                  'volume', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
+                  'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment',
+                  'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
@@ -222,7 +223,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
-                  'volume', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
+                  'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'investorsCount']
 
@@ -290,7 +291,7 @@ class InvestmentOnlySerializer(serializers.ModelSerializer):
         model = Investment
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
                   'project_cost', 'project_raise', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment',
-                  'volume', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
+                  'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'offer_price', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'is_closed', 'features', 'is_verified', 'start_date', 'end_date', 'created_at']
 
 
