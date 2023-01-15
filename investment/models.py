@@ -104,6 +104,10 @@ class Investment(models.Model):
     dealtype = models.ForeignKey(
         to=DealType, null=True, on_delete=models.CASCADE, related_name='investment_dealtype')
     volume = models.IntegerField(null=True)
+    only_returns = models.BooleanField(default=True)
+    off_plan = models.BooleanField(default=False)
+    outright_purchase = models.BooleanField(default=True)
+    outright_purchase_amount = models.IntegerField(null=True)
     offer_price = models.IntegerField(null=True)
     spot_price = models.IntegerField(null=True)
     unit_price = models.IntegerField(null=True)
@@ -159,6 +163,21 @@ class Investors(models.Model):
     is_closed = models.BooleanField(default=False)
     closed_by = models.ForeignKey(
         to=User, on_delete=models.CASCADE, null=True, related_name='closed_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.amount)
+
+
+class Installment(models.Model):
+    investor = models.ForeignKey(
+        to=Investors, on_delete=models.CASCADE, related_name='investor_instalmment')
+    amount = models.IntegerField(null=True)
+    serialkey = models.CharField(max_length=255, null=True)
+    is_approved = models.BooleanField(default=False)
+    approved_by = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, null=True, related_name='approved_by_installment')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
