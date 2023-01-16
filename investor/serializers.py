@@ -105,7 +105,7 @@ class InvestmentLSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ['id', 'slug', 'name', 'amount', 'currency', 'dealtype',
-                  'volume', 'offer_price', 'spot_price', 'unit_price',
+                  'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'offer_price', 'spot_price', 'unit_price',
                   'location', 'roi', 'period', 'room', 'risk', 'start_date',
                   'end_date', 'created_at', 'is_verified', 'is_closed']
 
