@@ -255,6 +255,14 @@ class InvestorSerializer(serializers.ModelSerializer):
         return returns_on_i.quantize(decimal.Decimal('0.00'))
 
 
+class InstallmentSerializer(serializers.ModelSerializer):
+    investor = InvestorSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Installment
+        fields = ('id', 'investor', 'amount', 'updated_at')
+
+
 class AdminInvestorSerializer(serializers.ModelSerializer):
     investment = InvestmentLSerializer(many=False, read_only=False)
     investor = UserInvestorSerializer(many=False, read_only=False)
