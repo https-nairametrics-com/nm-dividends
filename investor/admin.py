@@ -2,6 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import InitialInterests, Risk, Interest, InvestmentSize, Period
+from investment.models import Installment
 
 
 class RiskAdmin(admin.ModelAdmin):
@@ -13,3 +14,4 @@ admin.site.register(Interest)
 admin.site.register(InvestmentSize)
 admin.site.register(Period)
 admin.site.register(InitialInterests)
+admin.site.register(Installment)
