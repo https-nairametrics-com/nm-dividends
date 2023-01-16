@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from authentication.models import User
 from investment.views import IsSuperUser
-from investment.models import Investors, Investment
+from investment.models import Installment, Investors, Investment
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-from .serializers import InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg, Count
 from django.http import JsonResponse, Http404, HttpResponse
@@ -369,6 +369,17 @@ class AdminSingleInvestorListAPIView(ListAPIView):
             return Response({"res": "User has no investment"},
                             status=status.HTTP_200_OK)
     '''
+
+
+class AdminInstallmentListAPIView(ListAPIView):
+    serializer_class = InstallmentSerializer
+    queryset = Installment.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_queryset(self):
+        return self.queryset.all()
 
 
 class InvestorAdminListAPIView(generics.GenericAPIView):
