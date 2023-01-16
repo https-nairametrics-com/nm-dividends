@@ -156,6 +156,7 @@ class Investors(models.Model):
     amount = models.IntegerField(null=True)
     bid_price = models.IntegerField(null=True)
     slug = models.CharField(max_length=255, null=True)
+    volume = models.IntegerField(default=1)
     serialkey = models.CharField(max_length=255, null=True)
     is_approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey(
