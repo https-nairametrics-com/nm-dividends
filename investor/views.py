@@ -185,7 +185,8 @@ class InvestmentAPIView(generics.GenericAPIView):
         if (int(request.data.get('amount')) < getInvesmentAmount(id)):
             investordata = {
                 'amount': request.data.get('amount'),
-                'bid_price': request.data.get('amount'),
+                'bid_price': request.data.get('bid_price'),
+                'volume': request.data.get('volume'),
                 'slug': str(investor_slug()),
                 'investment': id,
                 'investor': self.request.user.id,
@@ -229,8 +230,14 @@ class AdminInvestmentAPIView(generics.GenericAPIView):
         investment_id = self.get_object(id)
         user_id = self.get_user_object(request.data.get('investor'))
         if (request.data.get('amount') > getInvesmentAmount(id)):
+
+            if int(request.data.get('amount')) > request.data.get('bid_price'):
+                return Response({"status": "error",  "error": "Amount cannot be greater than bid price"},
+                                status=status.HTTP_400_BAD_REQUEST)
             investordata = {
                 'amount': request.data.get('amount'),
+                'bid_price': request.data.get('bid_price'),
+                'volume': request.data.get('volume'),
                 'slug': str(investor_slug()),
                 'investment': id,
                 'investor': request.data.get('investor'),
