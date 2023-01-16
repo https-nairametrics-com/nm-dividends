@@ -9,9 +9,9 @@ class RiskAdmin(admin.ModelAdmin):
     list_display = ['risk', 'is_verified']
 
 
+admin.site.register(Installment)
 admin.site.register(Risk, RiskAdmin)
 admin.site.register(Interest)
 admin.site.register(InvestmentSize)
 admin.site.register(Period)
 admin.site.register(InitialInterests)
-admin.site.register(Installment)
