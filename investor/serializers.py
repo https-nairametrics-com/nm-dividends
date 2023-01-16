@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import InitialInterests, Period, Risk, Expectations, InvestmentSize, Interest
 from investment.serializers import DealTypeSerializer, CurrencySerializer, UserInvestmentSerializer, RoomSerializer
-from investment.models import Currency, DealType, Investors, Investment, InvestmentRoom
+from investment.models import Installment, Currency, DealType, Investors, Investment, InvestmentRoom
 from authentication.models import User
 from django.db.models import Sum, Aggregate, Avg
 from comment.models import Comment
@@ -32,6 +32,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'firstname', 'lastname',
                   'username', 'referral_code', 'phone']
+
+
+class CreateInstallmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Installment
+        fields = ['id', 'investor', 'amount', 'serialkey',
+                  'is_approved', 'approved_by', 'created_at']
 
 
 class CommentSerializer(serializers.ModelSerializer):
