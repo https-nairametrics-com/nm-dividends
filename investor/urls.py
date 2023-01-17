@@ -35,6 +35,8 @@ urlpatterns = [
          name="investor-rooms"),
     path('approve/<int:id>', views.ApproveInvestorAPIView.as_view(),
          name="approve-investment"),
+    path('approve/installment/<int:id>', views.ApproveInstallmentAPIView.as_view(),
+         name="approve-investment"),
     path('close/<int:id>', views.CloseInvestorAPIView.as_view(),
          name="close-investment"),
 
