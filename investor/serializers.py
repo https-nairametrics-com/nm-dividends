@@ -260,7 +260,7 @@ class InstallmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Installment
-        fields = ('id', 'investor', 'amount', 'updated_at')
+        fields = ('id', 'investor', 'amount', 'is_approved', 'updated_at')
 
 
 class AdminInvestorSerializer(serializers.ModelSerializer):
