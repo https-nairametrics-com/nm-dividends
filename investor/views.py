@@ -7,7 +7,7 @@ from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-from .serializers import CreateInstallmentSerializer, InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import ApproveInstallmentSerializer, CreateInstallmentSerializer, InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg, Count
 from django.http import JsonResponse, Http404, HttpResponse
@@ -26,6 +26,53 @@ def getInvesmentAmount(id):
     query = Investment.objects.filter(
         id=id).values_list('amount', flat=True)[0]
     return query
+
+
+def getInstallmentId(investor):
+    query = Installment.objects.filter(
+        investor=investor).values_list('id', flat=True)[0]
+    if query is None:
+        return Response({"error": "Investor not valid"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return int(query)
+
+
+def getInvestorId(id):
+    query = Installment.objects.filter(
+        id=id).values_list('investor', flat=True)[0]
+    if query is None:
+        return Response({"error": "Installment not valid"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return int(query)
+
+
+def getInvestorAmount(id):
+    query = Investors.objects.filter(
+        id=id).values_list('amount', flat=True)[0]
+    if query is None:
+        return Response({"error": "Investor not valid"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return int(query)
+
+
+def getBidPrice(id):
+    query = Investors.objects.filter(
+        id=id).values_list('bid_price', flat=True)[0]
+    if query is None:
+        return Response({"error": "Investor not valid"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return int(query)
+
+
+def getInstallment(id):
+    try:
+        return Installment.objects.get(id=id)
+    except Installment.DoesNotExist:
+        raise Http404
 
 
 class PeriodListAPIView(ListCreateAPIView):
@@ -514,6 +561,7 @@ class AdminCloseInvestorAPIView(generics.GenericAPIView):
 
 class ApproveInvestorAPIView(generics.GenericAPIView):
     serializer_class = ApproveInvestorSerializer
+    serializer_installment_class = ApproveInstallmentSerializer
     queryset = Investors.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
     filter_backends = [DjangoFilterBackend,
@@ -526,6 +574,67 @@ class ApproveInvestorAPIView(generics.GenericAPIView):
             raise Http404
 
     def patch(self, request, id, format=None):
+        investment_id = self.get_object(id)
+        investordata = {
+            'is_approved': request.data.get('is_approved'),
+            'approved_by': self.request.user.id,
+        }
+        serializer = self.serializer_class(investment_id, data=investordata)
+        if serializer.is_valid():
+            serializer.save()
+
+        installment_id = getInstallmentId(id)
+        get_installment_id = getInstallment(installment_id)
+        installmentdata = {
+            'is_approved': request.data.get('is_approved'),
+            'approved_by': self.request.user.id,
+        }
+        serializer_in = self.serializer_installment_class(
+            get_installment_id, data=installmentdata)
+        if serializer_in.is_valid():
+            serializer_in.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApproveInstallmentAPIView(generics.GenericAPIView):
+    serializer_class = ApproveInvestorSerializer
+    serializer_installment_class = ApproveInstallmentSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        #installment_id = getInstallmentId(id)
+        investor_id = getInvestorId(id)
+        investor_amount = getInvestorAmount(investor_id)
+        bid_price = getBidPrice(investor_id)
+
+        # Check if addition of current amount and installment is greater than bid price
+        if (investor_amount + request.data.get('amount')) > bid_price:
+            return Response({"error": "Total amount cannot be greater than bid price"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        get_installment_id = getInstallment(id)
+        installmentdata = {
+            'is_approved': request.data.get('is_approved'),
+            'approved_by': self.request.user.id,
+        }
+        serializer_in = self.serializer_installment_class(
+            get_installment_id, data=installmentdata)
+        if serializer_in.is_valid():
+            serializer_in.save()
+
+        # add installment to current amount
+        #
+
         investment_id = self.get_object(id)
         investordata = {
             'is_approved': request.data.get('is_approved'),
