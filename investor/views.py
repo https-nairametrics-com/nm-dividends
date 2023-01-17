@@ -7,7 +7,7 @@ from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-from .serializers import ApproveInstallmentSerializer, CreateInstallmentSerializer, InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import ApproveInvestorInstallmentSerializer, ApproveInstallmentSerializer, CreateInstallmentSerializer, InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg, Count
 from django.http import JsonResponse, Http404, HttpResponse
@@ -599,6 +599,7 @@ class ApproveInvestorAPIView(generics.GenericAPIView):
 
 class ApproveInstallmentAPIView(generics.GenericAPIView):
     serializer_class = ApproveInvestorSerializer
+    serializer_add = ApproveInvestorInstallmentSerializer
     serializer_installment_class = ApproveInstallmentSerializer
     queryset = Investors.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
@@ -618,7 +619,7 @@ class ApproveInstallmentAPIView(generics.GenericAPIView):
         bid_price = getBidPrice(investor_id)
 
         # Check if addition of current amount and installment is greater than bid price
-        if (investor_amount + request.data.get('amount')) > bid_price:
+        if (investor_amount + int(request.data.get('amount'))) > bid_price:
             return Response({"error": "Total amount cannot be greater than bid price"},
                             status=status.HTTP_400_BAD_REQUEST)
 
@@ -633,14 +634,16 @@ class ApproveInstallmentAPIView(generics.GenericAPIView):
             serializer_in.save()
 
         # add installment to current amount
-        #
-
-        investment_id = self.get_object(id)
-        investordata = {
-            'is_approved': request.data.get('is_approved'),
+        amount = investor_amount + int(request.data.get('amount'))
+        updateInvestorData = {
+            'is_approved': True,
             'approved_by': self.request.user.id,
+            'amount': amount,
         }
-        serializer = self.serializer_class(investment_id, data=investordata)
+
+        investment_id = self.get_object(investor_id)
+        serializer = self.serializer_add(
+            investment_id, data=updateInvestorData)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
