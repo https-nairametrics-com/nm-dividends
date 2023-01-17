@@ -38,6 +38,13 @@ class CreateInstallmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Installment
         fields = ['id', 'investor', 'amount', 'serialkey',
+                  'is_approved', 'created_at']
+
+
+class ApproveInstallmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Installment
+        fields = ['id', 'investor', 'amount', 'serialkey',
                   'is_approved', 'approved_by', 'created_at']
 
 
