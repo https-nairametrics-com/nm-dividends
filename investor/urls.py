@@ -50,6 +50,8 @@ urlpatterns = [
          name="admin-list-investors"),
     path('admin/investor/<int:id>', views.AdminSingleInvestorListAPIView.as_view(),
          name="admin-list-single-investors"),
+    path('admin/payments/', views.AdminInstallmentListAPIView.as_view(),
+         name="admin-list-installments"),
     path('admin/export/', views.AdminExportInvestorAPIView.as_view(),
          name="export-investors"),
 
