@@ -7,7 +7,7 @@ from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-from .serializers import InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import CreateInstallmentSerializer, InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg, Count
 from django.http import JsonResponse, Http404, HttpResponse
@@ -165,6 +165,7 @@ class SizeDetailAPIView(RetrieveUpdateDestroyAPIView):
 
 class InvestmentAPIView(generics.GenericAPIView):
     serializer_class = CreateInvestorSerializer
+    serializer_installment_class = CreateInstallmentSerializer
     queryset = Investors.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated, IsUserApproved,)
     filter_backends = [DjangoFilterBackend,
@@ -182,6 +183,7 @@ class InvestmentAPIView(generics.GenericAPIView):
             return Response({"status": "error",  "error": "User account not approved"},
                             status=status.HTTP_400_BAD_REQUEST)
         investment_id = self.get_object(id)
+        serial_invest = str(serial_investor())
         if (int(request.data.get('amount')) < getInvesmentAmount(id)):
             investordata = {
                 'amount': request.data.get('amount'),
@@ -190,13 +192,24 @@ class InvestmentAPIView(generics.GenericAPIView):
                 'slug': str(investor_slug()),
                 'investment': id,
                 'investor': self.request.user.id,
-                'serialkey': str(serial_investor()),
+                'serialkey': serial_invest,
                 'is_approved': False,
                 'is_closed': False,
             }
             serializer = self.serializer_class(data=investordata)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            investor_data = serializer.data
+            installmentdata = {
+                'amount': request.data.get('amount'),
+                'investor': investor_data['id'],
+                'serialkey': serial_invest,
+                'is_approved': False,
+            }
+            serializer_in = self.serializer_installment_class(
+                data=installmentdata)
+            serializer_in.is_valid(raise_exception=True)
+            serializer_in.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response({"status": "error",  "error": "Amount cannot exceed Invesment amount"},
