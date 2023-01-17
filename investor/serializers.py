@@ -44,7 +44,7 @@ class CreateInstallmentSerializer(serializers.ModelSerializer):
 class ApproveInstallmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Installment
-        fields = ['id', 'investor', 'amount', 'serialkey',
+        fields = ['id',
                   'is_approved', 'approved_by', 'created_at']
 
 
@@ -221,6 +221,12 @@ class ApproveInvestorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investors
         fields = ('id', 'approved_by', 'is_approved')
+
+
+class ApproveInvestorInstallmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investors
+        fields = ('id', 'amount', 'approved_by', 'is_approved')
 
 
 class CloseInvestorSerializer(serializers.ModelSerializer):
