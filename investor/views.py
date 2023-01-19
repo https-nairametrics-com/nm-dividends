@@ -263,6 +263,46 @@ class InvestmentAPIView(generics.GenericAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class InstallmentAPIView(generics.GenericAPIView):
+    serializer_class = CreateInvestorSerializer
+    serializer_installment_class = CreateInstallmentSerializer
+    queryset = Investors.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsUserApproved,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, id):
+        try:
+            return Investors.objects.get(id=id)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id, format=None):
+
+        if (isApproved(request.user.id) == False):
+            return Response({"status": "error",  "error": "User account not approved"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        investment_id = self.get_object(id)
+        serial_invest = str(serial_investor())
+        if (int(request.data.get('amount')) + getInvestorAmount(id) <= getBidPrice(id)):
+            installmentdata = {
+                'amount': request.data.get('amount'),
+                'slug': str(investor_slug()),
+                'investor': id,
+                'serialkey': serial_invest,
+                'is_approved': False,
+
+            }
+            serializer_in = self.serializer_installment_class(
+                data=installmentdata)
+            serializer_in.is_valid(raise_exception=True)
+            serializer_in.save()
+            return Response(serializer_in.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"status": "error",  "error": "Amount cannot exceed Invesment amount"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 class AdminInvestmentAPIView(generics.GenericAPIView):
     serializer_class = CreateInvestorSerializer
     queryset = Investors.objects.all().order_by('-created_at')
