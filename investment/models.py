@@ -149,6 +149,11 @@ class Gallery(models.Model):
 
 
 class Investors(models.Model):
+    TYPE_OPTIONS = [
+        ('only returns', 'only returns'),
+        ('off plan', 'off plan'),
+        ('outright purchase', 'outright purchase')
+    ]
     investment = models.ForeignKey(
         to=Investment, related_name='investment', on_delete=models.CASCADE)
     investor = models.ForeignKey(
@@ -156,6 +161,8 @@ class Investors(models.Model):
     amount = models.IntegerField(null=True)
     bid_price = models.IntegerField(null=True)
     slug = models.CharField(max_length=255, null=True)
+    investment_type = models.CharField(
+        choices=TYPE_OPTIONS, max_length=255, default="only returns")
     volume = models.IntegerField(default=1)
     serialkey = models.CharField(max_length=255, null=True)
     is_approved = models.BooleanField(default=False)
