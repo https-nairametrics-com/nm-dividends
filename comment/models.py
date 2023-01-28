@@ -6,6 +6,8 @@ from authentication.models import User
 
 # Create your models here.
 
+# create comment model
+
 
 class Comment(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
