@@ -13,6 +13,10 @@ def upload_to(instance, filename):
     return 'posts/{filename}'.format(filename=filename)
 
 
+def identity_to(instance, filename):
+    return 'identity/{filename}'.format(filename=filename)
+
+
 class Currency(models.Model):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=False)
@@ -203,3 +207,16 @@ class Mfa(models.Model):
 
     def __str__(self):
         return self.mfa
+
+
+class Sponsor(models.Model):
+    name = models.CharField(max_length=255)
+    nin = models.EmailField(max_length=255, unique=True, db_index=True)
+    phone = models.CharField(max_length=255, null=True)
+    dob = models.DateField(null=True)
+    address = models.TextField(null=True)
+    identity = models.ImageField(
+        _("Identity"), upload_to=identity_to, default='identity/default.jpg')
+
+    def __str__(self):
+        return self.name
