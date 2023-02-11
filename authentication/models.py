@@ -9,6 +9,10 @@ from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+def identity_to(instance, filename):
+    return 'identity/{filename}'.format(filename=filename)
+
+
 class UserManager(BaseUserManager):
 
     def create_user(self, username, firstname, lastname, address, referral_code, phone, email, password=None):
@@ -106,3 +110,16 @@ class Referrals(models.Model):
 
     def __str__(self):
         return str(self.created_at)
+
+
+class Profile(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='profile_authentication_set')
+    next_of_kin = models.CharField(max_length=255, null=True)
+    nin = models.EmailField(max_length=255, unique=True, db_index=True)
+    dob = models.DateField(null=True)
+    identity = models.ImageField(
+        _("Identity"), upload_to=identity_to, default='identity/default.jpg')
+
+    def __str__(self):
+        return self.name
