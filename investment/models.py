@@ -217,6 +217,20 @@ class Sponsor(models.Model):
     address = models.TextField(null=True)
     identity = models.ImageField(
         _("Identity"), upload_to=identity_to, default='identity/default.jpg')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
+
+
+class SponsorInvestment(models.Model):
+    investment = models.ForeignKey(
+        to=Investment, related_name='investment_sponsorinvestment', on_delete=models.CASCADE)
+    sponsor = models.ForeignKey(
+        to=Sponsor, related_name='sponsor_sponsorinvestment', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.created_at)
