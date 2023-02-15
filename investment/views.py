@@ -725,3 +725,32 @@ class AdminExportInvestmentAPIView(generics.GenericAPIView):
             writer.writerow(row)
 
         return response
+
+
+class IssuerCreateSponsorAPIView(generics.GenericAPIView):
+    serializer_class = InvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id):
+        checkInvestment = self.get_object(id)
+        investordata = {
+            'amount': request.data.get('amount'),
+            'bid_price': request.data.get('bid_price'),
+            'volume': request.data.get('volume'),
+            'investment_type': request.data.get('investment_type'),
+            'investment': id,
+            'investor': request.data.get('investor'),
+            'serialkey': str(serial_investor()),
+            'is_approved': False,
+            'is_closed': False,
+        }
+        serializer = self.serializer_class(data=investordata)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
