@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Investment, MainRoom, DealType, Currency, InvestmentRoom, Gallery, Investors
+from .models import SponsorInvestment, Sponsor, Investment, MainRoom, DealType, Currency, InvestmentRoom, Gallery, Investors
 from investor.models import Period, Risk
 from authentication.models import User
 from django.conf import settings
