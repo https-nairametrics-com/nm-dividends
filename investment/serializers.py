@@ -53,6 +53,21 @@ class MainRoomSerializer(serializers.ModelSerializer):
                   'is_verified', ]
 
 
+class SponsorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Sponsor
+        fields = ['id', 'nin', 'name', 'dob',
+                  'address', 'identity', 'phone', ]
+
+
+class SponsorInvestmentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SponsorInvestment
+        fields = ['id', 'investent', 'sponsor', ]
+
+
 class CreateRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
