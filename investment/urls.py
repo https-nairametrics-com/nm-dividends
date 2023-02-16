@@ -39,7 +39,7 @@ urlpatterns = [
          name="update-investment"),
     path('invest/room/', views.InvestmentRoomAPIView.as_view(),
          name="room-investment"),
-    path('create/sponsor/', views.IssuerCreateSponsorAPIView.as_view(),
+    path('create/sponsor/<int:id>', views.IssuerCreateSponsorAPIView.as_view(),
          name="create-sponsor"),
     path('update/sponsor/<int:id>', views.UpdateSponsorAPIView.as_view(),
          name="update-sponsor"),
