@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from authentication.models import User
-from .models import Currency, DealType, MainRoom, InvestmentRoom, Investment, Gallery, Investors
+from .models import SponsorInvestment, Sponsor, Currency, DealType, MainRoom, InvestmentRoom, Investment, Gallery, Investors
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import filters, generics, status, views, permissions
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
@@ -21,6 +21,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 import csv
 from . import serializers
 # Create your views here.
+
+
+def getSponsorId(nin):
+    query = Sponsor.objects.filter(
+        nin=nin).values_list('id', flat=True)[0]
+    return query
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -728,8 +734,10 @@ class AdminExportInvestmentAPIView(generics.GenericAPIView):
 
 
 class IssuerCreateSponsorAPIView(generics.GenericAPIView):
-    serializer_class = InvestmentSerializer
+    serializer_class = SponsorSerializer
+    serializer_s_class = SponsorInvestmentSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self, pk):
         try:
@@ -739,18 +747,30 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
 
     def post(self, request, id):
         checkInvestment = self.get_object(id)
-        investordata = {
-            'amount': request.data.get('amount'),
-            'bid_price': request.data.get('bid_price'),
-            'volume': request.data.get('volume'),
-            'investment_type': request.data.get('investment_type'),
+        getSponsor = getSponsorId(request.data.get('nin'))
+        if getSponsor is None:
+            newSponsorData = {
+                'nin': request.data.get('amount'),
+                'name': request.data.get('bid_price'),
+                'dob': request.data.get('volume'),
+                'address': request.data.get('investment_type'),
+                'identity': request.data.get('investor'),
+                'phone': request.data.get('phone'),
+            }
+            serializer = self.serializer_class(data=newSponsorData)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            sponsorData = serializer.data
+            sponsorId = sponsorData['id']
+        else:
+            sponsorId = int(getSponsor)
+
+        sponsorInvestmentData = {
             'investment': id,
-            'investor': request.data.get('investor'),
-            'serialkey': str(serial_investor()),
-            'is_approved': False,
-            'is_closed': False,
+            'sponsor': sponsorId,
         }
-        serializer = self.serializer_class(data=investordata)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer_s = self.serializer_s_class(data=sponsorInvestmentData)
+        serializer_s.is_valid(raise_exception=True)
+        serializer_s.save()
+
+        return Response(serializer_s.data, status=status.HTTP_201_CREATED)
