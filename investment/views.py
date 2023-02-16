@@ -751,10 +751,10 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
         if getSponsor is None:
             newSponsorData = {
                 'nin': request.data.get('amount'),
-                'name': request.data.get('bid_price'),
-                'dob': request.data.get('volume'),
-                'address': request.data.get('investment_type'),
-                'identity': request.data.get('investor'),
+                'name': request.data.get('name'),
+                'dob': request.data.get('dob'),
+                'address': request.data.get('address'),
+                'identity': request.data.get('identity'),
                 'phone': request.data.get('phone'),
             }
             serializer = self.serializer_class(data=newSponsorData)
@@ -774,3 +774,33 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
         serializer_s.save()
 
         return Response(serializer_s.data, status=status.HTTP_201_CREATED)
+
+
+class UpdateSponsorAPIView(generics.GenericAPIView):
+    serializer_class = SponsorSerializer
+    serializer_s_class = SponsorInvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Sponsor.objects.get(id=pk)
+        except Sponsor.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id):
+        checkInvestment = self.get_object(id)
+        newSponsorData = {
+            'nin': request.data.get('amount'),
+            'name': request.data.get('name'),
+            'dob': request.data.get('dob'),
+            'address': request.data.get('address'),
+            'identity': request.data.get('identity'),
+            'phone': request.data.get('phone'),
+            'is_verified': request.data.get('is_verified'),
+        }
+        serializer = self.serializer_class(data=newSponsorData)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
