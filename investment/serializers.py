@@ -58,7 +58,7 @@ class SponsorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sponsor
         fields = ['id', 'nin', 'name', 'dob',
-                  'address', 'identity', 'phone', ]
+                  'address', 'identity', 'phone', 'is_verified', ]
 
 
 class SponsorInvestmentSerializer(serializers.ModelSerializer):
