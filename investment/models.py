@@ -215,6 +215,7 @@ class Sponsor(models.Model):
     phone = models.CharField(max_length=255, null=True)
     dob = models.DateField(null=True)
     address = models.TextField(null=True)
+    is_verified = models.BooleanField(default=False)
     identity = models.ImageField(
         _("Identity"), upload_to=identity_to, default='identity/default.jpg')
     created_at = models.DateTimeField(auto_now_add=True)
