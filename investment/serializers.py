@@ -65,7 +65,7 @@ class SponsorInvestmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SponsorInvestment
-        fields = ['id', 'investent', 'sponsor', ]
+        fields = ['id', 'investment', 'sponsor', ]
 
 
 class CreateRoomSerializer(serializers.ModelSerializer):
