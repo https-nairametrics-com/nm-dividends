@@ -804,7 +804,7 @@ class UpdateSponsorAPIView(generics.GenericAPIView):
     def patch(self, request, id):
         checkInvestment = self.get_object(id)
         newSponsorData = {
-            'nin': request.data.get('amount'),
+            'nin': request.data.get('nin'),
             'name': request.data.get('name'),
             'dob': request.data.get('dob'),
             'address': request.data.get('address'),
