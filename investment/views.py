@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
@@ -836,3 +836,23 @@ class ApproveSponsorAPIView(generics.GenericAPIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SponsorListAPIView(ListAPIView):
+    serializer_class = SponsorListSerializer
+    queryset = Sponsor.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    # parser_classes = [MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        return self.queryset.all()
+
+
+class SponsorInvestmentsListAPIView(ListAPIView):
+    serializer_class = ListSponsorInvestmentSerializer
+    queryset = SponsorInvestment.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated,)
+    # parser_classes = [MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        return self.queryset.filter(sponsor=self.kwargs['id'])
