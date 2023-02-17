@@ -25,7 +25,7 @@ from . import serializers
 
 def getSponsorId(nin):
     query = Sponsor.objects.filter(
-        nin=nin).values_list('id', flat=True)[0]
+        nin=nin)
     return query
 
 
@@ -745,12 +745,18 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
         except Investment.DoesNotExist:
             raise Http404
 
-    def post(self, request, id):
+    def post(self, request, id, *args, **kwargs):
         checkInvestment = self.get_object(id)
         getSponsor = getSponsorId(request.data.get('nin'))
+        print(getSponsor)
         if getSponsor is None:
+            query = Sponsor.objects.filter(
+                nin=getSponsorId(request.data.get('nin'))).values_list('id', flat=True)[0]
+            sponsorId = int(query)
+
+        else:
             newSponsorData = {
-                'nin': request.data.get('amount'),
+                'nin': request.data.get('nin'),
                 'name': request.data.get('name'),
                 'dob': request.data.get('dob'),
                 'address': request.data.get('address'),
@@ -762,8 +768,6 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
             serializer.save()
             sponsorData = serializer.data
             sponsorId = sponsorData['id']
-        else:
-            sponsorId = int(getSponsor)
 
         sponsorInvestmentData = {
             'investment': id,
