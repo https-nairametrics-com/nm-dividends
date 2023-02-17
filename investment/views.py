@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
+from .serializers import UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
@@ -790,7 +790,7 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
 
 
 class UpdateSponsorAPIView(generics.GenericAPIView):
-    serializer_class = SponsorSerializer
+    serializer_class = UpdateSponsorSerializer
     serializer_s_class = SponsorInvestmentSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
     parser_classes = [MultiPartParser, FormParser]
@@ -804,7 +804,6 @@ class UpdateSponsorAPIView(generics.GenericAPIView):
     def patch(self, request, id):
         checkInvestment = self.get_object(id)
         newSponsorData = {
-            'nin': request.data.get('nin'),
             'name': request.data.get('name'),
             'dob': request.data.get('dob'),
             'address': request.data.get('address'),
