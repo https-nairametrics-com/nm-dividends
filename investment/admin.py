@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Currency, DealType, MainRoom, Investment, InvestmentRoom, Gallery, Investors
+from .models import Sponsor, SponsorInvestment, Currency, DealType, MainRoom, Investment, InvestmentRoom, Gallery, Investors
 
 
 class InvestmentAdmin(admin.ModelAdmin):
@@ -15,3 +15,5 @@ admin.site.register(Gallery)
 admin.site.register(Investors)
 admin.site.register(Currency)
 admin.site.register(DealType)
+admin.site.register(Sponsor)
+admin.site.register(SponsorInvestment)
