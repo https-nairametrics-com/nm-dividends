@@ -812,7 +812,8 @@ class UpdateSponsorAPIView(generics.GenericAPIView):
             'phone': request.data.get('phone'),
             'is_verified': request.data.get('is_verified'),
         }
-        serializer = self.serializer_class(data=newSponsorData)
+        serializer = self.serializer_class(
+            checkInvestment, data=newSponsorData)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
