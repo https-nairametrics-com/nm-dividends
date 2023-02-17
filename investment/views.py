@@ -29,6 +29,11 @@ def getSponsorId(nin):
     return query
 
 
+def checkSponsored(id):
+    query = SponsorInvestment.objects.filter(investment=id)
+    return query
+
+
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         # 👇️ if passed in object is instance of Decimal
@@ -747,6 +752,10 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
 
     def post(self, request, id, *args, **kwargs):
         checkInvestment = self.get_object(id)
+        checkSponsorExist = checkSponsored(id)
+        if checkSponsorExist is not None:
+            return Response({"error": "Investment already have an sponsor"},
+                            status=status.HTTP_400_BAD_REQUEST)
         getSponsor = getSponsorId(request.data.get('nin'))
         print(getSponsor)
         if getSponsor is None:
