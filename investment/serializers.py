@@ -331,10 +331,22 @@ class CloseInvestmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'is_closed']
 
 
-class InvestorsSerializer(serializers.ModelSerializer):
+class ListSponsorInvestmentSerializer(serializers.ModelSerializer):
+    investment = InvestmentSerializer(many=False, read_only=False)
 
     class Meta:
-        model = InvestmentRoom
-        fields = ['investment', 'id', 'investor', 'is_closed', 'bid_price',
-                  'is_approved', 'amount', 'serialkey', 'approved_by',
-                  'is_closed', 'closed_by', 'created_at']
+        model = SponsorInvestment
+        fields = ['investment', 'id', 'sponsor', ]
+
+
+class SponsorListSerializer(serializers.ModelSerializer):
+    investmentsCount = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sponsor
+        fields = ['id', 'nin', 'name', 'dob',
+                  'address', 'identity', 'phone', 'is_verified', 'investmentsCount', ]
+
+    def get_investmentsCount(self, obj):
+        return SponsorInvestment.objects.filter(sponsor=obj.id).count()
+        # return GallerySerializer(logger_queryset, many=True).data
