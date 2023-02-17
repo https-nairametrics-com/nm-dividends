@@ -43,6 +43,8 @@ urlpatterns = [
          name="create-sponsor"),
     path('update/sponsor/<int:id>', views.UpdateSponsorAPIView.as_view(),
          name="update-sponsor"),
+    path('verify/sponsor/<int:id>', views.ApproveSponsorAPIView.as_view(),
+         name="approve-sponsor"),
     path('portfolio/<slug:slug>', views.InvestmentDetailAPIView.as_view(),
          name="investment-portfolio"),
     path('mainroom/', views.MainRoomListAPIView.as_view(),

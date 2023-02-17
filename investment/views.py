@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
+from .serializers import ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer, InvestorsSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
@@ -817,3 +817,22 @@ class UpdateSponsorAPIView(generics.GenericAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ApproveSponsorAPIView(generics.GenericAPIView):
+    serializer_class = ApproveSponsorSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+
+    def get_object(self, id):
+        try:
+            return Sponsor.objects.get(id=id)
+        except Sponsor.DoesNotExist:
+            raise Http404
+
+    def patch(self, request, id, format=None):
+        snippet = self.get_object(id)
+        serializer = ApproveSponsorSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
