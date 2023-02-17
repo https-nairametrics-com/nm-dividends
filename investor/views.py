@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from authentication.models import User
-from investment.views import IsSuperUser
+#from investment.views import IsSuperUser
 from investment.models import Installment, Investors, Investment
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import generics, status, views, permissions, filters
@@ -73,6 +73,11 @@ def getInstallment(id):
         return Installment.objects.get(id=id)
     except Installment.DoesNotExist:
         raise Http404
+
+
+class IsSuperUser(IsAdminUser):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_superuser)
 
 
 class PeriodListAPIView(ListCreateAPIView):
