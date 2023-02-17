@@ -211,7 +211,7 @@ class Mfa(models.Model):
 
 class Sponsor(models.Model):
     name = models.CharField(max_length=255)
-    nin = models.EmailField(max_length=255, unique=True, db_index=True)
+    nin = models.CharField(max_length=255, unique=True, db_index=True)
     phone = models.CharField(max_length=255, null=True)
     dob = models.DateField(null=True)
     address = models.TextField(null=True)
