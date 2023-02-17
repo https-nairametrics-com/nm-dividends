@@ -61,6 +61,14 @@ class SponsorSerializer(serializers.ModelSerializer):
                   'address', 'identity', 'phone', 'is_verified', ]
 
 
+class UpdateSponsorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Sponsor
+        fields = ['id', 'name', 'dob',
+                  'address', 'identity', 'phone', 'is_verified', ]
+
+
 class ApproveSponsorSerializer(serializers.ModelSerializer):
 
     class Meta:
