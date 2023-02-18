@@ -366,3 +366,10 @@ class IssuerOnlySerializer(serializers.ModelSerializer):
         fields = ['id', 'owner', 'slug', 'name', 'description', 'currency',
                   'volume', 'dealtype', 'location', 'video', 'room', 'period', 'title_status', 'construction_status', 'project_status',
                   'risk', 'features', 'start_date', 'end_date', 'created_at']
+
+
+class IssuerInvestorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investors
+        fields = ['id', 'investor', 'investment_type', 'investment',
+                  'serialkey', 'volume', 'house_number', 'slug']
