@@ -48,7 +48,7 @@ def getInvestorId(nin):
     query = Profile.objects.filter(nin=nin)
     if query is not None:
         getId = Profile.objects.filter(
-            nin=nin).values_list('id', flat=True)[0]
+            nin=nin).values_list('user', flat=True)[0]
 
     return int(getId)
 
@@ -57,7 +57,8 @@ def checkInvestorExist(nin, id):
     query = Profile.objects.filter(nin=nin)
     if query is not None:
         getId = Profile.objects.filter(
-            nin=nin).values_list('id', flat=True)[0]
+            nin=nin).values_list('user', flat=True)[0]
+    print(query)
     query2 = Investment.objects.filter(
         investment=id, investor=int(getId))
     return query2
@@ -973,15 +974,17 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
 
     def post(self, request, id, *args, **kwargs):
         checkInvestment = self.get_object(id)
-        # Check if investor is already subscribed to this investment
-        checkInvestorInvestmentExist = checkInvestorExist(
-            request.data.get('nin'), id)
-        if checkInvestorInvestmentExist is not None:
-            return Response({"error": "This investor is already subscribed to this portfolio"},
-                            status=status.HTTP_400_BAD_REQUEST)
         checkUser = checkNin(request.data.get('nin'))
         if checkUser is not None:
-            investorId = getInvestorId(request.data.get('nin'))
+            # Check if investor is already subscribed to this investment
+
+            checkInvestorInvestmentExist = checkInvestorExist(
+                request.data.get('nin'), id)
+            if checkInvestorInvestmentExist is not None:
+                return Response({"error": "This investor is already subscribed to this portfolio"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                investorId = getInvestorId(request.data.get('nin'))
         else:
             userd = str(username_generator())
             newUserData = {
