@@ -54,8 +54,12 @@ def getInvestorId(nin):
 
 
 def checkInvestorExist(nin, id):
+    query = Profile.objects.filter(nin=nin)
+    if query is not None:
+        getId = Profile.objects.filter(
+            nin=nin).values_list('id', flat=True)[0]
     query2 = Investment.objects.filter(
-        investment=id, investor=getInvestorId(nin))
+        investment=id, investor=int(getId))
     return query2
 
 
