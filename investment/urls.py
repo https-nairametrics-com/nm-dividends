@@ -83,6 +83,6 @@ urlpatterns = [
          name="admin-export-investments"),
     path('issuer/', views.IssuerAPIView.as_view(),
          name="issuer-investments"),
-    path('issuer/investor/', views.IssuerCreateInvestorAPIView.as_view(),
+    path('issuer/investor/<int:id>', views.IssuerCreateInvestorAPIView.as_view(),
          name="issuer-investor"),
 ]
