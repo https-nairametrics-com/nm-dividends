@@ -358,3 +358,11 @@ class SponsorListSerializer(serializers.ModelSerializer):
     def get_investmentsCount(self, obj):
         return SponsorInvestment.objects.filter(sponsor=obj.id).count()
         # return GallerySerializer(logger_queryset, many=True).data
+
+
+class IssuerOnlySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investment
+        fields = ['id', 'owner', 'slug', 'name', 'description', 'currency',
+                  'volume', 'dealtype', 'location', 'video', 'room', 'period', 'title_status', 'construction_status', 'project_status',
+                  'risk', 'features', 'start_date', 'end_date', 'created_at']
