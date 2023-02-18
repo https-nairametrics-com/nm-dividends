@@ -975,23 +975,15 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
     def post(self, request, id, *args, **kwargs):
         checkInvestment = self.get_object(id)
         checkUser = checkNin(request.data.get('nin'))
-        if checkUser is not None:
+        print(checkUser)
+        if not checkUser:
             # Check if investor is already subscribed to this investment
-
-            checkInvestorInvestmentExist = checkInvestorExist(
-                request.data.get('nin'), id)
-            if checkInvestorInvestmentExist is not None:
-                return Response({"error": "This investor is already subscribed to this portfolio"},
-                                status=status.HTTP_400_BAD_REQUEST)
-            else:
-                investorId = getInvestorId(request.data.get('nin'))
-        else:
             userd = str(username_generator())
             newUserData = {
                 'firstname': request.data.get('firstname'),
                 'lastname': request.data.get('lastname'),
                 'username': userd,
-                'address ': request.data.get('address'),
+                'address': request.data.get('address'),
                 'email': request.data.get('email'),
                 'password': request.data.get('firstname') + request.data.get('lastname')+userd,
                 'referral_code': str(referral_generator()),
@@ -1025,6 +1017,16 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
             serializer_p = self.profile_serializer_class(data=newUserProfile)
             serializer_p.is_valid(raise_exception=True)
             serializer_p.save()
+
+        else:
+
+            checkInvestorInvestmentExist = checkInvestorExist(
+                request.data.get('nin'), id)
+            if checkInvestorInvestmentExist is not None:
+                return Response({"error": "This investor is already subscribed to this portfolio"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                investorId = getInvestorId(request.data.get('nin'))
 
         investorData = {
             'investment': id,
