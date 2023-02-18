@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Referrals
+from .models import User, Referrals, Profile
 from django.contrib import auth
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
@@ -26,6 +26,13 @@ class ReferralSerializer(serializers.ModelSerializer):
     class Meta:
         model = Referrals
         fields = ['id', 'referred', 'owner', 'status']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = ['id', 'user', 'next_of_kin', 'nin', 'dob', 'identity']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
