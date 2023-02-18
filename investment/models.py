@@ -123,7 +123,7 @@ class Investment(models.Model):
     offer_price = models.IntegerField(null=True)
     spot_price = models.IntegerField(null=True)
     unit_price = models.IntegerField(null=True)
-    roi = models.DecimalField(max_digits=6, decimal_places=2)
+    roi = models.DecimalField(null=True, max_digits=6, decimal_places=2)
     annualized = models.DecimalField(max_digits=6, decimal_places=2)
     risk = models.ForeignKey(to=Risk, on_delete=models.CASCADE)
     features = models.TextField(null=True)
