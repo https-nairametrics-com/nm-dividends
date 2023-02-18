@@ -46,7 +46,7 @@ def checkNin(id):
 
 def getInvestorId(nin):
     query = Profile.objects.filter(nin=nin)
-    if query is not None:
+    if query:
         getId = Profile.objects.filter(
             nin=nin).values_list('user', flat=True)[0]
 
@@ -55,11 +55,10 @@ def getInvestorId(nin):
 
 def checkInvestorExist(nin, id):
     query = Profile.objects.filter(nin=nin)
-    if query is not None:
+    if query:
         getId = Profile.objects.filter(
             nin=nin).values_list('user', flat=True)[0]
-    print(query)
-    query2 = Investment.objects.filter(
+    query2 = Investors.objects.filter(
         investment=id, investor=int(getId))
     return query2
 
@@ -1019,10 +1018,9 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
             serializer_p.save()
 
         else:
-
             checkInvestorInvestmentExist = checkInvestorExist(
                 request.data.get('nin'), id)
-            if checkInvestorInvestmentExist is not None:
+            if checkInvestorInvestmentExist:
                 return Response({"error": "This investor is already subscribed to this portfolio"},
                                 status=status.HTTP_400_BAD_REQUEST)
             else:
