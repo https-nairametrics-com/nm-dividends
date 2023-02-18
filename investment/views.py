@@ -8,7 +8,7 @@ from authentication.utils import serial_investor
 from .permissions import IsOwner, IsInvestmentOwner
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
+from .serializers import IssuerOnlySerializer, UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
 from investor.serializers import RiskSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
@@ -856,3 +856,73 @@ class SponsorInvestmentsListAPIView(ListAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(sponsor=self.kwargs['id'])
+
+
+class IssuerAPIView(generics.GenericAPIView):
+    serializer_class = IssuerOnlySerializer
+    gallery_serializer = GallerySerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        newInvestorData = {
+            'owner': self.request.user.id,
+            'name': request.data.get('name'),
+            'description': request.data.get('description'),
+            'location': request.data.get('location'),
+            'volume': request.data.get('volume'),
+            'video': request.data.get('video'),
+            'currency': 1,
+            'dealtype': 1,
+            'room': 1,
+            'period': 1,
+            'title_status': request.data.get('title_status'),
+            'construction_status': request.data.get('construction_status'),
+            'project_status': request.data.get('project_status'),
+            'risk': 1,
+            'features': request.data.get('features'),
+            'start_date': request.data.get('start_date'),
+            'end_date': request.data.get('end_date'),
+
+        }
+        serializer = self.serializer_class(data=newInvestorData)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        investment_data = serializer.data
+        imagedata = {'investment': investment_data['id'],
+                     'gallery': request.data.get('gallery'),
+                     'is_featured': True}
+        in_serializer = self.gallery_serializer(data=imagedata)
+        in_serializer.is_valid(raise_exception=True)
+        in_serializer.save()
+        #images = dict((request.data).lists())['image']
+        if request.data.get('galleries_1'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_1'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_2'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_2'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_3'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_3'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_4'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_4'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
