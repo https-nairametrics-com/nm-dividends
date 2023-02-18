@@ -84,6 +84,14 @@ class InvestmentRoom(models.Model):
 
 
 class Investment(models.Model):
+    TYPE_OPTIONS = [
+        ('not started', 'not started'),
+        ('started', 'started'),
+        ('pending', 'pending'),
+        ('in progress', 'in progress'),
+        ('approved', 'approved'),
+        ('completed', 'completed'),
+    ]
     owner = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='owner')
     name = models.CharField(max_length=255)
@@ -123,6 +131,12 @@ class Investment(models.Model):
     is_closed = models.BooleanField(default=False)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
+    title_status = models.CharField(
+        choices=TYPE_OPTIONS, max_length=255, default="pending")
+    construction_status = models.CharField(
+        choices=TYPE_OPTIONS, max_length=255, default="pending")
+    project_status = models.CharField(
+        choices=TYPE_OPTIONS, max_length=255, default="not started")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
