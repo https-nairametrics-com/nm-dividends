@@ -118,10 +118,10 @@ class Profile(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='profile_authentication_set')
     next_of_kin = models.CharField(max_length=255, null=True)
-    nin = models.EmailField(max_length=255, unique=True, db_index=True)
+    nin = models.CharField(max_length=255, unique=True, db_index=True)
     dob = models.DateField(null=True)
     identity = models.ImageField(
         _("Identity"), upload_to=identity_to, default='identity/default.jpg')
 
     def __str__(self):
-        return self.name
+        return self.nin
