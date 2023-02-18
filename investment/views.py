@@ -1,15 +1,17 @@
 from django.shortcuts import render
-from authentication.models import User
+from authentication.models import User, Profile
 from .models import SponsorInvestment, Sponsor, Currency, DealType, MainRoom, InvestmentRoom, Investment, Gallery, Investors
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework import filters, generics, status, views, permissions
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor
+from authentication.serializers import ProfileSerializer, RegisterSerializer
 from .permissions import IsOwner, IsInvestmentOwner
+from authentication.utils import Util, serial_investor, username_generator, referral_generator, investor_slug
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import IssuerOnlySerializer, UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
-from investor.serializers import RiskSerializer
+from .serializers import IssuerInvestorSerializer, IssuerOnlySerializer, UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
+from investor.serializers import RiskSerializer, CreateInvestorSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
 from django.http import JsonResponse, Http404, HttpResponse
@@ -20,6 +22,9 @@ from decimal import *
 from django_filters.rest_framework import DjangoFilterBackend
 import csv
 from . import serializers
+from django.core.mail import send_mail as sender
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 # Create your views here.
 
 
@@ -32,6 +37,26 @@ def getSponsorId(nin):
 def checkSponsored(id):
     query = SponsorInvestment.objects.filter(investment=id)
     return query
+
+
+def checkNin(id):
+    query = Profile.objects.filter(nin=id)
+    return query
+
+
+def getInvestorId(nin):
+    query = Profile.objects.filter(nin=nin)
+    if query is not None:
+        getId = Profile.objects.filter(
+            nin=nin).values_list('id', flat=True)[0]
+
+    return int(getId)
+
+
+def checkInvestorExist(nin, id):
+    query2 = Investment.objects.filter(
+        investment=id, investor=getInvestorId(nin))
+    return query2
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -926,3 +951,86 @@ class IssuerAPIView(generics.GenericAPIView):
             in_serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class IssuerCreateInvestorAPIView(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    profile_serializer_class = ProfileSerializer
+    investor_serializer_class = IssuerInvestorSerializer
+    register_serializer_class = SponsorInvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id, *args, **kwargs):
+        checkInvestment = self.get_object(id)
+        # Check if investor is already subscribed to this investment
+        checkInvestorInvestmentExist = checkInvestorExist(
+            request.data.get('nin'), id)
+        if checkInvestorInvestmentExist is not None:
+            return Response({"error": "This investor is already subscribed to this portfolio"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        checkUser = checkNin(request.data.get('nin'))
+        if checkUser is not None:
+            investorId = getInvestorId(request.data.get('nin'))
+        else:
+            userd = str(username_generator())
+            newUserData = {
+                'firstname': request.data.get('firstname'),
+                'lastname': request.data.get('lastname'),
+                'username': userd,
+                'address ': request.data.get('address'),
+                'email': request.data.get('email'),
+                'password': request.data.get('firstname') + request.data.get('lastname')+userd,
+                'referral_code': str(referral_generator()),
+                'phone': request.data.get('phone'),
+            }
+            serializer = self.serializer_class(data=newUserData)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            userData = serializer.data
+            investorId = userData['id']
+
+            user = User.objects.get(email=userData['email'])
+            email_body = 'Hi '+user.firstname + \
+                ' Your password to yieldroom is: \n' + \
+                request.data.get('firstname') + \
+                request.data.get('lastname')+userd
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'Welcome to yieldroom '}
+            sender(data['email_subject'], data['email_body'],
+                   'ssn@nairametrics.com', [data['to_email']])
+
+            Util.send_email(data)
+            newUserProfile = {
+                'identity': request.data.get('identity'),
+                'user': investorId,
+                'next_of_kin': request.data.get('next_of_kin'),
+                'nin': request.data.get('nin'),
+                'dob': request.data.get('dob'),
+            }
+            serializer_p = self.profile_serializer_class(data=newUserProfile)
+            serializer_p.is_valid(raise_exception=True)
+            serializer_p.save()
+
+        investorData = {
+            'investment': id,
+            'investor': investorId,
+            'house_number': request.data.get('house_number'),
+            'volume': request.data.get('volume'),
+            'slug': str(investor_slug()),
+            'serialkey': str(serial_investor()),
+            'investment_type': 'off plan'
+
+        }
+        serializer_i = self.investor_serializer_class(data=investorData)
+        serializer_i.is_valid(raise_exception=True)
+        serializer_i.save()
+
+        return Response(serializer_i.data, status=status.HTTP_201_CREATED)
