@@ -178,6 +178,7 @@ class Investors(models.Model):
         to=User, on_delete=models.CASCADE, related_name='investor')
     amount = models.IntegerField(null=True)
     bid_price = models.IntegerField(null=True)
+    house_number = models.CharField(max_length=255, null=True)
     slug = models.CharField(max_length=255, null=True)
     investment_type = models.CharField(
         choices=TYPE_OPTIONS, max_length=255, default="only returns")
