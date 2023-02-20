@@ -273,11 +273,16 @@ class InvestmentSerializer(serializers.ModelSerializer):
         totalamount = Investors.objects.filter(
             investment=int(obj.id), is_approved=True).aggregate(Sum('amount'))
 
+        if obj.project_raise:
+            project_raise = int(obj.project_raise)
+        else:
+            project_raise = 0
+
         if totalamount.get('amount__sum') is None:
 
-            totalBalance = int(obj.project_raise) - 0
+            totalBalance = project_raise - 0
         else:
-            totalBalance = int(obj.project_raise) - \
+            totalBalance = project_raise - \
                 int(totalamount.get('amount__sum'))
 
         return totalBalance
