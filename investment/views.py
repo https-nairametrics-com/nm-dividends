@@ -778,12 +778,12 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
     def post(self, request, id, *args, **kwargs):
         checkInvestment = self.get_object(id)
         checkSponsorExist = checkSponsored(id)
-        if checkSponsorExist is not None:
+        if checkSponsorExist:
             return Response({"error": "Investment already have an sponsor"},
                             status=status.HTTP_400_BAD_REQUEST)
         getSponsor = getSponsorId(request.data.get('nin'))
-        print(getSponsor)
-        if getSponsor is None:
+        # print(getSponsor)
+        if getSponsor:
             query = Sponsor.objects.filter(
                 nin=getSponsorId(request.data.get('nin'))).values_list('id', flat=True)[0]
             sponsorId = int(query)
