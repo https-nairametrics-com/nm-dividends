@@ -993,9 +993,11 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
 
             user = User.objects.get(email=userData['email'])
             email_body = 'Hi '+user.firstname + \
+                ' Your email address is: ' + request.data.get('email') + \
                 ' Your password to yieldroom is: \n' + \
                 request.data.get('firstname') + \
-                request.data.get('lastname')+userd
+                request.data.get('lastname')+userd + '\n' +\
+                'https://yield-room.netlify.com'
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Welcome to yieldroom '}
             sender(data['email_subject'], data['email_body'],
