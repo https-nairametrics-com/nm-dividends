@@ -212,6 +212,7 @@ class InvestmentDetailsSerializer(serializers.ModelSerializer):
     sponsor = serializers.SerializerMethodField()
     investors = serializers.SerializerMethodField()
     amountAlloted = serializers.SerializerMethodField()
+    investorsCount = serializers.SerializerMethodField()
     balanceToBeAlloted = serializers.SerializerMethodField()
     currency = CurrencySerializer(many=False, read_only=False)
     dealtype = DealTypeSerializer(many=False, read_only=False)
@@ -231,7 +232,7 @@ class InvestmentDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+        fields = ['id', 'owner', 'slug', 'name', 'investorsCount', 'description', 'currency', 'amount',
                   'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment',
                   'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
@@ -240,6 +241,10 @@ class InvestmentDetailsSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(investment=obj.id)
         return GallerySerializer(logger_queryset, many=True).data
+
+    def get_investorsCount(self, obj):
+        in_queryset = Investors.objects.filter(investment=obj.id).count()
+        return in_queryset
 
     def get_sponsor(self, obj):
         logger_queryset = SponsorInvestment.objects.filter(investment=obj.id)
