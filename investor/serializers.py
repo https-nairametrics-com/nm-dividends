@@ -366,8 +366,11 @@ class InvestorExportSerializer(serializers.ModelSerializer):
             id=obj.id).values_list('investment', flat=True)[0]
         roi = Investment.objects.filter(
             id=rob).values_list('roi', flat=True)[0]
-        amount = Investors.objects.filter(
-            id=obj.id).values_list('amount', flat=True)[0]
-        returns_on_i = ((decimal.Decimal(roi) / decimal.Decimal(100))
-                        * decimal.Decimal(amount)) + decimal.Decimal(amount)
-        return returns_on_i.quantize(decimal.Decimal('0.00'))
+        if roi is None:
+            return 0
+        else:
+            amount = Investors.objects.filter(
+                id=obj.id).values_list('amount', flat=True)[0]
+            returns_on_i = ((decimal.Decimal(roi) / decimal.Decimal(100))
+                            * decimal.Decimal(amount)) + decimal.Decimal(amount)
+            return returns_on_i.quantize(decimal.Decimal('0.00'))
