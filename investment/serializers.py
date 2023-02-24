@@ -91,6 +91,14 @@ class ListSponsorSerializer(serializers.ModelSerializer):
         fields = ['id', 'investment', 'sponsor', ]
 
 
+class ListInvestorsSerializer(serializers.ModelSerializer):
+    Investor = UserInvestmentSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Investors
+        fields = ['id', 'investment', 'investor', ]
+
+
 class CreateRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -226,7 +234,7 @@ class InvestmentDetailsSerializer(serializers.ModelSerializer):
                   'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment',
                   'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
-                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'sponsor']
+                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'sponsor', 'investors']
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(investment=obj.id)
@@ -235,6 +243,10 @@ class InvestmentDetailsSerializer(serializers.ModelSerializer):
     def get_sponsor(self, obj):
         logger_queryset = SponsorInvestment.objects.filter(investment=obj.id)
         return ListSponsorSerializer(logger_queryset, many=True).data
+
+    def get_investors(self, obj):
+        logger_queryset = Investors.objects.filter(investment=obj.id)
+        return ListInvestorsSerializer(logger_queryset, many=True).data
 
     def get_amountAlloted(self, obj):
         return Investors.objects.filter(investment=obj.id, is_approved=True).aggregate(Sum('amount'))
