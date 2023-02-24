@@ -92,7 +92,7 @@ class ListSponsorSerializer(serializers.ModelSerializer):
 
 
 class ListInvestorsSerializer(serializers.ModelSerializer):
-    Investor = UserInvestmentSerializer(many=False, read_only=False)
+    investor = UserInvestmentSerializer(many=False, read_only=False)
 
     class Meta:
         model = Investors
@@ -210,6 +210,7 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
 class InvestmentDetailsSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     sponsor = serializers.SerializerMethodField()
+    investors = serializers.SerializerMethodField()
     amountAlloted = serializers.SerializerMethodField()
     balanceToBeAlloted = serializers.SerializerMethodField()
     currency = CurrencySerializer(many=False, read_only=False)
@@ -234,7 +235,7 @@ class InvestmentDetailsSerializer(serializers.ModelSerializer):
                   'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment',
                   'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
-                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'sponsor', 'investors']
+                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'sponsor', 'investors', ]
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(investment=obj.id)
