@@ -83,6 +83,14 @@ class SponsorInvestmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'investment', 'sponsor', ]
 
 
+class ListSponsorSerializer(serializers.ModelSerializer):
+    sponsor = SponsorSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = SponsorInvestment
+        fields = ['id', 'investment', 'sponsor', ]
+
+
 class CreateRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -190,9 +198,43 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
+
+class InvestmentDetailsSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    sponsor = serializers.SerializerMethodField()
+    amountAlloted = serializers.SerializerMethodField()
+    balanceToBeAlloted = serializers.SerializerMethodField()
+    currency = CurrencySerializer(many=False, read_only=False)
+    dealtype = DealTypeSerializer(many=False, read_only=False)
+    # gallery_set = serializers.StringRelatedField(many=True)
+    risk = RiskRoomSerializer(many=False, read_only=False)
+    room = RoomSerializer(many=False, read_only=False)
+    period = PeriodInvestmentSerializer(read_only=False)
+    owner = UserInvestmentSerializer(read_only=False)
+    # gallery_investment = GallerySerializer(read_only=False)
+
+    '''
+    def get_image(self, gallery):
+        pesticide_qs = Gallery.objects.filter(
+            gallery__investment=gallery)
+        return Gall erySerializer(pesticide_qs, many=True).data
+        '''
+
+    class Meta:
+        model = Investment
+        fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+                  'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment',
+                  'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
+                  'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
+                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'sponsor']
+
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(investment=obj.id)
         return GallerySerializer(logger_queryset, many=True).data
+
+    def get_sponsor(self, obj):
+        logger_queryset = SponsorInvestment.objects.filter(investment=obj.id)
+        return ListSponsorSerializer(logger_queryset, many=True).data
 
     def get_amountAlloted(self, obj):
         return Investors.objects.filter(investment=obj.id, is_approved=True).aggregate(Sum('amount'))
@@ -210,12 +252,6 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
             amount = totalamount.get('amount__sum')
         totalBalance = project_raise - amount
         return totalBalance
-
-    '''
-    def get_image_url(self, obj):
-        request = self.context.get("request")
-        return request.build_absolute_uri(obj.image_url)
-        '''
 
     def get_room(self, instance):
         return instance.geo_info.room
