@@ -10,7 +10,7 @@ from .permissions import IsOwner, IsInvestmentOwner
 from authentication.utils import Util, serial_investor, username_generator, referral_generator, investor_slug
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import IssuerInvestorSerializer, IssuerOnlySerializer, UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
+from .serializers import InvestmentDetailsSerializer, IssuerInvestorSerializer, IssuerOnlySerializer, UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
 from investor.serializers import RiskSerializer, CreateInvestorSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
@@ -234,7 +234,7 @@ class RoomInvestmentListAPIView(ListAPIView):
 
 
 class InvestmentDetailAPIView(RetrieveAPIView):
-    serializer_class = InvestmentRoomSerializer
+    serializer_class = InvestmentDetailsSerializer
     gallery_serializer = GallerySerializer
     queryset = Investment.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -994,7 +994,7 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
             user = User.objects.get(email=userData['email'])
             email_body = 'Hi '+user.firstname + \
                 ' Your email address is: ' + request.data.get('email') + \
-                ' Your password to yieldroom is: \n' + \
+                ' Your default password to yieldroom is: \n' + \
                 request.data.get('firstname') + \
                 request.data.get('lastname')+userd + '\n' +\
                 'https://yield-room.netlify.com'
