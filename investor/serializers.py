@@ -361,6 +361,7 @@ class InvestorExportSerializer(serializers.ModelSerializer):
         queryset = Comment.objects.filter(investor=obj.id).count()
         return queryset
 
+    # Get portfolio value
     def get_portfolio_value(self, obj):
         rob = Investors.objects.filter(
             id=obj.id).values_list('investment', flat=True)[0]
