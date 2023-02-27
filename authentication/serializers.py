@@ -246,7 +246,7 @@ class UserInterestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'firstname', 'lastname', 'address',
+        fields = ['id', 'firstname', 'lastname', 'email', 'address',
                   'phone', 'referral_code', 'is_verified', 'is_approved', 'created_at',
                   'details']
 
