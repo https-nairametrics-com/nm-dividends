@@ -54,11 +54,15 @@ class MainRoomSerializer(serializers.ModelSerializer):
 
 
 class SponsorSerializer(serializers.ModelSerializer):
+    identity_url = serializers.SerializerMethodField("get_identity_url")
 
     class Meta:
         model = Sponsor
         fields = ['id', 'nin', 'name', 'dob',
-                  'address', 'identity', 'phone', 'is_verified', ]
+                  'address', 'identity', 'phone', 'is_verified', 'identity_url', ]
+
+    def get_identity_url(self, obj):
+        return obj.gallery.url
 
 
 class UpdateSponsorSerializer(serializers.ModelSerializer):
