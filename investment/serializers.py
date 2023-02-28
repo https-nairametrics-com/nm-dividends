@@ -62,7 +62,7 @@ class SponsorSerializer(serializers.ModelSerializer):
                   'address', 'identity', 'phone', 'is_verified', 'identity_url', ]
 
     def get_identity_url(self, obj):
-        return obj.gallery.url
+        return obj.identity.url
 
 
 class UpdateSponsorSerializer(serializers.ModelSerializer):
@@ -434,6 +434,7 @@ class ListSponsorInvestmentSerializer(serializers.ModelSerializer):
 
 class SponsorListSerializer(serializers.ModelSerializer):
     investmentsCount = serializers.SerializerMethodField()
+    identity_url = serializers.SerializerMethodField("get_identity_url")
 
     class Meta:
         model = Sponsor
@@ -443,6 +444,9 @@ class SponsorListSerializer(serializers.ModelSerializer):
     def get_investmentsCount(self, obj):
         return SponsorInvestment.objects.filter(sponsor=obj.id).count()
         # return GallerySerializer(logger_queryset, many=True).data
+
+    def get_identity_url(self, obj):
+        return obj.identity.url
 
 
 class IssuerOnlySerializer(serializers.ModelSerializer):
