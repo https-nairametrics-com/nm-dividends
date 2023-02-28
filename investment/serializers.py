@@ -206,6 +206,27 @@ class InvestmentRoomSerializer(serializers.ModelSerializer):
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at']
 
+    def get_amountAlloted(self, obj):
+        return Investors.objects.filter(investment=obj.id, is_approved=True).aggregate(Sum('amount'))
+
+    def get_balanceToBeAlloted(self, obj):
+        totalamount = Investors.objects.filter(
+            investment=obj.id, is_approved=True).aggregate(Sum('amount'))
+        if obj.project_raise:
+            project_raise = int(obj.project_raise)
+        else:
+            project_raise = 0
+        if totalamount.get('amount__sum') is None:
+            amount = 0
+        else:
+            amount = totalamount.get('amount__sum')
+        totalBalance = project_raise - amount
+        return totalBalance
+
+    def get_image(self, obj):
+        logger_queryset = Gallery.objects.filter(investment=obj.id)
+        return GallerySerializer(logger_queryset, many=True).data
+
 
 class InvestmentDetailsSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
