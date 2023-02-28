@@ -439,7 +439,7 @@ class SponsorListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sponsor
         fields = ['id', 'nin', 'name', 'dob',
-                  'address', 'identity', 'phone', 'is_verified', 'investmentsCount', ]
+                  'address', 'identity', 'phone', 'is_verified', 'investmentsCount', 'identity_url', ]
 
     def get_investmentsCount(self, obj):
         return SponsorInvestment.objects.filter(sponsor=obj.id).count()
