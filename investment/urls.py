@@ -7,6 +7,8 @@ urlpatterns = [
     path('image/<int:id>', views.GalleryUDAPIView.as_view(), name="update-image"),
     path('investment/', views.InvestmentListAPIView.as_view(),
          name="investment-list"),
+    path('investment/issuer/', views.IssuerInvestmentListAPIView.as_view(),
+         name="issuer-investment-list"),
     path('investor/returns/', views.TotalReturnsAPIView.as_view(),
          name="investment-returns"),
     path('investor/subscriptions/', views.InvestmentsByInvestorAPIView.as_view(),
