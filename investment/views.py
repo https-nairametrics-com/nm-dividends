@@ -223,6 +223,16 @@ class InvestmentListAPIView(ListAPIView):
         return self.queryset.all()
 
 
+class IssuerInvestmentListAPIView(ListAPIView):
+    serializer_class = InvestmentSerializer
+    queryset = Investment.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated,)
+    # parser_classes = [MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        return self.queryset.filter(owner=self.request.user)
+
+
 class RoomInvestmentListAPIView(ListAPIView):
     serializer_class = InvestmentSerializer
     queryset = Investment.objects.all().order_by('-created_at')
