@@ -73,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255, null=True, unique=True, db_index=True)
     is_verified = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
-    is_investor = models.BooleanField(default=False)
+    is_issuer = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_vendor = models.BooleanField(default=False)
