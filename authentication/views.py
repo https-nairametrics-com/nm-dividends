@@ -12,7 +12,7 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
 from django.core.mail import send_mail as sender
 from rest_framework import filters, generics, status, views, permissions
-from .serializers import ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
+from .serializers import ProfileIssuerSerializer, ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
@@ -28,6 +28,7 @@ import csv
 import io
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.parsers import MultiPartParser, FormParser
 from drf_yasg import openapi
 from .renderers import UserRenderer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -234,7 +235,9 @@ class RegisterIssuerView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
     ini_serializer = RegistrationInitialInterestSerializer
+    profile_serializer = ProfileIssuerSerializer
     renderer_classes = (UserRenderer,)
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
         user = {
@@ -252,12 +255,12 @@ class RegisterIssuerView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         user_data = serializer.data
-        inidata = {'owner': user_data['id'],
-                   'risk': request.data.get('risk'),
-                   'period': request.data.get('period'),
-                   'interest': request.data.get('interest'),
-                   'investmentsize': request.data.get('investmentsize'), }
-        ini_serial = self.ini_serializer(data=inidata)
+        inidata = {'user': user_data['id'],
+                   'nin': request.data.get('nin'),
+                   'dob': request.data.get('period'),
+                   'identity': request.data.get('interest'),
+                   'is_investor': True, }
+        ini_serial = self.profile_serializer(data=inidata)
         ini_serial.is_valid(raise_exception=True)
         ini_serial.save()
         user = User.objects.get(email=user_data['email'])
@@ -271,7 +274,7 @@ class RegisterIssuerView(generics.GenericAPIView):
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
         sender(data['email_subject'], data['email_body'],
-               'ssn@nairametrics.com', [data['to_email']])
+               'newsletter@nairametrics.com', [data['to_email']])
 
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
