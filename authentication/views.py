@@ -230,6 +230,53 @@ class RegisterView(generics.GenericAPIView):
         return Response(user_data, status=status.HTTP_201_CREATED)
 
 
+class RegisterIssuerView(generics.GenericAPIView):
+
+    serializer_class = RegisterSerializer
+    ini_serializer = RegistrationInitialInterestSerializer
+    renderer_classes = (UserRenderer,)
+
+    def post(self, request):
+        user = {
+            'firstname': request.data.get('firstname'),
+            'lastname': request.data.get('lastname'),
+            'username': str(username_generator()),
+            'address': request.data.get('address'),
+            'linkedln': request.data.get('linkedln'),
+            'referral_code': str(referral_generator()),
+            'phone': request.data.get('phone'),
+            'password': request.data.get('password'),
+            'email': request.data.get('email'), }
+        #user = request.data
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user_data = serializer.data
+        inidata = {'owner': user_data['id'],
+                   'risk': request.data.get('risk'),
+                   'period': request.data.get('period'),
+                   'interest': request.data.get('interest'),
+                   'investmentsize': request.data.get('investmentsize'), }
+        ini_serial = self.ini_serializer(data=inidata)
+        ini_serial.is_valid(raise_exception=True)
+        ini_serial.save()
+        user = User.objects.get(email=user_data['email'])
+        token = RefreshToken.for_user(user).access_token
+        current_site = get_current_site(request).domain
+        relativeLink = reverse('email-verify')
+        absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+        print(absurl)
+        email_body = 'Hi '+user.firstname + \
+            ' Use the link below to verify your email \n' + absurl
+        data = {'email_body': email_body, 'to_email': user.email,
+                'email_subject': 'Verify your email'}
+        sender(data['email_subject'], data['email_body'],
+               'ssn@nairametrics.com', [data['to_email']])
+
+        Util.send_email(data)
+        return Response(user_data, status=status.HTTP_201_CREATED)
+
+
 class RegisterReferralView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
