@@ -25,6 +25,8 @@ from . import serializers
 from django.core.mail import send_mail as sender
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 # Create your views here.
 
 
@@ -997,7 +999,8 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
             serializer = self.serializer_class(data=newUserData)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            csv_file = request.FILES["csv_upload"]
+            investment_data = serializer.data
+            csv_file = request.data.get.FILES["csv_upload"]
 
             if not csv_file.name.endswith('.csv'):
                 messages.warning(request, 'The wrong file type was uploaded')
