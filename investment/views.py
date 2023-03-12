@@ -962,6 +962,25 @@ class IssuerAPIView(generics.GenericAPIView):
             in_serializer.is_valid(raise_exception=True)
             in_serializer.save()
 
+        # Upload new investors
+        if request.data.get('investors'):
+            csv_file = request.data.get('investors')
+            if not csv_file.name.endswith('.csv'):
+                messages.warning(request, 'The wrong file type was uploaded')
+                return Response({"error": "The wrong file was uploaded"},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # return HttpResponseRedirect(request.path_info)
+
+            file_data = csv_file.read().decode("utf-8")
+            csv_data = file_data.split("\n")
+
+            for x in csv_data:
+                fields = x.split(",")
+                created = customer.objects.update_or_create(
+                    name=fields[0],
+                    balance=fields[1],
+                )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -1000,21 +1019,7 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             investment_data = serializer.data
-            csv_file = request.data.get.FILES["csv_upload"]
-
-            if not csv_file.name.endswith('.csv'):
-                messages.warning(request, 'The wrong file type was uploaded')
-                return HttpResponseRedirect(request.path_info)
-
-            file_data = csv_file.read().decode("utf-8")
-            csv_data = file_data.split("\n")
-
-            for x in csv_data:
-                fields = x.split(",")
-                created = customer.objects.update_or_create(
-                    name=fields[0],
-                    balance=fields[1],
-                )
+            #csv_file = request.data.get.FILES["csv_upload"]
 
             userData = serializer.data
             investorId = userData['id']
