@@ -985,6 +985,7 @@ class IssuerAPIView(generics.GenericAPIView):
 
             file_data = csv_file.read().decode("utf-8")
             csv_data = file_data.split("\n")
+            investmentID = investment_data['id']
 
             for _, fields in reader.iterrows():
                 #fields = x.split(",")
@@ -1043,7 +1044,7 @@ class IssuerAPIView(generics.GenericAPIView):
 
                 else:
                     checkInvestorInvestmentExist = checkInvestorExist(
-                        fields["nin"], investment_data['id'])
+                        fields["nin"], investmentID)
                     if checkInvestorInvestmentExist:
                         return Response({"error": "This investor is already subscribed to this portfolio"},
                                         status=status.HTTP_400_BAD_REQUEST)
@@ -1051,7 +1052,7 @@ class IssuerAPIView(generics.GenericAPIView):
                         investorId = getInvestorId(fields["nin"])
 
                 investorData = {
-                    'investment': investment_data['id'],
+                    'investment': investmentID,
                     'investor': investorId,
                     'house_number': fields["house_number"],
                     'volume': fields["volume"],
