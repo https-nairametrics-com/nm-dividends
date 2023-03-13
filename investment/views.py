@@ -16,6 +16,7 @@ from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
 from django.http import JsonResponse, Http404, HttpResponse
 import json
+import pandas as pd
 from itertools import chain
 from .helpers import modify_input_for_multiple_files
 from decimal import *
@@ -968,6 +969,179 @@ class IssuerAPIView(generics.GenericAPIView):
 
         # Upload new investors
         if request.data.get('investors'):
+            # file_serializer = self.file_serializer_class(
+            #    data=request.data.get('investors'))
+            # file_serializer.is_valid(raise_exception=True)
+            #file = file_serializer.validated_data['file']
+
+            csv_file = request.data.get('investors')
+            if not csv_file.name.endswith('.csv'):
+                messages.warning(request, 'The wrong file type was uploaded')
+                return Response({"error": "The wrong file was uploaded"},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # return HttpResponseRedirect(request.path_info)
+
+            reader = pd.read_csv(request.data.get('investors'))
+
+            file_data = csv_file.read().decode("utf-8")
+            csv_data = file_data.split("\n")
+
+            for _, fields in reader.iterrows():
+                #fields = x.split(",")
+
+                checkUser = checkNin(fields[6])
+                # print(checkUser)
+                if not checkUser:
+                    # Check if investor is already subscribed to this investment
+                    userd = str(username_generator())
+                    newUserData = {
+                        'firstname': fields["firstname"],
+                        'lastname': fields["lastname"],
+                        'username': userd,
+                        'address': fields["address"],
+                        'email': fields["email"],
+                        'password': fields["firstname"] + fields["lastname"]+userd,
+                        'referral_code': str(referral_generator()),
+                        'phone': fields["phone"],
+                    }
+                    register_serializer = self.register_serializer_class(
+                        data=newUserData)
+                    register_serializer.is_valid(raise_exception=True)
+                    register_serializer.save()
+                    investment_data = register_serializer.data
+                    #csv_file = request.data.get.FILES["csv_upload"]
+
+                    userData = register_serializer.data
+                    investorId = userData['id']
+
+                    user = User.objects.get(email=fields["email"])
+                    email_body = 'Hi '+user.firstname + \
+                        ' Your email address is: ' + fields["email"] + \
+                        ' Your default password to yieldroom is: \n' + \
+                        fields["firstname"] + \
+                        fields["lastname"]+userd + '\n' +\
+                        'https://yield-room.netlify.com'
+                    data = {'email_body': email_body, 'to_email': user.email,
+                            'email_subject': 'Welcome to yieldroom '}
+                    sender(data['email_subject'], data['email_body'],
+                           'ssn@nairametrics.com', [data['to_email']])
+
+                    Util.send_email(data)
+                    print("dob")
+                    print("dob")
+
+                    newUserProfile = {
+                        'user': investorId,
+                        'next_of_kin': fields["next_of_kin"],
+                        'nin': fields["nin"],
+                        'dob': fields["dob"],
+                    }
+                    serializer_p = self.profile_serializer_class(
+                        data=newUserProfile)
+                    serializer_p.is_valid(raise_exception=True)
+                    serializer_p.save()
+
+                else:
+                    checkInvestorInvestmentExist = checkInvestorExist(
+                        fields["nin"], investment_data['id'])
+                    if checkInvestorInvestmentExist:
+                        return Response({"error": "This investor is already subscribed to this portfolio"},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        investorId = getInvestorId(fields["nin"])
+
+                investorData = {
+                    'investment': investment_data['id'],
+                    'investor': investorId,
+                    'house_number': fields["house_number"],
+                    'volume': fields["volume"],
+                    'slug': str(investor_slug()),
+                    'serialkey': str(serial_investor()),
+                    'investment_type': 'off plan'
+
+                }
+                serializer_i = self.investor_serializer_class(
+                    data=investorData)
+                serializer_i.is_valid(raise_exception=True)
+                serializer_i.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class IssuerAPIOldView(generics.GenericAPIView):
+    serializer_class = IssuerOnlySerializer
+    file_serializer_class = FileUploadSerializer
+    gallery_serializer = GallerySerializer
+    register_serializer_class = RegisterSerializer
+    profile_serializer_class = ProfileSerializer
+    investor_serializer_class = IssuerInvestorSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        newInvestorData = {
+            'owner': self.request.user.id,
+            'name': request.data.get('name'),
+            'description': request.data.get('description'),
+            'location': request.data.get('location'),
+            'volume': request.data.get('volume'),
+            'video': request.data.get('video'),
+            'currency': 1,
+            'dealtype': 1,
+            'room': 1,
+            'period': 1,
+            'title_status': request.data.get('title_status'),
+            'construction_status': request.data.get('construction_status'),
+            'project_status': request.data.get('project_status'),
+            'risk': 1,
+            'features': request.data.get('features'),
+            'start_date': request.data.get('start_date'),
+            'end_date': request.data.get('end_date'),
+
+        }
+        serializer = self.serializer_class(data=newInvestorData)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        investment_data = serializer.data
+        imagedata = {'investment': investment_data['id'],
+                     'gallery': request.data.get('gallery'),
+                     'is_featured': True}
+        in_serializer = self.gallery_serializer(data=imagedata)
+        in_serializer.is_valid(raise_exception=True)
+        in_serializer.save()
+        #images = dict((request.data).lists())['image']
+        if request.data.get('galleries_1'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_1'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_2'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_2'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_3'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_3'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+        if request.data.get('galleries_4'):
+            imagedata = {'investment': investment_data['id'],
+                         'gallery': request.data.get('galleries_4'),
+                         'is_featured': False}
+            in_serializer = self.gallery_serializer(data=imagedata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+
+        # Upload new investors
+        if request.data.get('investors'):
+
             csv_file = request.data.get('investors')
             if not csv_file.name.endswith('.csv'):
                 messages.warning(request, 'The wrong file type was uploaded')
