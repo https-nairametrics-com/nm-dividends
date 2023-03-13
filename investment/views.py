@@ -10,7 +10,7 @@ from .permissions import IsOwner, IsInvestmentOwner
 from authentication.utils import Util, serial_investor, username_generator, referral_generator, investor_slug
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import InvestmentDetailsSerializer, IssuerInvestorSerializer, IssuerOnlySerializer, UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
+from .serializers import FileUploadSerializer, InvestmentDetailsSerializer, IssuerInvestorSerializer, IssuerOnlySerializer, UpdateSponsorSerializer, ListSponsorInvestmentSerializer, SponsorListSerializer, ApproveSponsorSerializer, SponsorSerializer, SponsorInvestmentSerializer, CurrencySerializer, DealTypeSerializer, MainRoomSerializer, CreateRoomSerializer, GalleryUpdateSerializer, CloseInvestmentSerializer, GalleryUDSerializer, ApproveInvestmentSerializer, TotalInvestmentSerializer, InvestmentRoomSerializer, InvestmentOnlySerializer, RoomSerializer, GallerySerializer, InvestmentSerializer
 from investor.serializers import RiskSerializer, CreateInvestorSerializer
 from investor.models import Risk, Period, InvestmentSize, Interest
 from django.db.models import Sum, Aggregate, Avg, Count, F
@@ -897,6 +897,7 @@ class SponsorInvestmentsListAPIView(ListAPIView):
 
 class IssuerAPIView(generics.GenericAPIView):
     serializer_class = IssuerOnlySerializer
+    file_serializer_class = FileUploadSerializer
     gallery_serializer = GallerySerializer
     register_serializer_class = RegisterSerializer
     profile_serializer_class = ProfileSerializer
@@ -1005,12 +1006,12 @@ class IssuerAPIView(generics.GenericAPIView):
                     userData = register_serializer.data
                     investorId = userData['id']
 
-                    user = User.objects.get(email=userData['email'])
+                    user = User.objects.get(email=fields[2])
                     email_body = 'Hi '+user.firstname + \
-                        ' Your email address is: ' + userData('email') + \
+                        ' Your email address is: ' + fields[2] + \
                         ' Your default password to yieldroom is: \n' + \
-                        userData('firstname') + \
-                        userData('lastname')+userd + '\n' +\
+                        fields[0] + \
+                        fields[1]+userd + '\n' +\
                         'https://yield-room.netlify.com'
                     data = {'email_body': email_body, 'to_email': user.email,
                             'email_subject': 'Welcome to yieldroom '}
@@ -1018,6 +1019,18 @@ class IssuerAPIView(generics.GenericAPIView):
                            'ssn@nairametrics.com', [data['to_email']])
 
                     Util.send_email(data)
+                    print("dob")
+                    print(fields[0])
+                    print(fields[1])
+                    print(fields[2])
+                    print(fields[3])
+                    print(fields[4])
+                    print(fields[5])
+                    print(fields[6])
+                    print(fields[7])
+                    print(fields[8])
+                    print("dob")
+
                     newUserProfile = {
                         'user': investorId,
                         'next_of_kin': fields[5],

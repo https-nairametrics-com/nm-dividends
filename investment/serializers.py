@@ -462,3 +462,7 @@ class IssuerInvestorSerializer(serializers.ModelSerializer):
         model = Investors
         fields = ['id', 'investor', 'investment_type', 'investment',
                   'serialkey', 'volume', 'house_number', 'slug']
+
+
+class FileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
