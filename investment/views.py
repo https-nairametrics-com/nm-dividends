@@ -898,6 +898,8 @@ class SponsorInvestmentsListAPIView(ListAPIView):
 class IssuerAPIView(generics.GenericAPIView):
     serializer_class = IssuerOnlySerializer
     gallery_serializer = GallerySerializer
+    register_serializer_class = RegisterSerializer
+    profile_serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
     parser_classes = [MultiPartParser, FormParser]
 
@@ -976,6 +978,81 @@ class IssuerAPIView(generics.GenericAPIView):
 
             for x in csv_data:
                 fields = x.split(",")
+
+                checkUser = checkNin(fields[6])
+                # print(checkUser)
+                if not checkUser:
+                    # Check if investor is already subscribed to this investment
+                    userd = str(username_generator())
+                    newUserData = {
+                        'firstname': fields[0],
+                        'lastname': fields[1],
+                        'username': userd,
+                        'address': fields[3],
+                        'email': fields[2],
+                        'password': fields[0] + fields[1]+userd,
+                        'referral_code': str(referral_generator()),
+                        'phone': fields[4],
+                    }
+                    register_serializer = self.register_serializer_class(
+                        data=newUserData)
+                    register_serializer.is_valid(raise_exception=True)
+                    register_serializer.save()
+                    investment_data = register_serializer.data
+                    #csv_file = request.data.get.FILES["csv_upload"]
+
+                    userData = register_serializer.data
+                    investorId = userData['id']
+
+                    user = User.objects.get(email=userData['email'])
+                    email_body = 'Hi '+user.firstname + \
+                        ' Your email address is: ' + userData('email') + \
+                        ' Your default password to yieldroom is: \n' + \
+                        userData('firstname') + \
+                        userData('lastname')+userd + '\n' +\
+                        'https://yield-room.netlify.com'
+                    data = {'email_body': email_body, 'to_email': user.email,
+                            'email_subject': 'Welcome to yieldroom '}
+                    sender(data['email_subject'], data['email_body'],
+                           'ssn@nairametrics.com', [data['to_email']])
+
+                    Util.send_email(data)
+                    newUserProfile = {
+                        'identity': request.data.get('identity'),
+                        'user': investorId,
+                        'next_of_kin': request.data.get('next_of_kin'),
+                        'nin': request.data.get('nin'),
+                        'dob': request.data.get('dob'),
+                    }
+                    serializer_p = self.profile_serializer_class(
+                        data=newUserProfile)
+                    serializer_p.is_valid(raise_exception=True)
+                    serializer_p.save()
+
+                else:
+                    checkInvestorInvestmentExist = checkInvestorExist(
+                        request.data.get('nin'), id)
+                    if checkInvestorInvestmentExist:
+                        return Response({"error": "This investor is already subscribed to this portfolio"},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        investorId = getInvestorId(request.data.get('nin'))
+
+                investorData = {
+                    'investment': id,
+                    'investor': investorId,
+                    'house_number': request.data.get('house_number'),
+                    'volume': request.data.get('volume'),
+                    'slug': str(investor_slug()),
+                    'serialkey': str(serial_investor()),
+                    'investment_type': 'off plan'
+
+                }
+                serializer_i = self.investor_serializer_class(
+                    data=investorData)
+                serializer_i.is_valid(raise_exception=True)
+                serializer_i.save()
+
                 created = customer.objects.update_or_create(
                     name=fields[0],
                     balance=fields[1],
@@ -1001,7 +1078,7 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
     def post(self, request, id, *args, **kwargs):
         checkInvestment = self.get_object(id)
         checkUser = checkNin(request.data.get('nin'))
-        print(checkUser)
+        # print(checkUser)
         if not checkUser:
             # Check if investor is already subscribed to this investment
             userd = str(username_generator())
