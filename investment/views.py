@@ -900,6 +900,7 @@ class IssuerAPIView(generics.GenericAPIView):
     gallery_serializer = GallerySerializer
     register_serializer_class = RegisterSerializer
     profile_serializer_class = ProfileSerializer
+    investor_serializer_class = IssuerInvestorSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
     parser_classes = [MultiPartParser, FormParser]
 
@@ -1018,11 +1019,10 @@ class IssuerAPIView(generics.GenericAPIView):
 
                     Util.send_email(data)
                     newUserProfile = {
-                        'identity': request.data.get('identity'),
                         'user': investorId,
-                        'next_of_kin': request.data.get('next_of_kin'),
-                        'nin': request.data.get('nin'),
-                        'dob': request.data.get('dob'),
+                        'next_of_kin': fields[5],
+                        'nin': fields[6],
+                        'dob': fields[7],
                     }
                     serializer_p = self.profile_serializer_class(
                         data=newUserProfile)
@@ -1031,18 +1031,18 @@ class IssuerAPIView(generics.GenericAPIView):
 
                 else:
                     checkInvestorInvestmentExist = checkInvestorExist(
-                        request.data.get('nin'), id)
+                        fields[6], id)
                     if checkInvestorInvestmentExist:
                         return Response({"error": "This investor is already subscribed to this portfolio"},
                                         status=status.HTTP_400_BAD_REQUEST)
                     else:
-                        investorId = getInvestorId(request.data.get('nin'))
+                        investorId = getInvestorId(fields[6])
 
                 investorData = {
                     'investment': id,
                     'investor': investorId,
-                    'house_number': request.data.get('house_number'),
-                    'volume': request.data.get('volume'),
+                    'house_number': fields[8],
+                    'volume': fields[9],
                     'slug': str(investor_slug()),
                     'serialkey': str(serial_investor()),
                     'investment_type': 'off plan'
@@ -1052,11 +1052,6 @@ class IssuerAPIView(generics.GenericAPIView):
                     data=investorData)
                 serializer_i.is_valid(raise_exception=True)
                 serializer_i.save()
-
-                created = customer.objects.update_or_create(
-                    name=fields[0],
-                    balance=fields[1],
-                )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
