@@ -62,6 +62,16 @@ def checkInvestorExist(nin, id):
     return query2
 
 
+def checkInvestorInvestment(invt, id):
+    query = Investors.objects.filter(investment=invt, id=id)
+    return query
+
+
+def checkInvestmentOwner(user, id):
+    query = Investment.objects.filter(owner=user, id=id)
+    return query
+
+
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         # 👇️ if passed in object is instance of Decimal
@@ -1332,3 +1342,55 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
         serializer_i.save()
 
         return Response(serializer_i.data, status=status.HTTP_201_CREATED)
+
+
+class AdminIssuerRemoveInvestorAPIView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id, *args, **kwargs):
+        checkInvestment = self.get_object(id)
+        checkInvestorExist = checkInvestorInvestment(
+            id, request.data.get('id'))
+        if checkInvestorExist:
+            investor = Investors.objects.get(id=id)
+            investor.delete()
+            return Response({"success": "Investor has been removed"},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Investor is not a subscriber to this portfolio"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class IssuerRemoveInvestorAPIView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id, *args, **kwargs):
+        checkInvestment = self.get_object(id)
+        checkOwnerInvestment = checkInvestmentOwner(request.user.id, id)
+        if not checkOwnerInvestment:
+            return Response({"error": "Bad request"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        checkInvestorExist = checkInvestorInvestment(
+            id, request.data.get('id'))
+        if checkInvestorExist:
+            investor = Investors.objects.get(id=id)
+            investor.delete()
+            return Response({"success": "Investor has been removed"},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Investor is not a subscriber to this portfolio"},
+                            status=status.HTTP_400_BAD_REQUEST)
