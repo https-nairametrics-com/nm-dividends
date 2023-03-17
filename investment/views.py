@@ -1394,3 +1394,33 @@ class IssuerRemoveInvestorAPIView(generics.GenericAPIView):
         else:
             return Response({"error": "Investor is not a subscriber to this portfolio"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class IssuerSummaryAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get(self, format=None):
+
+        countInvestors = Investors.objects.filter(
+            investment__owner=self.request.user.id).count()
+        if countInvestors:
+            totalInvestors = countInvestors
+        else:
+            totalInvestors = 0
+
+        countInvestments = Investment.objects.filter(
+            owner=self.request.user.id).count()
+        if countInvestments:
+            totalInvestments = countInvestments
+        else:
+            totalInvestments = 0
+
+        countSponsors = SponsorInvestment.objects.filter(
+            investment__owner=self.request.user.id).count()
+        if countSponsors:
+            totalSposnors = countSponsors
+        else:
+            totalSposnors = 0
+
+        return Response({"totalInvestors": totalInvestors, "totalInvestments": totalInvestments, "totalSponsors": totalSposnors}, status=status.HTTP_200_OK)
