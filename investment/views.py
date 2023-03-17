@@ -789,7 +789,7 @@ class AdminExportInvestmentAPIView(generics.GenericAPIView):
 class IssuerCreateSponsorAPIView(generics.GenericAPIView):
     serializer_class = SponsorSerializer
     serializer_s_class = SponsorInvestmentSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated)
     parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self, pk):
