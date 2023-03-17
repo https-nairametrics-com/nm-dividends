@@ -913,7 +913,7 @@ class IssuerAPIView(generics.GenericAPIView):
     register_serializer_class = RegisterSerializer
     profile_serializer_class = ProfileSerializer
     investor_serializer_class = IssuerInvestorSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated,)
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, *args, **kwargs):
@@ -1259,7 +1259,7 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
     profile_serializer_class = ProfileSerializer
     investor_serializer_class = IssuerInvestorSerializer
     register_serializer_class = SponsorInvestmentSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated,)
     parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self, pk):
