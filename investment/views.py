@@ -1398,7 +1398,7 @@ class IssuerRemoveInvestorAPIView(generics.GenericAPIView):
 
 class IssuerSummaryAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, format=None):
 
@@ -1424,16 +1424,16 @@ class IssuerSummaryAPIView(generics.GenericAPIView):
             totalSposnors = 0
 
         sumVolume = Investment.objects.filter(
-            owner=self.request.user.id).aggregate(amount=Sum('amount'))
+            owner=self.request.user.id).aggregate(volume=Sum('volume'))
         if sumVolume:
-            cre = int(sumVolume.get('amount__sum'))
+            cre = sumVolume
         else:
             cre = 0
 
         sumInvestorVolume = Investors.objects.filter(
-            investment__owner=self.request.user.id).aggregate(amount=Sum('amount'))
+            investment__owner=self.request.user.id).aggregate(volume=Sum('volume'))
         if sumInvestorVolume:
-            investorcre = int(sumVolume.get('amount__sum'))
+            investorcre = sumInvestorVolume
         else:
             investorcre = 0
 
