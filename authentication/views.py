@@ -257,8 +257,8 @@ class RegisterIssuerView(generics.GenericAPIView):
         user_data = serializer.data
         inidata = {'user': user_data['id'],
                    'nin': request.data.get('nin'),
-                   'dob': request.data.get('period'),
-                   'identity': request.data.get('interest'),
+                   'dob': request.data.get('dob'),
+                   'identity': request.data.get('identity'),
                    'is_investor': True, }
         ini_serial = self.profile_serializer(data=inidata)
         ini_serial.is_valid(raise_exception=True)
