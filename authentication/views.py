@@ -196,7 +196,7 @@ class RegisterView(generics.GenericAPIView):
             'lastname': request.data.get('lastname'),
             'username': str(username_generator()),
             'address': request.data.get('address'),
-            'linkedln': request.data.get('linkedln'),
+            'linkedin': request.data.get('linkedln'),
             'referral_code': str(referral_generator()),
             'phone': request.data.get('phone'),
             'password': request.data.get('password'),
@@ -232,7 +232,6 @@ class RegisterView(generics.GenericAPIView):
 
 
 class RegisterIssuerView(generics.GenericAPIView):
-
     serializer_class = RegisterSerializer
     ini_serializer = RegistrationInitialInterestSerializer
     profile_serializer = ProfileIssuerSerializer
@@ -245,7 +244,7 @@ class RegisterIssuerView(generics.GenericAPIView):
             'lastname': request.data.get('lastname'),
             'username': str(username_generator()),
             'address': request.data.get('address'),
-            'linkedln': request.data.get('linkedln'),
+            'linkedin': request.data.get('linkedln'),
             'referral_code': str(referral_generator()),
             'phone': request.data.get('phone'),
             'password': request.data.get('password'),
@@ -306,7 +305,7 @@ class RegisterReferralView(generics.GenericAPIView):
                         'lastname': request.data.get('lastname'),
                         'username': str(username_generator()),
                         'address': request.data.get('address'),
-                        'linkedln': request.data.get('linkedln'),
+                        'linkedin': request.data.get('linkedln'),
                         'referral_code': str(referral_generator()),
                         'phone': request.data.get('phone'),
                         'password': request.data.get('password'),
