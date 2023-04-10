@@ -1075,8 +1075,9 @@ class IssuerAPIView(generics.GenericAPIView):
                     data=investorData)
                 serializer_i.is_valid(raise_exception=True)
                 serializer_i.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class IssuerAPIOldView(generics.GenericAPIView):
