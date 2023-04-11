@@ -789,7 +789,7 @@ class AdminExportInvestmentAPIView(generics.GenericAPIView):
 class IssuerCreateSponsorAPIView(generics.GenericAPIView):
     serializer_class = SponsorSerializer
     serializer_s_class = SponsorInvestmentSerializer
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
     parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self, pk):
@@ -797,6 +797,9 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
             return Investment.objects.get(id=pk)
         except Investment.DoesNotExist:
             raise Http404
+
+    def get_sponsor(self, nin):
+        return Sponsor.objects.get(nin=nin)
 
     def post(self, request, id, *args, **kwargs):
         checkInvestment = self.get_object(id)
@@ -807,9 +810,8 @@ class IssuerCreateSponsorAPIView(generics.GenericAPIView):
         getSponsor = getSponsorId(request.data.get('nin'))
         # print(getSponsor)
         if getSponsor:
-            query = Sponsor.objects.filter(
-                nin=getSponsorId(request.data.get('nin'))).values_list('id', flat=True)[0]
-            sponsorId = int(query)
+            query = self.get_sponsor(request.data.get('nin'))
+            sponsorId = int(query.id)
 
         else:
             newSponsorData = {
