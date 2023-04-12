@@ -91,6 +91,6 @@ urlpatterns = [
          name="issuer-investor"),
     path('admin/remove/investor/<int:id>', views.AdminIssuerRemoveInvestorAPIView.as_view(),
          name="admin-remove-investor"),
-    path('remove/investor/<int:id>', views.AdminIssuerRemoveInvestorAPIView.as_view(),
+    path('remove/investor/<int:id>', views.IssuerRemoveInvestorAPIView.as_view(),
          name="remove-investor"),
 ]
