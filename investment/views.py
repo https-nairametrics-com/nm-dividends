@@ -1348,7 +1348,7 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
 
 
 class AdminIssuerRemoveInvestorAPIView(generics.GenericAPIView):
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated, IsAdminUser,)
     parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self, pk):
@@ -1370,7 +1370,7 @@ class AdminIssuerRemoveInvestorAPIView(generics.GenericAPIView):
 
 
 class IssuerRemoveInvestorAPIView(generics.GenericAPIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
     parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self, pk):
@@ -1382,7 +1382,7 @@ class IssuerRemoveInvestorAPIView(generics.GenericAPIView):
     def post(self, request, id, *args, **kwargs):
         checkInvestor = self.get_object(id)
         checkOwnerInvestment = checkInvestmentOwner(
-            request.user.id, checkInvestor.investment)
+            request.user.id, checkInvestor.investment.id)
         if checkOwnerInvestment:
             investor = Investors.objects.get(id=id)
             investor.delete()
