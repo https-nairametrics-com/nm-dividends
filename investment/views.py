@@ -1353,15 +1353,13 @@ class AdminIssuerRemoveInvestorAPIView(generics.GenericAPIView):
 
     def get_object(self, pk):
         try:
-            return Investment.objects.get(id=pk)
-        except Investment.DoesNotExist:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
             raise Http404
 
     def post(self, request, id, *args, **kwargs):
-        checkInvestment = self.get_object(id)
-        checkInvestorExist = checkInvestorInvestment(
-            id, request.data.get('id'))
-        if checkInvestorExist:
+        checkInvestor = self.get_object(id)
+        if checkInvestor:
             investor = Investors.objects.get(id=id)
             investor.delete()
             return Response({"success": "Investor has been removed"},
@@ -1377,25 +1375,21 @@ class IssuerRemoveInvestorAPIView(generics.GenericAPIView):
 
     def get_object(self, pk):
         try:
-            return Investment.objects.get(id=pk)
-        except Investment.DoesNotExist:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
             raise Http404
 
     def post(self, request, id, *args, **kwargs):
-        checkInvestment = self.get_object(id)
-        checkOwnerInvestment = checkInvestmentOwner(request.user.id, id)
-        if not checkOwnerInvestment:
-            return Response({"error": "Bad request"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        checkInvestorExist = checkInvestorInvestment(
-            id, request.data.get('id'))
-        if checkInvestorExist:
+        checkInvestor = self.get_object(id)
+        checkOwnerInvestment = checkInvestmentOwner(
+            request.user.id, checkInvestor.investment)
+        if checkOwnerInvestment:
             investor = Investors.objects.get(id=id)
             investor.delete()
             return Response({"success": "Investor has been removed"},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Investor is not a subscriber to this portfolio"},
+            return Response({"error": "Bad request"},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
