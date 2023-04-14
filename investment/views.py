@@ -1437,6 +1437,6 @@ class IssuerSummaryAPIView(generics.GenericAPIView):
             else:
                 investorcre = 0
         else:
-            investorcre = 0
+            investorcre = {"volume": 0}
 
         return Response({"totalInvestors": totalInvestors, "totalInvestments": totalInvestments, "totalSponsors": totalSposnors, "totalVolume": cre, "totalInvestorVolume": investorcre}, status=status.HTTP_200_OK)
