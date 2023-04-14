@@ -1428,9 +1428,14 @@ class IssuerSummaryAPIView(generics.GenericAPIView):
             cre = 0
 
         sumInvestorVolume = Investors.objects.filter(
-            investment__owner=self.request.user.id).aggregate(volume=Sum('volume'))
+            investment__owner=self.request.user.id)
         if sumInvestorVolume:
-            investorcre = sumInvestorVolume
+            sumInvestorVolume2 = Investors.objects.filter(
+                investment__owner=self.request.user.id).aggregate(volume=Sum('volume'))
+            if sumInvestorVolume2:
+                investorcre = sumInvestorVolume2
+            else:
+                investorcre = 0
         else:
             investorcre = 0
 
