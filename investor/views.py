@@ -453,6 +453,25 @@ class AdminInvestorListAPIView(ListAPIView):
         return self.queryset.all()
 
 
+class IssuerSingleInvestorListAPIView(ListAPIView):
+    serializer_class = InvestorSerializer
+    queryset = Investors.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def get_queryset(self):
+        checkInvestor = self.get_object(self.kwargs['id'])
+        if(self.request.user.id == checkInvestor.investment.owner.id):
+            return self.queryset.filter(investor=self.kwargs['id'])
+
+
 class AdminSingleInvestorListAPIView(ListAPIView):
     serializer_class = InvestorSerializer
     queryset = Investors.objects.all().order_by('-created_at')
@@ -753,7 +772,7 @@ class ExportInvestorsCount(generics.GenericAPIView):
 
 class AdminUserInvestorListAPIView(ListAPIView):
     serializer_class = UserInvestorSerializer
-    queryset = User.objects.filter(is_approved=True).order_by('-firstname')
+    queryset = User.objects.all().order_by('-firstname')
     permission_classes = (IsAuthenticated, IsAdminUser,)
     # parser_classes = [MultiPartParser, FormParser]
     filter_backends = [DjangoFilterBackend,
