@@ -11,7 +11,7 @@ from django.db.models import Sum, Aggregate, Avg
 from django.http import JsonResponse, Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from . import serializers
-from investment.models import Investors
+from investment.models import Investors, Investment
 from .utils import transaction_generator
 # Create your views here.
 
@@ -42,16 +42,63 @@ class CreateCommentAPIView(generics.GenericAPIView):
         return Response(commentdata, status=status.HTTP_201_CREATED)
 
 
+class CreateInvestmentCommentAPIView(generics.GenericAPIView):
+    serializer_class = serializers.CommentSerializer
+    queryset = Comment.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated,)
+    # parser_classes = [MultiPartParser, FormParser]
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, id, user):
+        try:
+            return Investment.objects.get(id=id, investor=user)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id):
+        snippet = self.get_object(id, request.user)
+        commentdata = {'investment': id,
+                       'comment': request.data.get('comment'),
+                       'is_closed': False,
+                       'slug': str(transaction_generator())}
+        in_serializer = self.serializer_class(data=commentdata)
+        in_serializer.is_valid(raise_exception=True)
+        in_serializer.save()
+        return Response(commentdata, status=status.HTTP_201_CREATED)
+
+
+class IssuerCreateCommentAPIView(generics.GenericAPIView):
+    serializer_class = serializers.AdminCommentSerializer
+    queryset = Comment.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, id):
+        try:
+            return Investment.objects.get(id=id)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id):
+        snippet = self.get_object(id)
+        if (request.user.id == snippet.owner):
+            commentdata = {'investment': id,
+                           'comment': request.data.get('comment'),
+                           'is_closed': request.data.get('is_closed'),
+                           'responded_by': request.user.id,
+                           'slug': str(transaction_generator())}
+            in_serializer = self.serializer_class(data=commentdata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+            return Response(commentdata, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
 class AdminCreateCommentAPIView(generics.GenericAPIView):
     serializer_class = serializers.AdminCommentSerializer
     queryset = Comment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated, IsAdminUser,)
-    # parser_classes = [MultiPartParser, FormParser]
-    # filter_backends = [DjangoFilterBackend,
-    #                   filters.SearchFilter, filters.OrderingFilter]
-
-    #filterset_fields = ['firstname', 'lastname', 'email']
-    #search_fields = ['firstname', 'lastname', 'email']
 
     def get_object(self, id):
         try:
