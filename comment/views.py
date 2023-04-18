@@ -52,9 +52,9 @@ class CreateInvestmentCommentAPIView(generics.GenericAPIView):
 
     def get_object(self, id, user):
         try:
-            return Investment.objects.get(id=id, investor=user)
-        except Investment.DoesNotExist:
-            raise Http404
+            return Investors.objects.get(investment=id, investor=user)
+        except Investors.DoesNotExist:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     def post(self, request, id):
         snippet = self.get_object(id, request.user)

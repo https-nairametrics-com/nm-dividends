@@ -470,6 +470,28 @@ class IssuerSingleInvestorListAPIView(ListAPIView):
         checkInvestor = self.get_object(self.kwargs['id'])
         if(self.request.user.id == checkInvestor.investment.owner.id):
             return self.queryset.filter(investor=self.kwargs['id'])
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class IssuerInvestorDetailsAPIView(RetrieveAPIView):
+    serializer_class = InvestorSerializer
+    queryset = Investors.objects.all().order_by('-created_at')
+    permission_classes = (IsAuthenticated, IsUserApproved,)
+    lookup_field = "id"
+
+    def get_object(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def get_queryset(self):
+        checkInvestor = self.get_object(self.kwargs['id'])
+        if(self.request.user.id == checkInvestor.investment.owner.id):
+            return self.queryset.filter(id=self.kwargs['id'])
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class AdminSingleInvestorListAPIView(ListAPIView):
