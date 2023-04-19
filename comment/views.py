@@ -61,7 +61,9 @@ class CreateInvestmentCommentAPIView(generics.GenericAPIView):
         commentdata = {'investment': id,
                        'comment': request.data.get('comment'),
                        'is_closed': False,
-                       'slug': str(transaction_generator())}
+                       'slug': str(transaction_generator()),
+                       'responded_by': request.user.id,
+                       }
         in_serializer = self.serializer_class(data=commentdata)
         in_serializer.is_valid(raise_exception=True)
         in_serializer.save()
