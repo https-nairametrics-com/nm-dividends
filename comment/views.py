@@ -50,24 +50,31 @@ class CreateInvestmentCommentAPIView(generics.GenericAPIView):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
 
-    def get_object(self, id, user):
+    def get_object(self, id):
         try:
-            return Investors.objects.get(investment=id, investor=user)
-        except Investors.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Investment.objects.get(id=id)
+        except Investment.DoesNotExist:
+            return Http404
+
+    def checkInvestor(self, id, user):
+        query = Investors.objects.filter(investment=id, investor=user)
+        return query
 
     def post(self, request, id):
-        snippet = self.get_object(id, request.user)
-        commentdata = {'investment': id,
-                       'comment': request.data.get('comment'),
-                       'is_closed': False,
-                       'slug': str(transaction_generator()),
-                       'responded_by': request.user.id,
-                       }
-        in_serializer = self.serializer_class(data=commentdata)
-        in_serializer.is_valid(raise_exception=True)
-        in_serializer.save()
-        return Response(commentdata, status=status.HTTP_201_CREATED)
+        snippet = self.get_object(id)
+        if(self.checkInvestor(id, request.user)):
+            commentdata = {'investment': id,
+                           'comment': request.data.get('comment'),
+                           'is_closed': False,
+                           'slug': str(transaction_generator()),
+                           'responded_by': request.user.id,
+                           }
+            in_serializer = self.serializer_class(data=commentdata)
+            in_serializer.is_valid(raise_exception=True)
+            in_serializer.save()
+            return Response(commentdata, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class IssuerCreateCommentAPIView(generics.GenericAPIView):
