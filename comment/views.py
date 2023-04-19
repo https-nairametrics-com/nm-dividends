@@ -83,10 +83,10 @@ class IssuerCreateCommentAPIView(generics.GenericAPIView):
 
     def post(self, request, id):
         snippet = self.get_object(id)
-        if (request.user.id == snippet.owner):
+        if (request.user.id == snippet.owner.id):
             commentdata = {'investment': id,
                            'comment': request.data.get('comment'),
-                           'is_closed': request.data.get('is_closed'),
+                           'is_closed': False,
                            'responded_by': request.user.id,
                            'slug': str(transaction_generator())}
             in_serializer = self.serializer_class(data=commentdata)
