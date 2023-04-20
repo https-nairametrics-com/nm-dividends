@@ -27,7 +27,7 @@ class AdminCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'slug', 'comment', 'investor',
+        fields = ['id', 'slug', 'investment', 'comment', 'investor',
                   'is_closed', 'responded_by', 'created_at']
 
 
@@ -47,7 +47,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'slug', 'comment', 'investor',
+        fields = ['id', 'slug', 'investment', 'responded_by', 'comment', 'investor',
                   'is_closed', 'created_at']
 
 
