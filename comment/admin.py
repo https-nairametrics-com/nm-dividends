@@ -3,4 +3,8 @@ from .models import Comment
 
 
 # Register your models here.
-admin.site.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['comment', 'investment', 'investor', 'created_at']
+
+
+admin.site.register(Comment, CommentAdmin)
