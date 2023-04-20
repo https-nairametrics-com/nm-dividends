@@ -7,11 +7,13 @@ from django.db.models import Sum, Aggregate, Avg
 from comment.models import Comment
 #from investor.serializers import CommentSerializer
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'firstname', 'lastname',
                   'username', 'referral_code', 'phone']
+
 
 class CommentSerializer(serializers.ModelSerializer):
     responded_by = UserSerializer(many=False, read_only=False)
@@ -368,7 +370,6 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
     def get_comment(self, obj):
         queryset = Comment.objects.filter(investment=obj.id)
-        print(queryset)
         return CommentSerializer(queryset, many=True).data
 
     def get_amountAlloted(self, obj):
