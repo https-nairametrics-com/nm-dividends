@@ -54,7 +54,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'slug', 'comment',
-                  'investor', 'is_closed', 'responded_by']
+                  'investor', 'investment', 'is_closed', 'responded_by']
 
     def get_responsed_by(self, instance):
         return instance.geo_info.responded_by
