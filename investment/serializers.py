@@ -4,6 +4,25 @@ from investor.models import Period, Risk
 from authentication.models import User
 from django.conf import settings
 from django.db.models import Sum, Aggregate, Avg
+from comment.models import Comment
+#from investor.serializers import CommentSerializer
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'firstname', 'lastname',
+                  'username', 'referral_code', 'phone']
+
+class CommentSerializer(serializers.ModelSerializer):
+    responded_by = UserSerializer(many=False, read_only=False)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'slug', 'comment',
+                  'investor', 'investment', 'is_closed', 'responded_by']
+
+    def get_responsed_by(self, instance):
+        return instance.geo_info.responded_by
 
 
 class UserInvestmentSerializer(serializers.ModelSerializer):
@@ -321,6 +340,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     period = PeriodInvestmentSerializer(read_only=False)
     owner = UserInvestmentSerializer(read_only=False)
     investorsCount = serializers.SerializerMethodField()
+    comment = serializers.SerializerMethodField()
     # gallery_investment = GallerySerializer(read_only=False)
 
     '''
@@ -332,7 +352,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+        fields = ['id', 'comment', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
                   'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'investorsCount']
@@ -345,6 +365,11 @@ class InvestmentSerializer(serializers.ModelSerializer):
     def get_investorsCount(self, obj):
         in_queryset = Investors.objects.filter(investment=obj.id).count()
         return in_queryset
+
+    def get_comment(self, obj):
+        queryset = Comment.objects.filter(investment=obj.id)
+        print(queryset)
+        return CommentSerializer(queryset, many=True).data
 
     def get_amountAlloted(self, obj):
         return Investors.objects.filter(investment=int(obj.id), is_approved=True).aggregate(Sum('amount'))
