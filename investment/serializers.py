@@ -344,6 +344,8 @@ class InvestmentSerializer(serializers.ModelSerializer):
     investorsCount = serializers.SerializerMethodField()
     comment = serializers.SerializerMethodField()
     canInvestorComment = serializers.SerializerMethodField()
+    canIssuerComment = serializers.SerializerMethodField()
+
     # gallery_investment = GallerySerializer(read_only=False)
 
     '''
@@ -355,7 +357,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investment
-        fields = ['id', 'canInvestorComment', 'comment', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
+        fields = ['id', 'canInvestorComment', 'canIssuerComment', 'comment', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
                   'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
                   'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'investorsCount']
@@ -382,6 +384,16 @@ class InvestmentSerializer(serializers.ModelSerializer):
         else:
             investor_can_comment = False
         return investor_can_comment
+
+    def get_canIssuerComment(self, obj):
+        user_id = self.context['request'].user.id
+        checkExist = Investment.objects.filter(
+            id=obj.id, owner=user_id)
+        if checkExist:
+            issuer_can_comment = True
+        else:
+            issuer_can_comment = False
+        return issuer_can_comment
 
     def get_amountAlloted(self, obj):
         return Investors.objects.filter(investment=int(obj.id), is_approved=True).aggregate(Sum('amount'))
