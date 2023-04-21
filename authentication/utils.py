@@ -83,3 +83,9 @@ def username_generator(size=4, chars=string.ascii_lowercase + string.digits):
         username_generator
     except User.DoesNotExist:
         return the_id
+
+
+def slug_generator(size=4, chars=string.ascii_lowercase + string.digits):
+    the_id = "".join(random.choice(chars) for x in range(size))
+    # Check if ID exist in database
+    return the_id
