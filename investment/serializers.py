@@ -360,7 +360,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'canInvestorComment', 'canIssuerComment', 'comment', 'owner', 'slug', 'name', 'description', 'currency', 'amount',
                   'volume', 'only_returns', 'off_plan', 'outright_purchase', 'outright_purchase_amount', 'project_raise', 'project_cost', 'periodic_payment', 'milestone', 'minimum_allotment', 'maximum_allotment', 'offer_price',
                   'amountAlloted', 'balanceToBeAlloted', 'spot_price', 'unit_price', 'dealtype', 'location', 'video', 'room', 'roi', 'period',
-                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'investorsCount']
+                  'annualized',  'risk', 'features', 'is_verified', 'image', 'start_date', 'end_date', 'created_at', 'investorsCount', 'title_status', 'construction_status', 'project_status']
 
     def get_image(self, obj):
         logger_queryset = Gallery.objects.filter(
