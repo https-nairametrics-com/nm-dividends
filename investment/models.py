@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields.jsonb import JSONField
 from django.utils.text import slugify
 from django.urls import reverse
+from .utils import slug_generator
 # Create your models here.
 
 
@@ -145,7 +146,7 @@ class Investment(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.slug = slugify(self.name)
+            self.slug = slugify(self.name)+'-'+str(slug_generator())
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
