@@ -1438,3 +1438,46 @@ class IssuerSummaryAPIView(generics.GenericAPIView):
             investorcre = {"volume": 0}
 
         return Response({"totalInvestors": totalInvestors, "totalInvestments": totalInvestments, "totalSponsors": totalSposnors, "totalVolume": cre, "totalInvestorVolume": investorcre}, status=status.HTTP_200_OK)
+
+
+class AdminSummaryAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, format=None):
+
+        countInvestors = Investors.objects.all().count()
+        if countInvestors:
+            totalInvestors = countInvestors
+        else:
+            totalInvestors = 0
+
+        countInvestments = Investment.objects.all().count()
+        if countInvestments:
+            totalInvestments = countInvestments
+        else:
+            totalInvestments = 0
+
+        countSponsors = SponsorInvestment.objects.all().count()
+        if countSponsors:
+            totalSposnors = countSponsors
+        else:
+            totalSposnors = 0
+
+        sumVolume = Investment.objects.all().aggregate(volume=Sum('volume'))
+        if sumVolume:
+            cre = sumVolume
+        else:
+            cre = 0
+
+        sumInvestorVolume = Investors.objects.all()
+        if sumInvestorVolume:
+            sumInvestorVolume2 = Investors.objects.all().aggregate(volume=Sum('volume'))
+            if sumInvestorVolume2:
+                investorcre = sumInvestorVolume2
+            else:
+                investorcre = 0
+        else:
+            investorcre = {"volume": 0}
+
+        return Response({"totalInvestors": totalInvestors, "totalInvestments": totalInvestments, "totalSponsors": totalSposnors, "totalVolume": cre, "totalInvestorVolume": investorcre}, status=status.HTTP_200_OK)
