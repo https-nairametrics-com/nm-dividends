@@ -1442,7 +1442,7 @@ class IssuerSummaryAPIView(generics.GenericAPIView):
 
 class AdminSummaryAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAdminUser,)
 
     def get(self, format=None):
 
