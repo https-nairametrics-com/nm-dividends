@@ -87,6 +87,8 @@ urlpatterns = [
          name="issuer-investments"),
     path('issuer/summary/', views.IssuerSummaryAPIView.as_view(),
          name="issuer-investments"),
+    path('admin/summary/', views.AdminSummaryAPIView.as_view(),
+         name="admin-summary"),
     path('issuer/investor/<int:id>', views.IssuerCreateInvestorAPIView.as_view(),
          name="issuer-investor"),
     path('admin/remove/investor/<int:id>', views.AdminIssuerRemoveInvestorAPIView.as_view(),
