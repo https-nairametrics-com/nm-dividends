@@ -1391,6 +1391,29 @@ class IssuerRemoveInvestorAPIView(generics.GenericAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class InvestorSummaryAPIView(generics.GenericAPIView):
+    serializer_class = TotalInvestmentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, format=None):
+
+        countInvestors = Investors.objects.filter(
+            investor=self.request.user.id).count()
+        if countInvestors:
+            totalInvestments = countInvestors
+        else:
+            totalInvestments = 0
+
+        sumVolume = Investors.objects.filter(
+            investors=self.request.user.id).aggregate(volume=Sum('volume'))
+        if sumVolume:
+            cre = sumVolume
+        else:
+            cre = 0
+
+        return Response({"totalInvestments": totalInvestments, "totalVolume": cre}, status=status.HTTP_200_OK)
+
+
 class IssuerSummaryAPIView(generics.GenericAPIView):
     serializer_class = TotalInvestmentSerializer
     permission_classes = (IsAuthenticated,)
