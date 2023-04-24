@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('image/', views.GalleryAPIView.as_view(), name="post-image"),
     path('image/<int:id>', views.GalleryUDAPIView.as_view(), name="update-image"),
@@ -87,8 +86,10 @@ urlpatterns = [
          name="issuer-investments"),
     path('issuer/summary/', views.IssuerSummaryAPIView.as_view(),
          name="issuer-investments"),
+    path('investor/summary/', views.InvestorSummaryAPIView.as_view(),
+         name="investor-summary"),
     path('admin/summary/', views.AdminSummaryAPIView.as_view(),
-         name="admin-summary"),
+         name="admin-summary"),     
     path('issuer/investor/<int:id>', views.IssuerCreateInvestorAPIView.as_view(),
          name="issuer-investor"),
     path('admin/remove/investor/<int:id>', views.AdminIssuerRemoveInvestorAPIView.as_view(),
