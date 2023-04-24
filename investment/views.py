@@ -1405,7 +1405,7 @@ class InvestorSummaryAPIView(generics.GenericAPIView):
             totalInvestments = 0
 
         sumVolume = Investors.objects.filter(
-            investors=self.request.user.id).aggregate(volume=Sum('volume'))
+            investor=self.request.user.id).aggregate(volume=Sum('volume'))
         if sumVolume:
             cre = sumVolume
         else:
