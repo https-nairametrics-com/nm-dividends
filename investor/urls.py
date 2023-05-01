@@ -40,6 +40,8 @@ urlpatterns = [
          name="approve-investment"),
     path('close/<int:id>', views.CloseInvestorAPIView.as_view(),
          name="close-investment"),
+    path('message/<int:id>', views.ContactIssuerAPIView.as_view(),
+         name="contact-issuer"),
 
     path('admin/create/investment/<int:id>', views.AdminInvestmentAPIView.as_view(),
          name="create-investment"),
