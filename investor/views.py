@@ -14,6 +14,7 @@ from django.http import JsonResponse, Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 import csv
+from django.core.mail import send_mail as sender
 # Create your views here.
 
 
@@ -542,6 +543,34 @@ class InvestorAdminListAPIView(generics.GenericAPIView):
             return Investors.objects.get(id=pk)
         except Investors.DoesNotExist:
             raise Http404
+
+
+class ContactIssuerAPIView(generics.GenericAPIView):
+    serializer_class = AdminUInvestorSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, pk):
+        try:
+            return Investment.objects.get(id=pk)
+        except Investment.DoesNotExist:
+            raise Http404
+
+    def post(self, request, id, format=None):
+        checkInvestment = self.get_object(id)
+        if request.data.get('message'):
+            email_body = 'Hi ' + \
+                self.request.user.firstname + ' ' + self.request.user.lastname +\
+                'with email address ' + self.request.user.email + 'sent the message below' +\
+                request.data.get('message')
+            data = {'email_body': email_body, 'to_email': checkInvestment.owner.email,
+                    'email_subject': 'Project Enquiry'}
+            sender(data['email_subject'], data['email_body'],
+                   'info@nairametrics.com', [data['to_email']])
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error",  "error": "Message is empty"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class AdminUInvestorAPIView(generics.GenericAPIView):
