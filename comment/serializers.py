@@ -7,7 +7,7 @@ from django.db.models import Sum, Aggregate, Avg
 from .models import Comment
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UsersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class InvestorSerializer(serializers.ModelSerializer):
-    investor = UserSerializer(many=False, read_only=False)
+    investor = UsersSerializer(many=False, read_only=False)
 
     class Meta:
         model = Investors
@@ -23,7 +23,7 @@ class InvestorSerializer(serializers.ModelSerializer):
 
 
 class AdminCommentSerializer(serializers.ModelSerializer):
-    #investor = UserSerializer(many=False, read_only=False)
+    #investor = UsersSerializer(many=False, read_only=False)
 
     class Meta:
         model = Comment
@@ -32,7 +32,7 @@ class AdminCommentSerializer(serializers.ModelSerializer):
 
 
 class AdminDetailCommentSerializer(serializers.ModelSerializer):
-    responded_by = UserSerializer(many=False, read_only=False)
+    responded_by = UsersSerializer(many=False, read_only=False)
 
     class Meta:
         model = Comment
@@ -53,7 +53,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ListCommentSerializer(serializers.ModelSerializer):
     investor = InvestorSerializer(many=False, read_only=False)
-    responded_by = UserSerializer(many=False, read_only=False)
+    responded_by = UsersSerializer(many=False, read_only=False)
 
     class Meta:
         model = Comment
@@ -63,7 +63,7 @@ class ListCommentSerializer(serializers.ModelSerializer):
 
 class UserInvestorsSerializer(serializers.ModelSerializer):
     totalcomments = serializers.SerializerMethodField()
-    investor = UserSerializer(many=False, read_only=False)
+    investor = UsersSerializer(many=False, read_only=False)
 
     class Meta:
         model = Investors
@@ -79,7 +79,7 @@ class UserInvestorsSerializer(serializers.ModelSerializer):
 
 class DetailInvestorSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
-    investor = UserSerializer(many=False, read_only=False)
+    investor = UsersSerializer(many=False, read_only=False)
 
     class Meta:
         model = Investors
