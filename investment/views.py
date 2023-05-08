@@ -1064,7 +1064,7 @@ class IssuerAPIView(generics.GenericAPIView):
                 investorData = {
                     'investment': investmentID,
                     'investor': investorId,
-                    'house_number': fields["house_number"],
+                    'house_number': fields["unit_number"],
                     'volume': fields["volume"],
                     'slug': str(investor_slug()),
                     'serialkey': str(serial_investor()),
