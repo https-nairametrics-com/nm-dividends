@@ -1205,17 +1205,6 @@ class IssuerAPIOldView(generics.GenericAPIView):
                            'ssn@nairametrics.com', [data['to_email']])
 
                     Util.send_email(data)
-                    print("dob")
-                    print(fields[0])
-                    print(fields[1])
-                    print(fields[2])
-                    print(fields[3])
-                    print(fields[4])
-                    print(fields[5])
-                    print(fields[6])
-                    print(fields[7])
-                    print(fields[8])
-                    print("dob")
 
                     newUserProfile = {
                         'user': investorId,
