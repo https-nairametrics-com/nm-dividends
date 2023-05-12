@@ -1163,18 +1163,11 @@ class IssuerAPIView(generics.GenericAPIView):
 
         # Upload new investors
         if request.data.get('investors'):
-            # file_serializer = self.file_serializer_class(
-            #    data=request.data.get('investors'))
-            # file_serializer.is_valid(raise_exception=True)
-            #file = file_serializer.validated_data['file']
-
             csv_file = request.data.get('investors')
             if not csv_file.name.endswith('.csv'):
                 messages.warning(request, 'The wrong file type was uploaded')
                 return Response({"error": "The wrong file was uploaded"},
                                 status=status.HTTP_400_BAD_REQUEST)
-                # return HttpResponseRedirect(request.path_info)
-
             reader = pd.read_csv(request.data.get('investors'))
 
             file_data = csv_file.read().decode("utf-8")
@@ -1182,12 +1175,8 @@ class IssuerAPIView(generics.GenericAPIView):
             investmentID = investment_data['id']
 
             for _, fields in reader.iterrows():
-                #fields = x.split(",")
-
                 checkUser = checkNin(fields[6])
-                # print(checkUser)
                 if not checkUser:
-                    # Check if investor is already subscribed to this investment
                     userd = str(username_generator())
                     newUserData = {
                         'firstname': fields["firstname"],
@@ -1204,8 +1193,6 @@ class IssuerAPIView(generics.GenericAPIView):
                     register_serializer.is_valid(raise_exception=True)
                     register_serializer.save()
                     investment_data = register_serializer.data
-                    #csv_file = request.data.get.FILES["csv_upload"]
-
                     userData = register_serializer.data
                     investorId = userData['id']
 
