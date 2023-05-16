@@ -244,6 +244,10 @@ class IssuerInvestmentListAPIView(ListAPIView):
     serializer_class = InvestmentSerializer
     queryset = Investment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['name', 'location']
+    search_fields = ['name', 'location']
     # parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
