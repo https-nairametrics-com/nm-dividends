@@ -231,6 +231,10 @@ class InvestmentListAPIView(ListAPIView):
     queryset = Investment.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated,)
     # parser_classes = [MultiPartParser, FormParser]
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['name', 'location']
+    search_fields = ['name', 'location']
 
     def get_queryset(self):
         return self.queryset.all()
