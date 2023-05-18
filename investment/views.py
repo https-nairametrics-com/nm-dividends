@@ -1082,6 +1082,10 @@ class SponsorListAPIView(ListAPIView):
     serializer_class = SponsorListSerializer
     queryset = Sponsor.objects.all().order_by('-created_at')
     permission_classes = (IsAuthenticated, IsAdminUser,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['name', 'nin', 'phone']
+    search_fields = ['name', 'nin', 'phone']
     # parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
