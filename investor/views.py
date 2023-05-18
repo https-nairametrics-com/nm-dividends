@@ -369,6 +369,9 @@ class InvestorListAPIView(ListAPIView):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
 
+    filterset_fields = ['investment__name', 'investment__location']
+    search_fields = ['investment__name', 'investment__location']
+
     def get_queryset(self):
         return self.queryset.filter(investor=self.request.user)
 
