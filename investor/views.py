@@ -832,8 +832,8 @@ class AdminUserInvestorListAPIView(ListAPIView):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
 
-    filterset_fields = ['firstname', 'lastname', 'email']
-    search_fields = ['firstname', 'lastname', 'email']
+    filterset_fields = ['firstname', 'lastname', 'email', 'phone']
+    search_fields = ['firstname', 'lastname', 'email', 'phone']
 
     def get_queryset(self):
         return self.queryset.all()
