@@ -81,11 +81,12 @@ class UserListAPIView(ListAPIView):
                        filters.SearchFilter, filters.OrderingFilter]
 
     filterset_fields = ['firstname', 'lastname',
-                        'phone', 'referral_code',
+                        'phone', 'referral_code', 'email',
                         ]
-    search_fields = ['firstname', 'lastname', 'phone']
+    search_fields = ['firstname', 'lastname',
+                     'phone', 'email', 'referral_code']
     ordering_fields = ['firstname', 'lastname', 'created_at', 'details__interest__interest',
-                       'deta ils__risk__risk', 'details__period__period', 'details__investmentsize__investment_size']
+                       'details__risk__risk', 'details__period__period', 'details__investmentsize__investment_size']
 
     def get_queryset(self):
         return self.queryset.all()
