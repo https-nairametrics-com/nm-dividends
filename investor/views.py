@@ -815,8 +815,6 @@ class ExportInvestorsCount(generics.GenericAPIView):
             row = ','.join([
                 user.firstname,
                 user.lastname
-                # approved_portfolio.count()
-                # completed_portfolio.count()
             ])
 
             writer.writerow(row)
