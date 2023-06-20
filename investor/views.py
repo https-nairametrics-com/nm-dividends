@@ -562,6 +562,7 @@ class ContactIssuerAPIView(generics.GenericAPIView):
     def post(self, request, id, format=None):
         checkInvestment = self.get_object(id)
         if request.data.get('message'):
+            '''
             email_body = 'Hi ' + \
                 self.request.user.firstname + ' ' + self.request.user.lastname +\
                 'with email address ' + self.request.user.email + 'sent the message below' +\
@@ -569,7 +570,7 @@ class ContactIssuerAPIView(generics.GenericAPIView):
             data = {'email_body': email_body, 'to_email': checkInvestment.owner.email,
                     'email_subject': 'Project Enquiry'}
             sender(data['email_subject'], data['email_body'],
-                   'info@nairametrics.com', [data['to_email']])
+                   'info@nairametrics.com', [data['to_email']])'''
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"status": "error",  "error": "Message is empty"},
