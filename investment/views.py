@@ -557,7 +557,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                     'investment': investmentID,
                     'investor': investorId,
                     'house_number': fields["unit_number"],
-                    'volume': fields["volume"],
+                    'volume': 1,
                     'slug': str(investor_slug()),
                     'serialkey': str(serial_investor()),
                     'investment_type': 'off plan'
@@ -1246,7 +1246,7 @@ class IssuerAPIView(generics.GenericAPIView):
                     'investment': investmentID,
                     'investor': investorId,
                     'house_number': fields["unit_number"],
-                    'volume': fields["volume"],
+                    'volume': 1,
                     'slug': str(investor_slug()),
                     'serialkey': str(serial_investor()),
                     'investment_type': 'off plan'
