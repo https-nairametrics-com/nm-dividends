@@ -393,7 +393,11 @@ class ApproveInvestmentAPIView(generics.GenericAPIView):
 class InvestmentAPIView(generics.GenericAPIView):
     serializer_class = InvestmentOnlySerializer
     serializer_all = InvestmentSerializer
+    file_serializer_class = FileUploadSerializer
+    register_serializer_class = RegisterSerializer
+    profile_serializer_class = ProfileSerializer
     gallery_serializer = GallerySerializer
+    investor_serializer_class = IssuerInvestorSerializer
     permission_classes = (IsAuthenticated, IsAdminUser,)
     parser_classes = [MultiPartParser, FormParser]
 
