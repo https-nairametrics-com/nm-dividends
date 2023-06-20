@@ -754,7 +754,7 @@ class VerifyInvestmentAPIView(generics.GenericAPIView):
 
 class CloseInvestmentAPIView(generics.GenericAPIView):
     serializer_class = CloseInvestmentSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self, id):
         try:
