@@ -46,6 +46,9 @@ def checkNin(id):
     query = Profile.objects.filter(nin=id)
     return query
 
+def checkEmail(id):
+    query = User.objects.filter(email=id)
+    return query
 
 def getInvestorId(nin):
     query = Profile.objects.filter(nin=nin)
@@ -498,9 +501,10 @@ class InvestmentAPIView(generics.GenericAPIView):
             for _, fields in reader.iterrows():
                 #fields = x.split(",")
 
-                checkUser = checkNin(fields[6])
+                checkuser = checkNin(fields[6])
+                checkemail = checkEmail(fields["email"])
                 # print(checkUser)
-                if not checkUser:
+                if not checkuser or checkemail:
                     # Check if investor is already subscribed to this investment
                     userd = str(username_generator())
                     newUserData = {
