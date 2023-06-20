@@ -1195,8 +1195,9 @@ class IssuerAPIView(generics.GenericAPIView):
             investmentID = investment_data['id']
 
             for _, fields in reader.iterrows():
-                checkUser = checkNin(fields[6])
-                if not checkUser:
+                checkuser = checkNin(fields[6])
+                checkemail = checkEmail(fields["email"])
+                if not checkuser or not checkemail:
                     userd = str(username_generator())
                     newUserData = {
                         'firstname': fields["firstname"],
