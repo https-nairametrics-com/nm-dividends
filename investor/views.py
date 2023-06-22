@@ -507,20 +507,6 @@ class AdminSingleInvestorListAPIView(ListAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(investor=self.kwargs['id'])
-    '''
-    lookup_field = "investor"
-
-    def get(self, request, id):
-        query = Investors.objects.filter(investor=id).values()
-        if query.exists():
-            print(query)
-            ser = InvestorSerializer(query)
-
-            return Response({"status": "success", "data": ser.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"res": "User has no investment"},
-                            status=status.HTTP_200_OK)
-    '''
 
 
 class AdminInstallmentListAPIView(ListAPIView):
