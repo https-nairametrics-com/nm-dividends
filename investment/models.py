@@ -93,6 +93,12 @@ class Investment(models.Model):
         ('approved', 'approved'),
         ('completed', 'completed'),
     ]
+
+    PAYMENT_OPTIONS = [
+        ('not started', 'not started'),
+        ('partial', 'partial'),
+        ('full', 'full'),
+    ]
     owner = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='owner')
     name = models.CharField(max_length=255)
@@ -138,6 +144,8 @@ class Investment(models.Model):
         choices=TYPE_OPTIONS, max_length=255, default="pending")
     project_status = models.CharField(
         choices=TYPE_OPTIONS, max_length=255, default="not started")
+    payment = models.CharField(
+        choices=PAYMENT_OPTIONS, max_length=255, default="not started")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
