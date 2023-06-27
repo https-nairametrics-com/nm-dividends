@@ -1512,6 +1512,8 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
             'investor': investorId,
             'house_number': request.data.get('house_number'),
             'volume': request.data.get('volume'),
+            'payment': request.data.get('payment'),
+            'amount': request.data.get('amount'),
             'slug': str(investor_slug()),
             'serialkey': str(serial_investor()),
             'investment_type': 'off plan'
