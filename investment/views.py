@@ -541,13 +541,13 @@ class InvestmentAPIView(generics.GenericAPIView):
                            'ssn@nairametrics.com', [data['to_email']])
 
                     Util.send_email(data)
-                    dob = datetime.date(fields["dob"])
+                    dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
                     new_dob = dob.strftime("%Y-%m-%d")
                     newUserProfile = {
                         'user': investorId,
                         'next_of_kin': fields["next_of_kin"],
                         'nin': fields["nin"],
-                        'dob': fields["dob"],
+                        'dob': new_dob,
                     }
                     serializer_p = self.profile_serializer_class(
                         data=newUserProfile)
@@ -1232,7 +1232,7 @@ class IssuerAPIView(generics.GenericAPIView):
                            'ssn@nairametrics.com', [data['to_email']])
 
                     Util.send_email(data)
-                    dob = datetime.date(fields["dob"])
+                    dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
                     new_dob = dob.strftime("%Y-%m-%d")
                     newUserProfile = {
                         'user': investorId,
