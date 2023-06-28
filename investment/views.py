@@ -28,6 +28,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+import datetime
 # Create your views here.
 
 
@@ -540,7 +541,8 @@ class InvestmentAPIView(generics.GenericAPIView):
                            'ssn@nairametrics.com', [data['to_email']])
 
                     Util.send_email(data)
-
+                    dob = datetime.date(fields["dob"])
+                    new_dob = dob.strftime("%Y-%m-%d")
                     newUserProfile = {
                         'user': investorId,
                         'next_of_kin': fields["next_of_kin"],
@@ -1230,12 +1232,13 @@ class IssuerAPIView(generics.GenericAPIView):
                            'ssn@nairametrics.com', [data['to_email']])
 
                     Util.send_email(data)
-
+                    dob = datetime.date(fields["dob"])
+                    new_dob = dob.strftime("%Y-%m-%d")
                     newUserProfile = {
                         'user': investorId,
                         'next_of_kin': fields["next_of_kin"],
                         'nin': fields["nin"],
-                        'dob': fields["dob"],
+                        'dob': new_dob,
                     }
                     serializer_p = self.profile_serializer_class(
                         data=newUserProfile)
@@ -1487,10 +1490,12 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
                    'ssn@nairametrics.com', [data['to_email']])
 
             Util.send_email(data)
+            dob = datetime.date(request.data.get('dob'))
+            new_dob = dob.strftime("%Y-%m-%d")
             newUserProfile = {
                 'identity': request.data.get('identity'),
                 'user': investorId,
-                'next_of_kin': request.data.get('next_of_kin'),
+                'next_of_kin': request.data.get('dob'),
                 'nin': request.data.get('nin'),
                 'dob': request.data.get('dob'),
             }
