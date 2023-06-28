@@ -510,6 +510,9 @@ class InvestmentAPIView(generics.GenericAPIView):
                     # Check if investor is already subscribed to this investment
                     userd = str(username_generator())
                     print("Uche")
+                    print(fields["firstname"])
+                    print(fields["email"])
+                    print(fields["lastname"])
                     newUserData = {
                         'firstname': fields["firstname"],
                         'lastname': fields["lastname"],
