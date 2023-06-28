@@ -120,7 +120,7 @@ class Profile(models.Model):
         User, on_delete=models.CASCADE, related_name='profile_authentication_set')
     next_of_kin = models.CharField(max_length=255, null=True)
     is_investor = models.BooleanField(default=True)
-    nin = models.CharField(max_length=255, unique=True, db_index=True)
+    nin = models.CharField(max_length=255, null=True)
     dob = models.DateField(null=True)
     identity = models.ImageField(
         _("Identity"), upload_to=identity_to, default='identity/default.jpg')
