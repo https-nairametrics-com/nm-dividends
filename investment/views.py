@@ -514,7 +514,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                         'username': userd,
                         'address': fields["address"],
                         'email': fields["email"],
-                        'password': fields["firstname"] + fields["lastname"]+userd,
+                        'password': str(fields["firstname"])+str(fields["lastname"])+str(userd),
                         'referral_code': str(referral_generator()),
                         'phone': fields["phone"],
                     }
