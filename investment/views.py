@@ -522,7 +522,9 @@ class InvestmentAPIView(generics.GenericAPIView):
                     }
                     register_serializer = self.register_serializer_class(
                         data=newUserData)
+                    print("Kelechi")
                     register_serializer.is_valid(raise_exception=True)
+                    print("Ada")
                     register_serializer.save()
                     investment_data = register_serializer.data
                     #csv_file = request.data.get.FILES["csv_upload"]
