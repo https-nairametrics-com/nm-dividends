@@ -505,9 +505,11 @@ class InvestmentAPIView(generics.GenericAPIView):
                 checkuser = checkNin(fields[6])
                 checkemail = checkEmail(fields["email"])
                 # print(checkUser)
+                print("Chima")
                 if not checkuser or checkemail:
                     # Check if investor is already subscribed to this investment
                     userd = str(username_generator())
+                    print("Uche")
                     newUserData = {
                         'firstname': fields["firstname"],
                         'lastname': fields["lastname"],
@@ -524,6 +526,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                     register_serializer.save()
                     investment_data = register_serializer.data
                     #csv_file = request.data.get.FILES["csv_upload"]
+                    print("Kelvin")
 
                     userData = register_serializer.data
                     investorId = userData['id']
