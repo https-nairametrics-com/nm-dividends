@@ -29,6 +29,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 import datetime
+import math
 # Create your views here.
 
 
@@ -498,17 +499,20 @@ class InvestmentAPIView(generics.GenericAPIView):
             file_data = csv_file.read().decode("utf-8")
             csv_data = file_data.split("\n")
             investmentID = investment_data['id']
+            
 
             for _, fields in reader.iterrows():
                 #fields = x.split(",")
 
-                checkuser = checkNin(fields[6])
-                checkemail = checkEmail(fields["email"])
+                
                 # print(checkUser)
-                print("Chima")
-                if not checkemail:
-                    # Check if investor is already subscribed to this investment
-                    if fields["email"]:
+                checkN = math.isnan(fields["email"])
+                while not checkN:
+                    checkuser = checkNin(fields[6])
+                    checkemail = checkEmail(fields["email"])
+                    print("Chima")
+                    if not checkemail:
+                        # Check if investor is already subscribed to this investment
                         userd = str(username_generator())
                         print("Uche")
                         print(fields["firstname"])
@@ -563,7 +567,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                         serializer_p.is_valid(raise_exception=True)
                         serializer_p.save()
 
-                else:
+                    else:
                     checkInvestorInvestmentExist = checkInvestorExist(
                         fields["nin"], investmentID)
                     if checkInvestorInvestmentExist:
@@ -572,20 +576,20 @@ class InvestmentAPIView(generics.GenericAPIView):
                     else:
                         investorId = getInvestorId(fields["nin"])
 
-                investorData = {
-                    'investment': investmentID,
-                    'investor': investorId,
-                    'house_number': fields["unit_number"],
-                    'volume': 1,
-                    'slug': str(investor_slug()),
-                    'serialkey': str(serial_investor()),
-                    'investment_type': 'off plan'
+                    investorData = {
+                        'investment': investmentID,
+                        'investor': investorId,
+                        'house_number': fields["unit_number"],
+                        'volume': 1,
+                        'slug': str(investor_slug()),
+                        'serialkey': str(serial_investor()),
+                        'investment_type': 'off plan'
 
-                }
-                serializer_i = self.investor_serializer_class(
-                    data=investorData)
-                serializer_i.is_valid(raise_exception=True)
-                serializer_i.save()
+                    }
+                    serializer_i = self.investor_serializer_class(
+                        data=investorData)
+                    serializer_i.is_valid(raise_exception=True)
+                    serializer_i.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
