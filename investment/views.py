@@ -506,7 +506,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                 checkemail = checkEmail(fields["email"])
                 # print(checkUser)
                 print("Chima")
-                if not checkuser or checkemail:
+                if not checkemail:
                     # Check if investor is already subscribed to this investment
                     if fields["email"]:
                         userd = str(username_generator())
