@@ -1192,7 +1192,7 @@ class IssuerAPIView(generics.GenericAPIView):
             for _, fields in reader.iterrows():
                 checkuser = checkNin(fields[6])
                 checkemail = checkEmail(fields["email"])
-                if not checkuser or not checkemail:
+                if not checkemail and validate_email(fields["email"]):
                     userd = str(username_generator())
                     newUserData = {
                         'firstname': fields["firstname"],
