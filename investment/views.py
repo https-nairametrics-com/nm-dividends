@@ -503,84 +503,73 @@ class InvestmentAPIView(generics.GenericAPIView):
             for _, fields in reader.iterrows():
                 #fields = x.split(",")
                 # print(checkUser)
-                #checkN = math.isnan(fields["email"])
-                #while validate_email(fields["email"]):
-                    checkuser = checkNin(fields[6])
-                    checkemail = checkEmail(str(fields["email"]))
-                    print("Chima")
-                    if not checkemail and validate_email(fields["email"]):
-                        # Check if investor is already subscribed to this investment
-                        userd = str(username_generator())
-                        print("Uche")
-                        print(fields["firstname"])
-                        print(fields["email"])
-                        print(fields["lastname"])
-                        newUserData = {
-                            'firstname': fields["firstname"],
-                            'lastname': fields["lastname"],
-                            'username': userd,
-                            'address': fields["address"],
-                            'email': fields["email"],
-                            'password': str(fields["firstname"])+str(fields["lastname"])+str(userd),
-                            'referral_code': str(referral_generator()),
-                            'phone': fields["phone"],
-                        }
-                        register_serializer = self.register_serializer_class(
-                            data=newUserData)
-                        print("Kelechi")
-                        register_serializer.is_valid(raise_exception=True)
-                        print("Ada")
-                        register_serializer.save()
-                        investment_data = register_serializer.data
-                        #csv_file = request.data.get.FILES["csv_upload"]
-                        print("Kelvin")
-
-                        userData = register_serializer.data
-                        investorId = userData['id']
-
-                        user = User.objects.get(email=fields["email"])
-                        email_body = 'Hi '+user.firstname + \
-                            ' Your email address is: ' + fields["email"] + \
-                            ' Your default password to yieldroom is: \n' + \
-                            fields["firstname"] + \
-                            fields["lastname"]+userd + '\n' +\
-                            'https://yield-room.netlify.com'
-                        data = {'email_body': email_body, 'to_email': user.email,
-                                'email_subject': 'Welcome to yieldroom '}
-                        sender(data['email_subject'], data['email_body'],
-                            'ssn@nairametrics.com', [data['to_email']])
-
-                        Util.send_email(data)
-                        dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
-                        new_dob = dob.strftime("%Y-%m-%d")
-                        newUserProfile = {
-                            'user': investorId,
-                            'next_of_kin': fields["next_of_kin"],
-                            'nin': fields["nin"],
-                            'dob': new_dob,
-                        }
-                        serializer_p = self.profile_serializer_class(
-                            data=newUserProfile)
-                        serializer_p.is_valid(raise_exception=True)
-                        serializer_p.save()
-
-                    else:
-                        investorId = get_user(fields["email"])
-
-                    investorData = {
-                        'investment': investmentID,
-                        'investor': investorId,
-                        'house_number': fields["unit_number"],
-                        'volume': 1,
-                        'slug': str(investor_slug()),
-                        'serialkey': str(serial_investor()),
-                        'investment_type': 'off plan'
-
+                checkuser = checkNin(fields[6])
+                checkemail = checkEmail(str(fields["email"]))
+                if not checkemail and validate_email(fields["email"]):
+                    # Check if investor is already subscribed to this investment
+                    userd = str(username_generator())
+                    newUserData = {
+                        'firstname': fields["firstname"],
+                        'lastname': fields["lastname"],
+                        'username': userd,
+                        'address': fields["address"],
+                        'email': fields["email"],
+                        'password': str(fields["firstname"])+str(fields["lastname"])+str(userd),
+                        'referral_code': str(referral_generator()),
+                        'phone': fields["phone"],
                     }
-                    serializer_i = self.investor_serializer_class(
-                        data=investorData)
-                    serializer_i.is_valid(raise_exception=True)
-                    serializer_i.save()
+                    register_serializer = self.register_serializer_class(
+                        data=newUserData)
+                    register_serializer.is_valid(raise_exception=True)
+                    register_serializer.save()
+                    investment_data = register_serializer.data
+                    #csv_file = request.data.get.FILES["csv_upload"]
+                    userData = register_serializer.data
+                    investorId = userData['id']
+
+                    user = User.objects.get(email=fields["email"])
+                    email_body = 'Hi '+user.firstname + \
+                        ' Your email address is: ' + fields["email"] + \
+                        ' Your default password to yieldroom is: \n' + \
+                        fields["firstname"] + \
+                        fields["lastname"]+userd + '\n' +\
+                        'https://yield-room.netlify.com'
+                    data = {'email_body': email_body, 'to_email': user.email,
+                            'email_subject': 'Welcome to yieldroom '}
+                    sender(data['email_subject'], data['email_body'],
+                        'ssn@nairametrics.com', [data['to_email']])
+
+                    Util.send_email(data)
+                    dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
+                    new_dob = dob.strftime("%Y-%m-%d")
+                    newUserProfile = {
+                        'user': investorId,
+                        'next_of_kin': fields["next_of_kin"],
+                        'nin': fields["nin"],
+                        'dob': new_dob,
+                    }
+                    serializer_p = self.profile_serializer_class(
+                        data=newUserProfile)
+                    serializer_p.is_valid(raise_exception=True)
+                    serializer_p.save()
+
+                else:
+                    investorId = get_user(fields["email"])
+
+                investorData = {
+                    'investment': investmentID,
+                    'investor': investorId,
+                    'house_number': fields["unit_number"],
+                    'volume': 1,
+                    'slug': str(investor_slug()),
+                    'serialkey': str(serial_investor()),
+                    'investment_type': 'off plan'
+
+                }
+                serializer_i = self.investor_serializer_class(
+                    data=investorData)
+                serializer_i.is_valid(raise_exception=True)
+                serializer_i.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
