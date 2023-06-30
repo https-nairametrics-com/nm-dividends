@@ -30,6 +30,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 import datetime
 import math
+import re
 # Create your views here.
 
 
@@ -38,6 +39,10 @@ def getSponsorId(nin):
         nin=nin)
     return query
 
+def get_user(email):
+        query = User.objects.filter(
+        email=email).values_list('id', flat=True)[0]
+        return query
 
 def checkSponsored(id):
     query = SponsorInvestment.objects.filter(investment=id)
@@ -49,22 +54,10 @@ def checkNin(id):
     return query
 
 def checkEmail(id):
-    query = User.objects.filter(email=id)
+    query = User.objects.filter(email=str(id))
     return query
 
-def getInvestorId(nin):
-    query = Profile.objects.filter(nin=nin)
-    if query:
-        getId = Profile.objects.filter(
-            nin=nin).values_list('user', flat=True)[0]
 
-    return int(getId)
-
-
-def checkInvestorExist(nin, id):
-    query2 = Investors.objects.filter(
-        investment=id, investor=getInvestorId(nin))
-    return query2
 
 
 def checkInvestorInvestment(invt, id):
@@ -76,6 +69,10 @@ def checkInvestmentOwner(user, id):
     query = Investment.objects.filter(owner=user, id=id)
     return query
 
+def validate_email(email):  
+    if re.match(r"[^@]+@[^@]+\.[^@]+", email):  
+        return True  
+    return False  
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -411,6 +408,7 @@ class InvestmentAPIView(generics.GenericAPIView):
             return Investment.objects.get(pk=pk)
         except Investment.DoesNotExist:
             raise Http404
+       
 
     def post(self, request):
         indata = {
@@ -495,6 +493,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                 # return HttpResponseRedirect(request.path_info)
 
             reader = pd.read_csv(request.data.get('investors'))
+            reader.dropna()
 
             file_data = csv_file.read().decode("utf-8")
             csv_data = file_data.split("\n")
@@ -503,15 +502,13 @@ class InvestmentAPIView(generics.GenericAPIView):
 
             for _, fields in reader.iterrows():
                 #fields = x.split(",")
-
-                
                 # print(checkUser)
-                checkN = math.isnan(fields["email"])
-                while not checkN:
+                #checkN = math.isnan(fields["email"])
+                #while validate_email(fields["email"]):
                     checkuser = checkNin(fields[6])
-                    checkemail = checkEmail(fields["email"])
+                    checkemail = checkEmail(str(fields["email"]))
                     print("Chima")
-                    if not checkemail:
+                    if not checkemail and validate_email(fields["email"]):
                         # Check if investor is already subscribed to this investment
                         userd = str(username_generator())
                         print("Uche")
@@ -568,13 +565,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                         serializer_p.save()
 
                     else:
-                    checkInvestorInvestmentExist = checkInvestorExist(
-                        fields["nin"], investmentID)
-                    if checkInvestorInvestmentExist:
-                        return Response({"error": "This investor is already subscribed to this portfolio"},
-                                        status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        investorId = getInvestorId(fields["nin"])
+                        investorId = get_user(fields["email"])
 
                     investorData = {
                         'investment': investmentID,
@@ -1259,13 +1250,8 @@ class IssuerAPIView(generics.GenericAPIView):
                     serializer_p.save()
 
                 else:
-                    checkInvestorInvestmentExist = checkInvestorExist(
-                        fields["nin"], investmentID)
-                    if checkInvestorInvestmentExist:
-                        return Response({"error": "This investor is already subscribed to this portfolio"},
-                                        status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        investorId = getInvestorId(fields["nin"])
+                    
+                    investorId = get_user(fields["email"])
 
                 investorData = {
                     'investment': investmentID,
