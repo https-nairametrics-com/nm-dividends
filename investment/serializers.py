@@ -121,7 +121,7 @@ class ListInvestorsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Investors
-        fields = ['id', 'investment', 'investor', ]
+        fields = ['id', 'amount','payment', 'investment', 'investor', ]
 
 
 class CreateRoomSerializer(serializers.ModelSerializer):
