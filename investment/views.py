@@ -559,6 +559,8 @@ class InvestmentAPIView(generics.GenericAPIView):
                 investorData = {
                     'investment': investmentID,
                     'investor': investorId,
+                    'amount': fields["amount"],
+                    'payment': fields["payment"],
                     'house_number': fields["unit_number"],
                     'volume': 1,
                     'slug': str(investor_slug()),
@@ -1237,25 +1239,26 @@ class IssuerAPIView(generics.GenericAPIView):
                         data=newUserProfile)
                     serializer_p.is_valid(raise_exception=True)
                     serializer_p.save()
-
                 else:
                     
                     investorId = get_user(fields["email"])
 
-                investorData = {
-                    'investment': investmentID,
-                    'investor': investorId,
-                    'house_number': fields["unit_number"],
-                    'volume': 1,
-                    'slug': str(investor_slug()),
-                    'serialkey': str(serial_investor()),
-                    'investment_type': 'off plan'
+                    investorData = {
+                        'investment': investmentID,
+                        'investor': investorId,
+                        'house_number': fields["unit_number"],
+                        'amount': fields["amount"],
+                        'payment': fields["payment"],
+                        'volume': 1,
+                        'slug': str(investor_slug()),
+                        'serialkey': str(serial_investor()),
+                        'investment_type': 'off plan'
 
-                }
-                serializer_i = self.investor_serializer_class(
-                    data=investorData)
-                serializer_i.is_valid(raise_exception=True)
-                serializer_i.save()
+                    }
+                    serializer_i = self.investor_serializer_class(
+                        data=investorData)
+                    serializer_i.is_valid(raise_exception=True)
+                    serializer_i.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
