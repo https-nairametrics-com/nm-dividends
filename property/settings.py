@@ -113,8 +113,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://yield-room.netlify.app",
     "https://yields-room.herokuapp.com",
     "https://yieldsroom.herokuapp.com",
-    "https://yieldroom.africa.com",
-    "https://www.yieldroom.africa.com",
+    "https://yieldroom.africa",
+    "https://www.yieldroom.africa",
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
