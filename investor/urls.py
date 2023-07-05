@@ -42,7 +42,6 @@ urlpatterns = [
          name="close-investment"),
     path('message/<int:id>', views.ContactIssuerAPIView.as_view(),
          name="contact-issuer"),
-
     path('admin/create/investment/<int:id>', views.AdminInvestmentAPIView.as_view(),
          name="create-investment"),
     path('admin/update/<int:id>', views.AdminUInvestorAPIView.as_view(),
@@ -59,5 +58,6 @@ urlpatterns = [
          name="admin-list-installments"),
     path('admin/export/', views.AdminExportInvestorAPIView.as_view(),
          name="export-investors"),
-
+    path('update/<int:id>', views.UpdateInvestorAPIView.as_view(),
+         name="update-investor-portfolio"),
 ]
