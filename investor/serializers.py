@@ -309,6 +309,13 @@ class AdminUInvestorSerializer(serializers.ModelSerializer):
                   'is_approved', 'is_closed')
 
 
+class UpdateInvestorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Investors
+        fields = ('id', 'house_number', 'payment', 'amount')
+
+
 class CreateInvestorSerializer(serializers.ModelSerializer):
 
     class Meta:
