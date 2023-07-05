@@ -7,7 +7,7 @@ from rest_framework import generics, status, views, permissions, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from authentication.utils import serial_investor, investor_slug
 from .models import Risk, Interest, InvestmentSize, Period, Expectations
-from .serializers import ApproveInvestorInstallmentSerializer, ApproveInstallmentSerializer, CreateInstallmentSerializer, InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
+from .serializers import UpdateInvestorSerializer, ApproveInvestorInstallmentSerializer, ApproveInstallmentSerializer, CreateInstallmentSerializer, InstallmentSerializer, InvestorExportSerializer, UserInvestorSerializer, AdminUInvestorSerializer, CreateInvestorSerializer, ApproveInvestorSerializer, CloseInvestorSerializer, InvestorSerializer, AdminInvestorSerializer, PeriodSerializer, SizeSerializer, RiskSerializer, InterestSerializer, ExpectationsSerializer
 from .permissions import IsOwner, IsUserApproved
 from django.db.models import Sum, Aggregate, Avg, Count
 from django.http import JsonResponse, Http404, HttpResponse
@@ -601,6 +601,38 @@ class AdminUInvestorAPIView(generics.GenericAPIView):
             'approved_by': self.request.user.id,
             'is_closed': request.data.get('is_closed'),
             'closed_by': self.request.user.id,
+        }
+        serializer = self.serializer_class(investment_id, data=investordata)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id, format=None):
+        snippet = self.get_object(id)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UpdateInvestorAPIView(generics.GenericAPIView):
+    serializer_class = UpdateInvestorSerializer
+    queryset = Investors.objects.all()
+    permission_classes = (IsAuthenticated,)
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    def get_object(self, pk):
+        try:
+            return Investors.objects.get(id=pk)
+        except Investors.DoesNotExist:
+            raise Http404
+
+    def put(self, request, id, format=None):
+        investment_id = self.get_object(id)
+        investordata = {
+            'amount': request.data.get('amount'),
+            'house_number': request.data.get('house_number'),
+            'payment': request.data.get('payment'),
         }
         serializer = self.serializer_class(investment_id, data=investordata)
         if serializer.is_valid():
