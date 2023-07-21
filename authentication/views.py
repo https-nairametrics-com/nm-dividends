@@ -219,7 +219,7 @@ class RegisterView(generics.GenericAPIView):
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
-        absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+        absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
         print(absurl)
         email_body = 'Hi '+user.firstname + \
             ' Use the link below to verify your email \n' + absurl
@@ -267,7 +267,7 @@ class RegisterIssuerView(generics.GenericAPIView):
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
-        absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+        absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
         print(absurl)
         email_body = 'Hi '+user.firstname + \
             ' Use the link below to verify your email \n' + absurl
@@ -334,7 +334,7 @@ class RegisterReferralView(generics.GenericAPIView):
                     token = RefreshToken.for_user(user).access_token
                     current_site = get_current_site(request).domain
                     relativeLink = reverse('email-verify')
-                    absurl = 'http://'+current_site + \
+                    absurl = 'https://'+current_site + \
                         relativeLink+"?token="+str(token)
                     print(absurl)
                     email_body = 'Hi '+user.firstname + \
@@ -403,7 +403,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
                 'password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
 
             redirect_url = request.data.get('redirect_url', '')
-            absurl = 'http://'+current_site + relativeLink
+            absurl = 'https://'+current_site + relativeLink
             print("absurl")
             print(absurl)
             email_body = 'Hello, \n Use link below to reset your password  \n' + \
