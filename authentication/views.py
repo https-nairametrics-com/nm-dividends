@@ -207,6 +207,7 @@ class RegisterView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         user_data = serializer.data
+        '''
         inidata = {'owner': user_data['id'],
                    'risk': request.data.get('risk'),
                    'period': request.data.get('period'),
@@ -215,6 +216,7 @@ class RegisterView(generics.GenericAPIView):
         ini_serial = self.ini_serializer(data=inidata)
         ini_serial.is_valid(raise_exception=True)
         ini_serial.save()
+        '''
         user = User.objects.get(email=user_data['email'])
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
