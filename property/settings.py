@@ -35,7 +35,7 @@ AUTH_USER_MODEL = 'authentication.User'
 # Application definition
 
 ALLOWED_HOSTS = ['yields-room.herokuapp.com', 'yield-room.netlify.app','yieldroom.africa','www.yieldroom.africa',
-                 '*.herokuapp.com', '*.netlify.app', 'localhost', '127.0.0.1', ]
+                 'yieldroom.ng','www.yieldroom.ng','*.herokuapp.com', '*.netlify.app', 'localhost', '127.0.0.1', ]
 
 
 INSTALLED_APPS = [
@@ -115,6 +115,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://yieldsroom.herokuapp.com",
     "https://yieldroom.africa",
     "https://www.yieldroom.africa",
+    "https://www.yieldroom.ng",
+    "https://yieldroom.ng",
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
@@ -237,8 +239,11 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_PORT = 995
 #EMAIL_HOST = 'outlook.office365.com'
-EMAIL_PORT = 2525
-EMAIL_HOST = 'smtp.mailtrap.io'
+#EMAIL_PORT = 2525
+#EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST = 'mail.yieldroom.africa'
+EMAIL_PORT = 587
+
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
