@@ -234,11 +234,12 @@ class RegisterView(generics.GenericAPIView):
         return Response(user_data, status=status.HTTP_201_CREATED)
 
 
-class UserInvestmentView(generics.GenericAPIView):
+class InitialInvestmentView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
     ini_serializer = RegistrationInitialInterestSerializer
-    renderer_classes = (UserRenderer,)
+    permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserRenderer,)
 
     def post(self, request):        
         inidata = {'owner': self.request.user.id,
@@ -247,6 +248,32 @@ class UserInvestmentView(generics.GenericAPIView):
                    'interest': request.data.get('interest'),
                    'investmentsize': request.data.get('investmentsize'), }
         ini_serial = self.ini_serializer(data=inidata)
+        ini_serial.is_valid(raise_exception=True)
+        ini_serial.save()
+        ini_data = ini_serial.data
+        return Response(ini_data, status=status.HTTP_201_CREATED)
+
+class UpdateInitialInvestmentView(generics.GenericAPIView):
+
+    serializer_class = RegisterSerializer
+    ini_serializer = RegistrationInitialInterestSerializer
+    permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserRenderer,)
+
+    def get_object(self, pk):
+        try:
+            return InitialInterests.objects.get(id=pk)
+        except InitialInterests.DoesNotExist:
+            raise Http404
+
+    def put(self, request, id, format=None):   
+        initialInterestId = self.get_object(id)     
+        inidata = {'owner': self.request.user.id,
+                   'risk': request.data.get('risk'),
+                   'period': request.data.get('period'),
+                   'interest': request.data.get('interest'),
+                   'investmentsize': request.data.get('investmentsize'), }
+        ini_serial = self.ini_serializer(initialInterestId, data=inidata)
         ini_serial.is_valid(raise_exception=True)
         ini_serial.save()
         ini_data = ini_serial.data
