@@ -234,6 +234,25 @@ class RegisterView(generics.GenericAPIView):
         return Response(user_data, status=status.HTTP_201_CREATED)
 
 
+class UserInvestmentView(generics.GenericAPIView):
+
+    serializer_class = RegisterSerializer
+    ini_serializer = RegistrationInitialInterestSerializer
+    renderer_classes = (UserRenderer,)
+
+    def post(self, request):        
+        inidata = {'owner': self.request.user.id,
+                   'risk': request.data.get('risk'),
+                   'period': request.data.get('period'),
+                   'interest': request.data.get('interest'),
+                   'investmentsize': request.data.get('investmentsize'), }
+        ini_serial = self.ini_serializer(data=inidata)
+        ini_serial.is_valid(raise_exception=True)
+        ini_serial.save()
+        ini_data = ini_serial.data
+        return Response(ini_data, status=status.HTTP_201_CREATED)
+
+
 class RegisterIssuerView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     ini_serializer = RegistrationInitialInterestSerializer
