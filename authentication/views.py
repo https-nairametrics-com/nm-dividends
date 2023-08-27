@@ -230,7 +230,6 @@ class RegisterView(generics.GenericAPIView):
         sender(data['email_subject'], data['email_body'],
                'no-reply@yieldroom.africa', [data['to_email']])
 
-        #Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
 
 
