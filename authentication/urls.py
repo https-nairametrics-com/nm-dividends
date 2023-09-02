@@ -8,6 +8,7 @@ from . import views
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name="register"),
+    path('investor/', views.UserInvestorDetailAPIView.as_view(), name="user-investor"),
     path('initial-interest/', views.InitialInvestmentView.as_view(), name="initial-interest"),
     path('initial-interest/update/<int:id>', views.UpdateInitialInvestmentView.as_view(), name="update-initial-interest"),
     path('register/referral/', RegisterReferralView.as_view(),
