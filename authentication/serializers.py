@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from investor.serializers import InitialInterestSerializer, RegistrationInitialInterestSerializer
+from investor.serializers import InitialInterestSerializer, RegistrationInitialInterestSerializer, PeriodSerializer, RoomSerializer, RiskSerializer, SizeSerializer
 from investor.models import InitialInterests
 
 
@@ -272,4 +272,4 @@ class UserInSerializer(serializers.ModelSerializer):
 
     def get_details(self, obj):
         logger_queryset = InitialInterests.objects.filter(owner=obj.id)
-        return RegistrationInitialInterestSerializer(logger_queryset, many=True).data
+        return InitialInterestSerializer(logger_queryset, many=True).data
