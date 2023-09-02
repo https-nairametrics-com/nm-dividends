@@ -176,7 +176,7 @@ class ExpectationsSerializer(serializers.ModelSerializer):
 
 class AdminExpectationsSerializer(serializers.ModelSerializer):
     user = UserInvestmentSerializer(read_only=False)
-
+  
     class Meta:
         model = Expectations
         fields = ['id', 'interest', 'is_verified', 'created_by', 'user'
