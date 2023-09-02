@@ -12,11 +12,11 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
 from django.core.mail import send_mail as sender
 from rest_framework import filters, generics, status, views, permissions
-from .serializers import ProfileIssuerSerializer, ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
+from .serializers import ProfileIssuerSerializer, UserInSerializer, ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .models import Referrals, User
@@ -72,7 +72,23 @@ def render_to_pdf(template_src, context_dict={}):
     return None
 '''
 
+class UserInvestorDetailAPIView(APIView):
+    def get(self, request, format=None):
+        try:
+            user = request.user
+            user = UserInSerializer(user)
 
+            return Response(
+                {'user': user.data},
+                status=status.HTTP_200_OK
+            )
+
+        except:
+            return Response(
+                {'error': 'Something went wrong when trying to load user'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
 class UserListAPIView(ListAPIView):
     serializer_class = UserInterestSerializer
     queryset = User.objects.all().order_by('-created_at')
@@ -95,12 +111,20 @@ class UserListAPIView(ListAPIView):
 class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserInterestSerializer
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
     lookup_field = "id"
 
     def get_queryset(self):
-        return self.queryset.all()
+        return self.queryset.filter(owner=self.request.user)
 
+class UserInvestorAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserInterestSerializer
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return self.queryset.filter(id=self.request.user)
 
 class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
     permission_classes = (AllowAny,)
