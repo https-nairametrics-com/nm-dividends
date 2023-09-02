@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from investor.serializers import InitialInterestSerializer
+from investor.serializers import InitialInterestSerializer, RegistrationInitialInterestSerializer
 from investor.models import InitialInterests
 
 
@@ -40,7 +40,6 @@ class ProfileIssuerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['id', 'user', 'nin', 'dob', 'identity']
-
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -261,3 +260,16 @@ class UserInterestSerializer(serializers.ModelSerializer):
     def get_details(self, obj):
         logger_queryset = InitialInterests.objects.filter(owner=obj.id)
         return InitialInterestSerializer(logger_queryset, many=True).data
+
+class UserInSerializer(serializers.ModelSerializer):
+    details = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'firstname', 'lastname', 'email', 'address',
+                  'phone', 'referral_code', 'is_verified', 'is_approved', 'created_at',
+                  'details']
+
+    def get_details(self, obj):
+        logger_queryset = InitialInterests.objects.filter(owner=obj.id)
+        return RegistrationInitialInterestSerializer(logger_queryset, many=True).data
