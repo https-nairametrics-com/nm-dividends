@@ -75,7 +75,7 @@ def investor_slug(size=6, chars=string.ascii_lowercase + string.digits):
 # Generate username  ID
 
 
-def username_generator(size=4, chars=string.ascii_lowercase + string.digits):
+def username_generator(size=7, chars=string.ascii_lowercase + string.digits):
     the_id = "".join(random.choice(chars) for x in range(size))
     # Check if ID exist in database
     try:
