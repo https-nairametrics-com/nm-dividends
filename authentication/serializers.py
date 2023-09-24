@@ -41,6 +41,12 @@ class ProfileIssuerSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['id', 'user', 'nin', 'dob', 'identity']
 
+class ProfileInvestorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'address', 'linkedin']
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=68, min_length=6, write_only=True)
