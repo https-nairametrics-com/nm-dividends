@@ -12,7 +12,7 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 #from core.auth.serializers import LoginSerializer, RegistrationSerializer
 from django.core.mail import send_mail as sender
 from rest_framework import filters, generics, status, views, permissions
-from .serializers import ProfileIssuerSerializer, UserInSerializer, ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
+from .serializers import ProfileInvestorSerializer, ProfileIssuerSerializer, UserInSerializer, ApproveUserSerializer, VerifiedUserSerializer, UserInterestSerializer, SigninSerializer, ReferralSerializer, InviteSerializer, RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
@@ -452,6 +452,28 @@ class LoginAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProfileUpdateView(generics.GenericAPIView):
+    serializer_class = ProfileInvestorSerializer
+    permission_classes = (IsAuthenticated,)
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(id=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def put(self, request, format=None):
+        snippet = self.get_object(self.request.user.id)
+        indata = {
+            'address': request.data.get('address')
+        }
+
+        
+
+
+
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
