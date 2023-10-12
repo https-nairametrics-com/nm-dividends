@@ -471,6 +471,12 @@ class ProfileUpdateView(generics.GenericAPIView):
             'linkedin': request.data.get('linkedin'),
             'phone': request.data.get('phone')
         }
+        ini_serial = self.serializer_class(data=indata)
+        ini_serial.is_valid(raise_exception=True)
+        ini_serial.save()
+
+        return Response(ini_serial.data, status=status.HTTP_200_OK)
+
 
         
 
