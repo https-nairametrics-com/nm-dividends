@@ -467,7 +467,9 @@ class ProfileUpdateView(generics.GenericAPIView):
     def put(self, request, format=None):
         snippet = self.get_object(self.request.user.id)
         indata = {
-            'address': request.data.get('address')
+            'address': request.data.get('address'),
+            'linkedin': request.data.get('linkedin'),
+            'phone': request.data.get('phone')
         }
 
         
