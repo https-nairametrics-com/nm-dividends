@@ -316,7 +316,7 @@ class RegisterIssuerView(generics.GenericAPIView):
             'lastname': request.data.get('lastname'),
             'username': str(username_generator()),
             'address': request.data.get('address'),
-            'linkedin': request.data.get('linkedln'),
+            'linkedin': request.data.get('linkedin'),
             'referral_code': str(referral_generator()),
             'phone': request.data.get('phone'),
             'password': request.data.get('password'),
