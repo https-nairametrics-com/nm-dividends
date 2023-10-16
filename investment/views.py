@@ -537,7 +537,7 @@ class InvestmentAPIView(generics.GenericAPIView):
                     data = {'email_body': email_body, 'to_email': user.email,
                             'email_subject': 'Welcome to yieldroom '}
                     sender(data['email_subject'], data['email_body'],
-                        'ssn@nairametrics.com', [data['to_email']])
+                        'no-reply@yieldroom.africa', [data['to_email']])
 
                     Util.send_email(data)
                     dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
@@ -1224,7 +1224,7 @@ class IssuerAPIView(generics.GenericAPIView):
                     data = {'email_body': email_body, 'to_email': user.email,
                             'email_subject': 'Welcome to yieldroom '}
                     sender(data['email_subject'], data['email_body'],
-                           'ssn@nairametrics.com', [data['to_email']])
+                           'no-reply@yieldroom.africa', [data['to_email']])
 
                     Util.send_email(data)
                     dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
@@ -1386,7 +1386,7 @@ class IssuerAPIOldView(generics.GenericAPIView):
                     data = {'email_body': email_body, 'to_email': user.email,
                             'email_subject': 'Welcome to yieldroom '}
                     sender(data['email_subject'], data['email_body'],
-                           'ssn@nairametrics.com', [data['to_email']])
+                           'no-reply@yieldroom.africa', [data['to_email']])
 
                     Util.send_email(data)
 
@@ -1478,7 +1478,7 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Welcome to yieldroom '}
             sender(data['email_subject'], data['email_body'],
-                   'ssn@nairametrics.com', [data['to_email']])
+                   'no-reply@yieldroom.africa', [data['to_email']])
 
             Util.send_email(data)
             dob = datetime.date(request.data.get('dob'))

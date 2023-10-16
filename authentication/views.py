@@ -345,7 +345,7 @@ class RegisterIssuerView(generics.GenericAPIView):
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
         sender(data['email_subject'], data['email_body'],
-               'newsletter@nairametrics.com', [data['to_email']])
+               'no-reply@yieldroom.africa', [data['to_email']])
 
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
