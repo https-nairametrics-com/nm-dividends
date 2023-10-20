@@ -556,7 +556,7 @@ class ContactIssuerAPIView(generics.GenericAPIView):
             data = {'email_body': email_body, 'to_email': checkInvestment.owner.email,
                     'email_subject': 'Project Enquiry'}
             sender(data['email_subject'], data['email_body'],
-                   'no-reply@yieldroom.africa', [data['to_email']])'''
+                   'no-reply@yieldroom.ng', [data['to_email']])'''
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({"status": "error",  "error": "Message is empty"},

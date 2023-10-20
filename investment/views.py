@@ -533,11 +533,11 @@ class InvestmentAPIView(generics.GenericAPIView):
                         ' Your default password to yieldroom is: \n' + \
                         fields["firstname"] + \
                         fields["lastname"]+userd + '\n' +\
-                        'https://yield-room.netlify.com'
+                        'https://yieldroom.africa'
                     data = {'email_body': email_body, 'to_email': user.email,
                             'email_subject': 'Welcome to yieldroom '}
                     sender(data['email_subject'], data['email_body'],
-                        'no-reply@yieldroom.africa', [data['to_email']])
+                        'no-reply@yieldroom.ng', [data['to_email']])
 
                     Util.send_email(data)
                     dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
@@ -1220,11 +1220,11 @@ class IssuerAPIView(generics.GenericAPIView):
                         ' Your default password to yieldroom is: \n' + \
                         fields["firstname"] + \
                         fields["lastname"]+userd + '\n' +\
-                        'https://yield-room.netlify.com'
+                        'https://yieldroom.africa'
                     data = {'email_body': email_body, 'to_email': user.email,
                             'email_subject': 'Welcome to yieldroom '}
                     sender(data['email_subject'], data['email_body'],
-                           'no-reply@yieldroom.africa', [data['to_email']])
+                           'no-reply@yieldroom.ng', [data['to_email']])
 
                     Util.send_email(data)
                     dob = datetime.datetime.strptime(fields["dob"], '%m/%d/%Y')
@@ -1382,11 +1382,11 @@ class IssuerAPIOldView(generics.GenericAPIView):
                         ' Your default password to yieldroom is: \n' + \
                         fields[0] + \
                         fields[1]+userd + '\n' +\
-                        'https://yield-room.netlify.com'
+                        'https://yieldroom.africa'
                     data = {'email_body': email_body, 'to_email': user.email,
                             'email_subject': 'Welcome to yieldroom '}
                     sender(data['email_subject'], data['email_body'],
-                           'no-reply@yieldroom.africa', [data['to_email']])
+                           'no-reply@yieldroom.ng', [data['to_email']])
 
                     Util.send_email(data)
 
@@ -1474,15 +1474,15 @@ class IssuerCreateInvestorAPIView(generics.GenericAPIView):
                 ' Your default password to yieldroom is: \n' + \
                 request.data.get('firstname') + \
                 request.data.get('lastname')+userd + '\n' +\
-                'https://yield-room.netlify.com'
+                'https://yieldroom.africa'
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Welcome to yieldroom '}
             sender(data['email_subject'], data['email_body'],
-                   'no-reply@yieldroom.africa', [data['to_email']])
+                   'no-reply@yieldroom.ng', [data['to_email']])
 
-            Util.send_email(data)
-            dob = datetime.date(request.data.get('dob'))
-            new_dob = dob.strftime("%Y-%m-%d")
+            #Util.send_email(data)
+            #dob = datetime.date(request.data.get('dob'))
+            #new_dob = dob.strftime("%Y-%m-%d")
             newUserProfile = {
                 'identity': request.data.get('identity'),
                 'user': investorId,
