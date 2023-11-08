@@ -219,7 +219,7 @@ class RegisterView(generics.GenericAPIView):
         user = {
             'firstname': request.data.get('firstname'),
             'lastname': request.data.get('lastname'),
-            'username': request.data.get('firstname')+"_"+request.data.get('lastname')+"_"+str(username_generator()),
+            'username': request.data.get('firstname')+request.data.get('lastname')+str(username_generator()),
             'address': request.data.get('address'),
             'linkedin': request.data.get('linkedln'),
             'referral_code': str(referral_generator()),
