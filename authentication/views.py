@@ -245,7 +245,8 @@ class RegisterView(generics.GenericAPIView):
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
-        absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
+        #absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
+        absurl = 'https://yieldroom.africa/confirm/'+"?token="+str(token)
         print(absurl)
         email_body = 'Hi '+user.firstname + \
             ' Use the link below to verify your email \n' + absurl
@@ -338,7 +339,8 @@ class RegisterIssuerView(generics.GenericAPIView):
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
-        absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
+        #absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
+        absurl = 'https://yieldroom.africa/confirm/'+"?token="+str(token)
         print(absurl)
         email_body = 'Hi '+user.firstname + \
             ' Use the link below to verify your email \n' + absurl
