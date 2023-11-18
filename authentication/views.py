@@ -221,6 +221,7 @@ class RegisterView(generics.GenericAPIView):
             'lastname': request.data.get('lastname'),
             'username': request.data.get('firstname')+request.data.get('lastname')+str(username_generator()),
             'address': request.data.get('address'),
+            'is_approved':True,
             'linkedin': request.data.get('linkedln'),
             'referral_code': str(referral_generator()),
             'phone': request.data.get('phone'),
@@ -317,6 +318,7 @@ class RegisterIssuerView(generics.GenericAPIView):
             'lastname': request.data.get('lastname'),
             'username': str(username_generator()),
             'address': request.data.get('address'),
+            'is_approved':True,
             'linkedin': request.data.get('linkedin'),
             'referral_code': str(referral_generator()),
             'phone': request.data.get('phone'),
@@ -478,12 +480,6 @@ class ProfileUpdateView(generics.GenericAPIView):
         ini_serial.save()
 
         return Response(ini_serial.data, status=status.HTTP_200_OK)
-
-
-        
-
-
-
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
