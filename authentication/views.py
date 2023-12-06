@@ -513,7 +513,9 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             print(absurl+"?redirect_url="+redirect_url)
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Reset your passsword'}
-            Util.send_email(data)
+            sender(data['email_subject'], data['email_body'],
+               'no-reply@yieldroom.ng', [data['to_email']])
+            #Util.send_email(data)
         return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
 
 
