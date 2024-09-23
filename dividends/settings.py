@@ -82,7 +82,7 @@ MIDDLEWARE = [
 
 ]
 
-ROOT_URLCONF = 'property.urls'
+ROOT_URLCONF = 'dividends.urls'
 
 TEMPLATES = [
     {
@@ -100,7 +100,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'property.wsgi.application'
+WSGI_APPLICATION = 'dividends.wsgi.application'
 
 # CORS WHITELIST
 CORS_ORIGIN_WHITELIST = [
@@ -134,24 +134,26 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+'''
 
 DATABASES = {
     'default': {
         'ENGINE':  'django.db.backends.postgresql',
-        'NAME': 'property',
-        'USER': 'postgres',
+        'NAME': 'dividends',
+        'USER': 'postgres', 
         'PASSWORD': 'roygbiv7',
         'HOST': '127.0.0.1',
         'PORT': ''
     }
-} '''
+}
 
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+'''DATABASE_URL = os.getenv("DATABASE_URL")
 
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1800),
 }
+'''
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -243,7 +245,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST = 'mail.yieldroom.africa'
 EMAIL_PORT = 587
-
+#EMAIL_HOST = 'premium161.web-hosting.com'
+#EMAIL_PORT = 587
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
