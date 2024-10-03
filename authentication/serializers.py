@@ -32,14 +32,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'next_of_kin', 'nin', 'dob', 'identity']
+        fields = ['id', 'user', 'dob', 'identity']
 
 
 class ProfileIssuerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'nin', 'dob', 'identity']
+        fields = ['id', 'user', 'dob', 'identity']
 
 class ProfileInvestorSerializer(serializers.ModelSerializer):
 
@@ -142,7 +142,7 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'password', 'username',
-                  'tokens', 'is_staff', 'is_vendor', 'is_approved', 'is_issuer']
+                  'tokens', 'is_staff', 'is_approved']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -168,9 +168,7 @@ class LoginSerializer(serializers.ModelSerializer):
             'username': user.username,
             'tokens': user.tokens,
             'is_staff': user.is_staff,
-            'is_vendor': user.is_vendor,
             'is_approved': user.is_approved,
-            'is_issuer': user.is_issuer,
         }
 
         return super().validate(attrs)

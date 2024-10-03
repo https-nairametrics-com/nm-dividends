@@ -74,10 +74,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255, null=True, unique=True, db_index=True)
     is_verified = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
-    is_issuer = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    is_vendor = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     auth_provider = models.CharField(
@@ -119,9 +117,6 @@ class Referrals(models.Model):
 class Profile(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='profile_authentication_set')
-    next_of_kin = models.CharField(max_length=255, null=True)
-    is_investor = models.BooleanField(default=True)
-    nin = models.CharField(max_length=255, null=True)
     dob = models.DateField(null=True)
     identity = models.ImageField(
         _("Identity"), upload_to=identity_to, default='identity/default.jpg')
