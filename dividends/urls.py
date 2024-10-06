@@ -46,6 +46,7 @@ urlpatterns = [
     #path('social_auth/', include(('social_auth.urls',
     #                              'social_auth'), namespace="social_auth")),
     path('investor/', include('investor.urls')),
+    path('results/', include('results.urls')),
     path('comment/', include('comment.urls')),
     path('contact/', include('contact.urls')),
     path('investment/', include('investment.urls')),

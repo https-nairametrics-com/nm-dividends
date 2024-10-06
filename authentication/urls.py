@@ -8,12 +8,12 @@ from . import views
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name="register"),
-    path('investor/', views.UserInvestorDetailAPIView.as_view(), name="user-investor"),
-    path('initial-interest/', views.InitialInvestmentView.as_view(), name="initial-interest"),
-    path('initial-interest/update/<int:id>', views.UpdateInitialInvestmentView.as_view(), name="update-initial-interest"),
-    path('register/referral/', RegisterReferralView.as_view(),
-         name="register-referral"),
-    path('register/issuer/', RegisterIssuerView.as_view(), name="register-issuer"),
+    #path('investor/', views.UserInvestorDetailAPIView.as_view(), name="user-investor"),
+    #path('initial-interest/', views.InitialInvestmentView.as_view(), name="initial-interest"),
+    #path('initial-interest/update/<int:id>', views.UpdateInitialInvestmentView.as_view(), name="update-initial-interest"),
+    #path('register/referral/', RegisterReferralView.as_view(),
+    #     name="register-referral"),
+    #path('register/issuer/', RegisterIssuerView.as_view(), name="register-issuer"),
     #path('login2/', LoginViewSet, name='auth-login'),
     #path('refresh/', RefreshViewSet, name='auth-refresh'),
     path('login/', LoginAPIView.as_view(), name="login"),

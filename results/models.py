@@ -18,7 +18,7 @@ class NMData(models.Model):
     data_type = models.CharField(max_length=255)
 
     description = models.TextField(blank=True)  # Additional field
-    upload_date = models.DateField(auto_now_add=True)  # Auto-populated date
+    upload_date = models.DateField(null=True)  # Auto-populated date
     csv_file = models.FileField(upload_to='csv/')  # Uploaded file
     status = models.CharField(
         choices=STATUS_OPTIONS, max_length=255, default="not started")
