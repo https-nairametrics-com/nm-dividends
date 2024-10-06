@@ -51,12 +51,11 @@ INSTALLED_APPS = [
     'drf_yasg',
     'authentication',
     'django_filters',
-    'expenses',
-    'income',
     'investor',
     'investment',
     'comment',
     'contact',
+    'results',
 ]
 
 SWAGGER_SETTINGS = {

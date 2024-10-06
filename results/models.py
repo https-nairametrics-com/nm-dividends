@@ -19,7 +19,7 @@ class NMData(models.Model):
 
     description = models.TextField(blank=True)  # Additional field
     upload_date = models.DateField(auto_now_add=True)  # Auto-populated date
-    csv_file = models.FileField(upload_to='uploads/')  # Uploaded file
+    csv_file = models.FileField(upload_to='csv/')  # Uploaded file
     status = models.CharField(
         choices=STATUS_OPTIONS, max_length=255, default="not started")
     json_data = models.JSONField(blank=True, null=True)  # Parsed JSON data from the CSV
