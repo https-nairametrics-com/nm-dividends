@@ -92,27 +92,21 @@ def view_all_uploads(request):
         data_type = request.query_params.get('data_type', None)
         company = request.query_params.get('company', None)
         csv_uploads = NMData.objects.all()
+        # Filter NMData objects by 'name' and 'data_type'
+        uploads = NMData.objects.all()
 
         if name:
-            csv_uploads = csv_uploads.filter(name__icontains=name)
-        if data_type:
-            csv_uploads = csv_uploads.filter(data_type__icontains=data_type)
-        # If 'company' is provided, filter manually by iterating over json_data
-        '''
-        if company:
-            filtered_uploads = []
-            for upload in csv_uploads:
-                for row in upload.json_data:
-                    if company.lower() in row.get('Company', '').lower():
-                        filtered_uploads.append(upload)
-                        break
-            csv_uploads = filtered_uploads
+            uploads = uploads.filter(name__icontains=name)
 
-        '''
+        if data_type:
+            uploads = uploads.filter(data_type__icontains=data_type)
+
+        # Prepare a list to hold the final filtered results
         filtered_results = []
+
         if company:
-        # Iterate through all NMData instances
-            for upload in csv_uploads:
+            # Iterate through filtered NMData instances
+            for upload in uploads:
                 matched_rows = []
                 # Search within the json_data for the company
                 for row in upload.json_data:
@@ -130,10 +124,19 @@ def view_all_uploads(request):
                         'uploaded_by': upload.uploaded_by.id if upload.uploaded_by else None,
                         'filtered_json_data': matched_rows,  # Return only the matching rows
                     })
-            return Response(filtered_results, status=200)
-            
-        # Serialize the data
-        serializer = NMDataSerializer(csv_uploads, many=True)
 
-        # Return the serialized data
-        return Response(serializer.data)
+        # If no company filter, return all filtered NMData
+        if not company:
+            for upload in uploads:
+                filtered_results.append({
+                    'id': upload.id,
+                    'name': upload.name,
+                    'data_type': upload.data_type,
+                    'description': upload.description,
+                    'upload_date': upload.upload_date,
+                    'status': upload.status,
+                    'uploaded_by': upload.uploaded_by.id if upload.uploaded_by else None,
+                    'json_data': upload.json_data,  # Return full json_data if no company filter
+                })
+
+        return Response(filtered_results, status=200)
