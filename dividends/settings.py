@@ -133,7 +133,7 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-'''
+
 
 DATABASES = {
     'default': {
@@ -147,12 +147,12 @@ DATABASES = {
 }
 
 
-'''DATABASE_URL = os.getenv("DATABASE_URL")
+'''
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1800),
 }
-'''
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
