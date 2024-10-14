@@ -7,6 +7,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import NMData
+from rest_framework.pagination import PageNumberPagination
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from .serializers import NMDataSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -82,6 +84,10 @@ def user_uploads(request):
     serializer = NMDataSerializer(uploads, many=True)
     return Response(serializer.data)
 
+class NMDataPagination(PageNumberPagination):
+    page_size = 10  # Define the number of records per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 @api_view(['GET'])
 #@permission_classes([IsAuthenticated])  # Only authenticated users can view all uploads
@@ -96,17 +102,24 @@ def view_all_uploads(request):
         uploads = NMData.objects.all()
 
         if name:
-            uploads = uploads.filter(name__icontains=name)
+                uploads = uploads.filter(name__icontains=name)
 
         if data_type:
             uploads = uploads.filter(data_type__icontains=data_type)
 
+        # Sorting
+        sort_by = request.query_params.get('sort_by', '-upload_date')
+        uploads = uploads.order_by(sort_by)
+
+        # Pagination using PageNumberPagination
+        paginator = NMDataPagination()
+        paginated_uploads = paginator.paginate_queryset(uploads, request)   
+
         # Prepare a list to hold the final filtered results
         filtered_results = []
 
-        if company:
-            # Iterate through filtered NMData instances
-            for upload in uploads:
+        for upload in paginated_uploads:
+            if company:
                 matched_rows = []
                 # Search within the json_data for the company
                 for row in upload.json_data:
@@ -124,10 +137,8 @@ def view_all_uploads(request):
                         'uploaded_by': upload.uploaded_by.id if upload.uploaded_by else None,
                         'filtered_json_data': matched_rows,  # Return only the matching rows
                     })
-
-        # If no company filter, return all filtered NMData
-        if not company:
-            for upload in uploads:
+            else:
+                # If no company filter, return all json_data
                 filtered_results.append({
                     'id': upload.id,
                     'name': upload.name,
@@ -136,7 +147,8 @@ def view_all_uploads(request):
                     'upload_date': upload.upload_date,
                     'status': upload.status,
                     'uploaded_by': upload.uploaded_by.id if upload.uploaded_by else None,
-                    'json_data': upload.json_data,  # Return full json_data if no company filter
+                    'json_data': upload.json_data,  # Return full json_data
                 })
 
-        return Response(filtered_results, status=200)
+        # Return paginated response with next and previous links
+        return paginator.get_paginated_response(filtered_results)
