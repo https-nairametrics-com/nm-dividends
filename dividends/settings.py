@@ -34,7 +34,7 @@ DEBUG = True
 AUTH_USER_MODEL = 'authentication.User'
 # Application definition
 
-ALLOWED_HOSTS = ['yields-room.herokuapp.com', 'yield-room.netlify.app','yieldroom.africa','www.yieldroom.africa',
+ALLOWED_HOSTS = ['yields-room.herokuapp.com', 'nairametrix.com', 'www.nairametrix.com', 'yield-room.netlify.app','yieldroom.africa','www.yieldroom.africa','nairametrics.com','nm-dividends-front.onrender.com',
                  'yieldroom.ng','www.yieldroom.ng','*.herokuapp.com', '*.netlify.app', 'localhost', '127.0.0.1', ]
 
 
@@ -105,6 +105,7 @@ WSGI_APPLICATION = 'dividends.wsgi.application'
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "http://localhost:5173",
     "http://localhost:3002",
     "https://relaxed-curie-e9a516.netlify.app",
     "http://127.0.0.1:3080",
@@ -116,6 +117,12 @@ CORS_ORIGIN_WHITELIST = [
     "https://www.yieldroom.africa",
     "https://www.yieldroom.ng",
     "https://yieldroom.ng",
+    "https://nairametrix.com",
+    "https://www.nairametrix.com",
+    "https://nm-dividends-front.vercel.com",
+    "https://nairametrics.com",
+    "https://dividends.nairametrics.com",
+    "https://nm-dividends-front.onrender.com"
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
@@ -242,9 +249,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_HOST = 'outlook.office365.com'
 #EMAIL_PORT = 2525
 #EMAIL_HOST = 'smtp.mailtrap.io'
-EMAIL_HOST = 'mail.yieldroom.africa'
+#EMAIL_HOST = 'mail.yieldroom.africa'
 EMAIL_PORT = 587
-#EMAIL_HOST = 'premium161.web-hosting.com'
+EMAIL_HOST = 'premium142.web-hosting.com'
 #EMAIL_PORT = 587
 
 
