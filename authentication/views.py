@@ -220,41 +220,28 @@ class RegisterView(generics.GenericAPIView):
             'firstname': request.data.get('firstname'),
             'lastname': request.data.get('lastname'),
             'username': request.data.get('firstname')+request.data.get('lastname')+str(username_generator()),
-            'address': request.data.get('address'),
             'is_approved':True,
-            'linkedin': request.data.get('linkedln'),
             'referral_code': str(referral_generator()),
-            'phone': request.data.get('phone'),
             'password': request.data.get('password'),
             'email': request.data.get('email'), }
         #user = request.data
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        user_data = serializer.data
-    
-        inidata = {'owner': user_data['id'],
-                   'risk': 1,
-                   'period': 1,
-                   'interest': 1,
-                   'investmentsize': 1, }
-        ini_serial = self.ini_serializer(data=inidata)
-        ini_serial.is_valid(raise_exception=True)
-        ini_serial.save()
-         
+        user_data = serializer.data         
         user = User.objects.get(email=user_data['email'])
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
         #absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
-        absurl = 'https://yieldroom.africa/confirm/'+"?token="+str(token)
+        absurl = request.data.get('callBackUrl')+"?token="+str(token)
         print(absurl)
         email_body = 'Hi '+user.firstname + \
             ' Use the link below to verify your email \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
         sender(data['email_subject'], data['email_body'],
-               'no-reply@yieldroom.ng', [data['to_email']])
+               'no-reply@nairametrix.com', [data['to_email']])
 
         return Response(user_data, status=status.HTTP_201_CREATED)
 
