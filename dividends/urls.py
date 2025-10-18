@@ -25,11 +25,11 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Yield Room API",
+        title="Nairametrics dividends",
         default_version='v1',
         description="Test description",
         terms_of_service="https://www.ourapp.com/policies/terms/",
-        contact=openapi.Contact(email="info@yieldroom.africa"),
+        contact=openapi.Contact(email="info@nairametrics.com"),
         license=openapi.License(name="Test License"),
     ),
     public=True,
@@ -47,7 +47,7 @@ urlpatterns = [
     #                              'social_auth'), namespace="social_auth")),
     #path('investor/', include('investor.urls')),
     path('results/', include('results.urls')),
-    #path('comment/', include('comment.urls')),
+    path('article/', include('article.urls')),
     #path('contact/', include('contact.urls')),
     #path('investment/', include('investment.urls')),
     path('', schema_view.with_ui('swagger', cache_timeout=0),
