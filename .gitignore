@@ -18,3 +18,14 @@ kimi.md
 
 # AI Agent Plans
 plans/
+
+.env
+venv
+
+__pycache__
+__pycache__/
+*.py[cod]
+db.sqlite3
+staticfiles/
+media/
+.vscode/
