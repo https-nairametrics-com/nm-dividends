@@ -62,7 +62,7 @@ class ResourceViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Return appropriate permissions based on action."""
-        if self.action in ["list", "retrieve"]:
+        if self.action in ["list", "retrieve", "categories"]:
             permission_classes = [AllowAny]
         else:
             permission_classes = [IsAuthenticated, IsAdminOrEditor]
