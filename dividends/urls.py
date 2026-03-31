@@ -48,6 +48,7 @@ urlpatterns = [
     #path('investor/', include('investor.urls')),
     path('results/', include('results.urls')),
     path('article/', include('article.urls')),
+    path('api/v1/', include('resources.urls')),
     #path('contact/', include('contact.urls')),
     #path('investment/', include('investment.urls')),
     path('', schema_view.with_ui('swagger', cache_timeout=0),
