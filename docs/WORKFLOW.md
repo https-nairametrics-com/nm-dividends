@@ -87,35 +87,85 @@ gh pr create --title "Issue #<number>: <Brief Title>" \
 
 ### 5. PR Description Template
 
-Include in your PR description:
-- What was implemented/changed
-- How to test
-- Link to the issue: `Closes #<number>`
+Use this template for PR descriptions:
 
-Example:
 ```markdown
 ## Summary
-Implements Issue #2: Resources API CRUD & Categories
+Brief description of changes
 
 ## Changes
-- Add ResourceSerializer with validation
-- Add ResourceViewSet with CRUD operations
-- Add permission checks (public read, admin write)
-- Add filters for category, status, featured, search
-- Add pagination (max 100 per page)
-- Add categories endpoint with resource counts
+- List specific changes
+- Use bullet points
 
 ## Testing
-Tested via Django shell and browsable API.
+- [ ] Unit tests pass (`python manage.py test`)
+- [ ] Integration tests pass (if applicable)
+- [ ] Manual testing completed
+- [ ] Test coverage >= 80% for new code
+- [ ] Linting passes (`flake8 .`, `black --check .`)
 
-Closes #2
+## Checklist
+- [ ] Code follows Django/Python style guide
+- [ ] Documentation updated (if needed)
+- [ ] No breaking changes (or documented)
+- [ ] Migrations tested (if applicable)
+
+## Related Issue
+Closes #<number>
 ```
 
 ### 6. Review and Merge
 
-- PRs should be reviewed before merging
-- Once approved, merge to `main`
-- Delete the feature branch after merge
+#### Developer Responsibilities
+
+As a feature developer, your responsibility ends at creating the pull request. You do not merge your own PRs.
+
+```bash
+# Push your feature branch
+git push origin issue-<number>-<description>
+
+# Create PR for review
+gh pr create --base main --title "Issue #<n>: Description" --body "Closes #<n>"
+
+# Respond to reviewer feedback
+# Do not click the merge button - that is the reviewer's role
+```
+
+#### Reviewer/Maintainer Responsibilities
+
+The reviewer is responsible for:
+1. Code review (quality, style, acceptance criteria)
+2. Running tests and verifying they pass
+3. Checking test coverage meets requirements
+4. Merging via GitHub UI once approved
+
+**Review Checklist:**
+- [ ] Code follows project conventions
+- [ ] Acceptance criteria are met
+- [ ] All tests pass (`python manage.py test`)
+- [ ] Test coverage >= 80% for new code
+- [ ] Linting passes (`flake8 .`, `black --check .`)
+- [ ] Migrations are valid (if applicable)
+- [ ] No security issues
+
+**Running Tests Before Merge:**
+```bash
+# Checkout the PR branch
+gh pr checkout <pr-number>
+
+# Run full test suite
+python manage.py test
+
+# Check coverage
+coverage run manage.py test
+coverage report
+
+# Run linting
+flake8 .
+black --check .
+```
+
+After approval, the reviewer merges via GitHub UI using "Squash and merge" and deletes the feature branch.
 
 ## Commit Message Conventions
 
@@ -188,6 +238,142 @@ gh pr list --repo https-nairametrics-com/nm-dividends
 5. **Test before creating PR**
 6. **PRs target `main` branch of your fork**
 
+## Testing Requirements
+
+### Before Creating PR
+
+Run these commands locally:
+
+```bash
+# Run tests
+python manage.py test
+
+# Check coverage
+coverage run manage.py test
+coverage report
+
+# Run linting
+flake8 .
+black --check .
+
+# Check migrations (if models changed)
+python manage.py makemigrations --check --dry-run
+```
+
+**Requirements:**
+- All tests must pass
+- New code: minimum 80% coverage
+- No linting errors
+- Valid migrations
+
+### Reviewer Testing
+
+Before approving, reviewers must:
+1. Checkout PR: `gh pr checkout <number>`
+2. Run tests: `python manage.py test`
+3. Verify coverage: `coverage report`
+4. Run linting: `flake8 . && black --check .`
+5. Test migrations: `python manage.py migrate` (test DB)
+
+## Dependency Analysis Framework
+
+### When to Branch from Other Branches
+
+If your issue depends on code from an open PR that hasn't merged yet:
+
+#### Step 1: Check for Dependencies
+
+Read the issue description for explicit dependencies:
+- "Depends on..."
+- "Requires..."
+- "Blocked by..."
+
+#### Step 2: Analyze Infrastructure
+
+Before branching, verify required infrastructure exists:
+
+```bash
+# Check if auth system exists in main
+grep -r "authentication" app_name/
+
+# Check if models exist
+ls app_name/models.py
+
+# Check open PRs for related work
+gh pr list --state open
+```
+
+#### Step 3: Branching Strategy
+
+| Scenario | Branch From | Example |
+|----------|-------------|---------|
+| Standalone feature | `main` | `issue-5-add-endpoint` |
+| Needs unmerged auth | `issue-3-auth-system` | `issue-6-user-profile` |
+| Uses new models | `issue-4-model-changes` | `issue-7-api-views` |
+
+#### Example: Branching from a Feature Branch
+
+Issue #10 depends on Issue #9 (auth system) which is in PR but not merged:
+
+```bash
+# 1. Checkout the dependency branch
+git checkout issue-9-auth-system
+git pull origin issue-9-auth-system
+
+# 2. Create your branch from it
+git checkout -b issue-10-user-profile
+
+# 3. Implement changes
+git add .
+git commit -m "feat(user): add user profile endpoint"
+
+# 4. Push both branches
+git push origin issue-9-auth-system   # PR #20
+git push origin issue-10-user-profile # PR #21
+
+# 5. Create PRs (dependency first)
+gh pr create --base main --title "feat: auth system" --body "Closes #9"
+gh pr create --base main --draft --title "feat: user profile (depends on #20)" \
+  --body "Depends on PR #20. Closes #10"
+```
+
+**After the dependency merges:**
+```bash
+# Rebase onto main to clean up history
+git checkout issue-10-user-profile
+git fetch origin
+git rebase origin/main
+git push --force-with-lease origin issue-10-user-profile
+gh pr ready  # Mark as ready for review
+```
+
+## Project Board Integration (Optional)
+
+If using GitHub Projects to track issues:
+
+### Board Columns
+- **Backlog** - Not started
+- **In Progress** - Actively working
+- **Review** - PR created
+- **Done** - Merged
+
+### Updating Status
+
+```bash
+# Move to In Progress
+gh project item-edit --id <item-id> --field "Status" --value "In Progress"
+
+# Or use GitHub UI
+```
+
+### When to Update
+
+| Action | Update To |
+|--------|-----------|
+| Start working | In Progress |
+| Create PR | Review |
+| PR merged | Done |
+
 ## Git Remotes
 
 ```bash
@@ -204,3 +390,5 @@ git remote -v
 ---
 
 *Last Updated: 2026-03-31*
+
+*Workflow updated with testing requirements and review procedures*
