@@ -31,6 +31,8 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser, FormParser
 from drf_yasg import openapi
 from .renderers import UserRenderer
+from .responses import api_response, success_response, error_response, created_response
+from .error_codes import ErrorCode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -78,15 +80,16 @@ class UserInvestorDetailAPIView(APIView):
             user = request.user
             user = UserInSerializer(user)
 
-            return Response(
-                {'user': user.data},
-                status=status.HTTP_200_OK
+            return success_response(
+                data={'user': user.data},
+                message="User details retrieved successfully"
             )
 
         except:
-            return Response(
-                {'error': 'Something went wrong when trying to load user'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            return error_response(
+                error_code=ErrorCode.INTERNAL_ERROR,
+                details="Something went wrong when trying to load user",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
 class UserListAPIView(ListAPIView):
@@ -173,10 +176,16 @@ class Invite(views.APIView):
         # print(item)
         if item.is_approved:
             serializer = InviteSerializer(item)
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+            return success_response(
+                data=serializer.data,
+                message="Referral data retrieved successfully"
+            )
         else:
-            return Response({"status": "error",  "error": "Object with referral code does not exists"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                error_code=ErrorCode.NOT_FOUND,
+                details="Object with referral code does not exist or user is not approved",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
     '''                        
         try:
             payload = jwt.decode(token, settings.SECRET_KEY)
@@ -184,11 +193,22 @@ class Invite(views.APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return success_response(
+            data={'email': user.email},
+            message="Email successfully verified"
+        )
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                error_code=ErrorCode.EXPIRED_TOKEN,
+                details="Activation link has expired",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                error_code=ErrorCode.INVALID_TOKEN,
+                details="Invalid activation token",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
 
     def get(self, request, referral_code):
@@ -243,7 +263,10 @@ class RegisterView(generics.GenericAPIView):
         sender(data['email_subject'], data['email_body'],
                'no-reply@nairametrix.com', [data['to_email']])
 
-        return Response(user_data, status=status.HTTP_201_CREATED)
+        return created_response(
+            data=user_data,
+            message="User registered successfully. Please check your email to verify your account."
+        )
 
 
 class InitialInvestmentView(generics.GenericAPIView):
@@ -339,7 +362,10 @@ class RegisterIssuerView(generics.GenericAPIView):
                'no-reply@yieldroom.ng', [data['to_email']])
 
         Util.send_email(data)
-        return Response(user_data, status=status.HTTP_201_CREATED)
+        return created_response(
+            data=user_data,
+            message="User registered successfully. Please check your email to verify your account."
+        )
 
 
 class RegisterReferralView(generics.GenericAPIView):
@@ -405,7 +431,10 @@ class RegisterReferralView(generics.GenericAPIView):
                             'email_subject': 'Verify your email'}
 
                     Util.send_email(data)
-                    return Response(user_data, status=status.HTTP_201_CREATED)
+                    return created_response(
+            data=user_data,
+            message="User registered successfully. Please check your email to verify your account."
+        )
             else:
                 return Response({"status": "error",  "error": "Referral code does not exists"},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -442,7 +471,10 @@ class LoginAPIView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return success_response(
+            data=serializer.data,
+            message="Login successful"
+        )
 
 class ProfileUpdateView(generics.GenericAPIView):
     serializer_class = ProfileInvestorSerializer
@@ -503,7 +535,10 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             sender(data['email_subject'], data['email_body'],
                'no-reply@yieldroom.ng', [data['to_email']])
             #Util.send_email(data)
-        return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
+        return success_response(
+            data=None,
+            message="We have sent you a link to reset your password"
+        )
 
 
 class PasswordTokenCheckAPI(generics.GenericAPIView):
@@ -534,7 +569,11 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                     return CustomRedirect(redirect_url+'?token_valid=False')
 
             except UnboundLocalError as e:
-                return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_400_BAD_REQUEST)
+                return error_response(
+                    error_code=ErrorCode.INVALID_TOKEN,
+                    details="Token is not valid, please request a new one",
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
 
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
@@ -543,7 +582,10 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
     def patch(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+        return success_response(
+            data=None,
+            message="Password reset successful"
+        )
 
 
 class LogoutAPIView(generics.GenericAPIView):
@@ -561,20 +603,23 @@ class LogoutAPIView(generics.GenericAPIView):
 
 
 class LoadUserView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, format=None):
         try:
             user = request.user
             user = UserSerializer(user)
 
-            return Response(
-                {'user': user.data},
-                status=status.HTTP_200_OK
+            return success_response(
+                data={'user': user.data},
+                message="User loaded successfully"
             )
 
         except:
-            return Response(
-                {'error': 'Something went wrong when trying to load user'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            return error_response(
+                error_code=ErrorCode.INTERNAL_ERROR,
+                details="Something went wrong when trying to load user",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
 
