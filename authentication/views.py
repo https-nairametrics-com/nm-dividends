@@ -329,14 +329,14 @@ class RegisterIssuerView(generics.GenericAPIView):
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
         #absurl = 'https://'+current_site+relativeLink+"?token="+str(token)
-        absurl = 'https://yieldroom.africa/confirm/'+"?token="+str(token)
+        absurl = 'https://investorates.com/confirm/'+"?token="+str(token)
         print(absurl)
         email_body = 'Hi '+user.firstname + \
             ' Use the link below to verify your email \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
         sender(data['email_subject'], data['email_body'],
-               'no-reply@yieldroom.ng', [data['to_email']])
+               'no-reply@nairametrix.com', [data['to_email']])
 
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
@@ -483,15 +483,17 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             user = User.objects.get(email=email)
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
-            if request.data.get('callbackUrl'):
-                current_site = request.data.get('callbackUrl')
+            if request.data.get('redirect_url'):
+                current_site = request.data.get('redirect_url')
             else:
                 current_site = get_current_site(request=request).domain
             relativeLink = reverse(
                 'password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
 
             redirect_url = request.data.get('redirect_url', '')
-            absurl = 'https://'+current_site + relativeLink
+            
+            #absurl = current_site + relativeLink
+            absurl = f"{redirect_url}/{uidb64}/{token}"
             print("absurl")
             print(absurl)
             email_body = 'Hello, \n Use link below to reset your password  \n' + \
@@ -501,7 +503,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Reset your passsword'}
             sender(data['email_subject'], data['email_body'],
-               'no-reply@yieldroom.ng', [data['to_email']])
+               'no-reply@nairametrix.com', [data['to_email']])
             #Util.send_email(data)
         return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
 
