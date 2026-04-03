@@ -1,0 +1,594 @@
+# Resources API Endpoints
+
+Complete reference for Resources API endpoints.
+
+---
+
+## Overview
+
+The Resources API provides content management for articles, disclosures, news, and actions. It uses a standardized response format.
+
+**Base URL:** `/api/v1/resources/`
+
+**Authentication:** JWT Bearer token required for write operations
+
+---
+
+## Response Format
+
+### Success Response (List)
+
+```json
+{
+  "success": true,
+  "message": "Resources retrieved successfully",
+  "data": [...],
+  "meta": {
+    "current_page": 1,
+    "per_page": 10,
+    "total": 50,
+    "total_pages": 5
+  }
+}
+```
+
+### Success Response (Single)
+
+```json
+{
+  "success": true,
+  "message": "Resource retrieved successfully",
+  "data": { ... }
+}
+```
+
+### Error Response
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "field_name": ["Error message"]
+  }
+}
+```
+
+---
+
+## Endpoints
+
+### List Resources
+
+Get a paginated list of resources with filtering and search.
+
+```bash
+GET /api/v1/resources/?category=article&status=published&featured=true&search=keyword&page=1&per_page=10
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | string | Filter by category: `article`, `disclosure`, `news`, `actions` |
+| `status` | string | Filter by status: `draft`, `pending`, `approved`, `published`, `archived` |
+| `featured` | boolean | Filter by featured status: `true`, `false` |
+| `search` | string | Full-text search in title and content |
+| `page` | integer | Page number (default: 1) |
+| `per_page` | integer | Items per page (default: 10, max: 100) |
+| `sort` | string | Sort field (default: `-date`) |
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Resources retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "slug": "sample-article",
+      "title": "Sample Article",
+      "content": "<p>Article content...</p>",
+      "excerpt": "Brief description",
+      "category": "article",
+      "tags": ["finance", "investment"],
+      "status": "published",
+      "featured": true,
+      "meta_title": "Sample Article - NM Dividends",
+      "meta_description": "Learn about investments",
+      "og_image": "/media/og-image.jpg",
+      "author_name": "John Doe",
+      "author_user": 1,
+      "date": "2026-04-01T10:00:00Z",
+      "created_at": "2026-03-30T08:00:00Z",
+      "updated_at": "2026-04-01T12:00:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 10,
+    "total": 50,
+    "total_pages": 5
+  }
+}
+```
+
+**Error Response (400 Bad Request):**
+
+```json
+{
+  "success": false,
+  "message": "Invalid query parameters",
+  "errors": {
+    "category": ["Invalid category choice."]
+  }
+}
+```
+
+### Get Single Resource
+
+Get a single resource by slug.
+
+```bash
+GET /api/v1/resources/sample-article/
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Resource retrieved successfully",
+  "data": {
+    "id": 1,
+    "slug": "sample-article",
+    "title": "Sample Article",
+    "content": "<p>Full article content...</p>",
+    "excerpt": "Brief description",
+    "category": "article",
+    "tags": ["finance", "investment"],
+    "status": "published",
+    "featured": true,
+    "meta_title": "Sample Article - NM Dividends",
+    "meta_description": "Learn about investments",
+    "og_image": "/media/og-image.jpg",
+    "author_name": "John Doe",
+    "author_user": 1,
+    "date": "2026-04-01T10:00:00Z",
+    "link": "https://example.com/external",
+    "created_at": "2026-03-30T08:00:00Z",
+    "updated_at": "2026-04-01T12:00:00Z"
+  }
+}
+```
+
+**Error Response (404 Not Found):**
+
+```json
+{
+  "success": false,
+  "message": "Resource not found.",
+  "data": null
+}
+```
+
+### Create Resource
+
+Create a new resource. Requires admin or editor role.
+
+```bash
+POST /api/v1/resources/
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "title": "New Article",
+  "content": "<p>Article content here...</p>",
+  "excerpt": "Brief description of the article",
+  "category": "article",
+  "tags": ["finance", "news"],
+  "status": "draft",
+  "featured": false,
+  "meta_title": "New Article",
+  "meta_description": "Description for SEO",
+  "og_image": "/media/og-image.jpg",
+  "date": "2026-04-02T10:00:00Z",
+  "link": "https://example.com"
+}
+```
+
+**Success Response (201 Created):**
+
+```json
+{
+  "success": true,
+  "message": "Resource created successfully",
+  "data": {
+    "id": 2,
+    "slug": "new-article",
+    "title": "New Article",
+    "content": "<p>Article content here...</p>",
+    "excerpt": "Brief description of the article",
+    "category": "article",
+    "tags": ["finance", "news"],
+    "status": "draft",
+    "featured": false,
+    "meta_title": "New Article",
+    "meta_description": "Description for SEO",
+    "og_image": "/media/og-image.jpg",
+    "author_name": "John Doe",
+    "author_user": 1,
+    "date": "2026-04-02T10:00:00Z",
+    "link": "https://example.com",
+    "created_at": "2026-04-02T10:00:00Z",
+    "updated_at": "2026-04-02T10:00:00Z"
+  }
+}
+```
+
+**Error Response (400 Bad Request) - Validation:**
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "title": ["This field is required."],
+    "category": ["Invalid category choice."],
+    "tags": ["List contains 11 items, it should contain no more than 10."]
+  }
+}
+```
+
+**Error Response (401 Unauthorized):**
+
+```json
+{
+  "detail": "Authentication credentials were not provided."
+}
+```
+
+**Error Response (403 Forbidden):**
+
+```json
+{
+  "detail": "You do not have permission to perform this action."
+}
+```
+
+### Update Resource
+
+Update an existing resource. Requires admin or editor role.
+
+```bash
+PUT /api/v1/resources/new-article/
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "title": "Updated Article Title",
+  "content": "<p>Updated content...</p>",
+  "status": "published",
+  "featured": true
+}
+```
+
+Or partial update:
+
+```bash
+PATCH /api/v1/resources/new-article/
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "status": "published",
+  "featured": true
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Resource updated successfully",
+  "data": {
+    "id": 2,
+    "slug": "new-article",
+    "title": "Updated Article Title",
+    "content": "<p>Updated content...</p>",
+    "category": "article",
+    "status": "published",
+    "featured": true,
+    "updated_at": "2026-04-02T11:00:00Z"
+  }
+}
+```
+
+**Error Response (404 Not Found):**
+
+```json
+{
+  "success": false,
+  "message": "Resource not found.",
+  "data": null
+}
+```
+
+### Delete Resource
+
+Delete a resource. Requires admin role.
+
+```bash
+DELETE /api/v1/resources/new-article/
+Authorization: Bearer <access_token>
+```
+
+**Success Response (204 No Content):**
+*(Empty response body)*
+
+**Error Response (403 Forbidden) - Not Admin:**
+
+```json
+{
+  "detail": "You do not have permission to perform this action."
+}
+```
+
+**Error Response (404 Not Found):**
+
+```json
+{
+  "success": false,
+  "message": "Resource not found.",
+  "data": null
+}
+```
+
+### List Categories
+
+Get all resource categories with counts.
+
+```bash
+GET /api/v1/resources/categories/
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "article",
+      "name": "Articles",
+      "slug": "article",
+      "description": "Standard articles and blog posts",
+      "resource_count": 150
+    },
+    {
+      "id": "disclosure",
+      "name": "Disclosures",
+      "slug": "disclosure",
+      "description": "Corporate disclosures and announcements",
+      "resource_count": 25
+    },
+    {
+      "id": "news",
+      "name": "News",
+      "slug": "news",
+      "description": "News items and updates",
+      "resource_count": 75
+    },
+    {
+      "id": "actions",
+      "name": "Actions",
+      "slug": "actions",
+      "description": "Administrative actions and announcements",
+      "resource_count": 10
+    }
+  ]
+}
+```
+
+---
+
+## Media Endpoints
+
+### Upload Media
+
+Upload a media file. Requires admin or editor role.
+
+```bash
+POST /api/v1/resources/media/
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+
+file: <binary-image-data>
+type: featured  # optional: featured, attachment
+```
+
+**Success Response (201 Created):**
+
+```json
+{
+  "success": true,
+  "message": "Media uploaded successfully",
+  "data": {
+    "id": 1,
+    "filename": "abc123def456.jpg",
+    "original_name": "my-image.jpg",
+    "url": "/media/uploads/featured/5/abc123def456.jpg",
+    "size": 1024576,
+    "mime_type": "image/jpeg",
+    "type": "featured",
+    "uploaded_at": "2026-04-02T10:00:00Z"
+  }
+}
+```
+
+**Error Response (400 Bad Request) - No File:**
+
+```json
+{
+  "success": false,
+  "message": "No file provided.",
+  "errors": {
+    "file": ["This field is required."]
+  }
+}
+```
+
+**Error Response (413 Payload Too Large):**
+
+```json
+{
+  "success": false,
+  "message": "File size exceeds 5MB limit.",
+  "errors": {
+    "file": ["Maximum file size is 5MB."]
+  }
+}
+```
+
+**Error Response (415 Unsupported Media Type):**
+
+```json
+{
+  "success": false,
+  "message": "Invalid file type. Allowed: JPEG, PNG, GIF, WebP.",
+  "errors": {
+    "file": ["Invalid file type."]
+  }
+}
+```
+
+### Delete Media
+
+Delete a media file. Requires admin or editor role.
+
+```bash
+DELETE /api/v1/resources/media/1/
+Authorization: Bearer <access_token>
+```
+
+**Success Response (204 No Content):**
+*(Empty response body)*
+
+**Error Response (404 Not Found):**
+
+```json
+{
+  "success": false,
+  "message": "Media file not found.",
+  "data": null
+}
+```
+
+---
+
+## Field Reference
+
+### Categories
+
+| Value | Display Name |
+|-------|--------------|
+| `article` | Article |
+| `disclosure` | Disclosure |
+| `news` | News |
+| `actions` | Actions |
+
+### Statuses
+
+| Value | Display Name | Description |
+|-------|--------------|-------------|
+| `draft` | Draft | Initial creation, not visible |
+| `pending` | Pending | Awaiting approval |
+| `approved` | Approved | Approved but not published |
+| `published` | Published | Publicly visible |
+| `archived` | Archived | No longer active |
+
+### Media Types
+
+| Value | Description |
+|-------|-------------|
+| `featured` | Featured image for resources |
+| `attachment` | General attachment |
+
+### Allowed Media Formats
+
+- JPEG (.jpg, .jpeg)
+- PNG (.png)
+- GIF (.gif)
+- WebP (.webp)
+
+**Max file size:** 5MB
+
+---
+
+## Permission Matrix
+
+| Action | Anonymous | Authenticated | Editor | Admin |
+|--------|-----------|---------------|--------|-------|
+| List resources | ✅ Published only | ✅ Published only | ✅ All | ✅ All |
+| Get single resource | ✅ Published only | ✅ Published only | ✅ All | ✅ All |
+| Create resource | ❌ | ❌ | ✅ | ✅ |
+| Update resource | ❌ | ❌ | ✅ | ✅ |
+| Delete resource | ❌ | ❌ | ❌ | ✅ |
+| Upload media | ❌ | ❌ | ✅ | ✅ |
+| Delete media | ❌ | ❌ | ✅ | ✅ |
+
+---
+
+## Examples
+
+### Create Article with Tags
+
+```bash
+curl -X POST http://localhost:8000/api/v1/resources/ \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Understanding Dividends",
+    "content": "<p>Dividends are payments...</p>",
+    "excerpt": "A guide to understanding dividends",
+    "category": "article",
+    "tags": ["dividends", "investing", "stocks"],
+    "status": "published",
+    "featured": true
+  }'
+```
+
+### Search Resources
+
+```bash
+curl "http://localhost:8000/api/v1/resources/?search=dividend&category=article&status=published"
+```
+
+### Filter by Category
+
+```bash
+curl "http://localhost:8000/api/v1/resources/?category=disclosure&sort=-date"
+```
+
+### Upload Featured Image
+
+```bash
+curl -X POST http://localhost:8000/api/v1/resources/media/ \
+  -H "Authorization: Bearer <token>" \
+  -F "file=@featured-image.jpg" \
+  -F "type=featured"
+```
+
+---
+
+## Related Documentation
+
+- [Authentication](./AUTHENTICATION.md) - JWT authentication
+- [Results](./RESULTS.md) - CSV data upload API
+- [Error Codes](./ERROR_CODES.md) - Common error responses
+
+---
+
+*Last Updated: 2026-04-02*

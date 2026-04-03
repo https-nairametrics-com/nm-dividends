@@ -21,7 +21,7 @@ class NMData(models.Model):
     upload_date = models.DateField(null=True)  # Auto-populated date
     csv_file = models.FileField(upload_to='csv/')  # Uploaded file
     status = models.CharField(
-        choices=STATUS_OPTIONS, max_length=255, default="not started")
+        choices=STATUS_OPTIONS, max_length=255, default="pending")
     json_data = models.JSONField(blank=True, null=True)  # Parsed JSON data from the CSV
     uploaded_by = models.ForeignKey(
         to=User, on_delete=models.CASCADE, null=True, related_name='uploaded_by')
