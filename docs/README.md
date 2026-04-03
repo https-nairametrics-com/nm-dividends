@@ -49,38 +49,6 @@ Complete documentation for the NM Dividends Backend API.
 
 ---
 
-## Documentation Map
-
-### Start Here
-
-**New to the project?**
-1. Read the [Main README](../README.md) for quick start
-2. Review [System Overview](#system-overview) below
-3. Set up your environment ([Installation](../README.md#quick-start))
-4. Learn the [Development Workflow](./contributing/WORKFLOW.md)
-
-### By Role
-
-**Backend Developer**
-- [Architecture Overview](./architecture/OVERVIEW.md)
-- [Data Models](./architecture/DATA_MODELS.md)
-- [Authentication](./api/AUTHENTICATION.md) - API endpoints
-- [Results](./api/RESULTS.md) - API endpoints
-- [Testing Guide](./operations/TESTING.md)
-
-**Frontend Developer**
-- [Authentication](./api/AUTHENTICATION.md) - API endpoints
-- [Results](./api/RESULTS.md) - API endpoints
-- [Error Codes](./api/ERROR_CODES.md)
-- [Authentication](./architecture/AUTHENTICATION.md)
-
-**DevOps/SRE**
-- [Deployment Guide](./operations/DEPLOYMENT.md)
-- [Environment Configuration](./operations/DEPLOYMENT.md#environment-configuration)
-- [Architecture Overview](./architecture/OVERVIEW.md)
-
----
-
 ## Documentation Structure
 
 ```
@@ -175,11 +143,12 @@ The API will be available at http://localhost:8000/
 | Component | Purpose | Status |
 |-----------|---------|--------|
 | `authentication` | User management, JWT auth | **Active** |
+| `article` | Content management (articles, news) | **Active** |
 | `results` | NM Data CSV uploads | **Active** |
-| `article` | Legacy article management | Deprecated |
-| `investment` | Investment portfolios | Deprecated |
+| `resources` | Content management (next-gen) | **In Development** |
+| `income` | Income tracking | Disabled |
 | `investor` | Investor profiles | Deprecated |
-| `expenses` | Expense tracking | Deprecated |
+| `investment` | Investment portfolios | Deprecated |
 | `comment` | Comment system | Deprecated |
 | `contact` | Contact forms | Deprecated |
 | `social_auth` | OAuth providers | Deprecated |
@@ -207,13 +176,15 @@ Content-Type: application/json
 
 ### Key Endpoints
 
-| Endpoint | Auth | Description |
-|----------|------|-------------|
-| `/api/token/` | No | Obtain JWT tokens |
-| `/auth/register/` | No | Register new user |
-| `/auth/login/` | No | Login and get tokens |
-| `/results/` | No | List NMData CSV uploads |
-| `/results/upload/` | Yes (Admin) | Upload CSV file |
+| Endpoint | App | Auth | Description |
+|----------|-----|------|-------------|
+| `/api/token/` | auth | No | Obtain JWT tokens |
+| `/auth/register/` | auth | No | Register new user |
+| `/auth/login/` | auth | No | Login and get tokens |
+| `/article/posts/` | article | No | List articles |
+| `/article/posts/<slug>/` | article | No | Get single article |
+| `/results/` | results | No | List NMData uploads |
+| `/results/upload/` | results | Yes (Admin) | Upload CSV file |
 
 See [Authentication](./api/AUTHENTICATION.md) and [Results](./api/RESULTS.md) for complete reference.
 
@@ -237,14 +208,15 @@ We are migrating all endpoints to use a consistent response format:
 }
 ```
 
-### Standardization Progress (Active Apps)
+### Standardization Progress
 
 | App | Status |
 |-----|--------|
+| article | ✅ Complete (uses standardized responses) |
 | authentication | 🔄 In Progress |
 | results | ⏳ Pending |
 
-Legacy apps (`article`, `investment`, `investor`, `expenses`, `comment`, `contact`, `social_auth`) are deprecated and not being standardized.
+Legacy apps are deprecated and not being standardized.
 
 See [Issue #9 Implementation Plan](../plans/ISSUE_9_IMPLEMENTATION_PLAN.md).
 
@@ -264,15 +236,18 @@ The following apps are **legacy/deprecated** and maintained for backward compati
 
 | App | Status | Note |
 |-----|--------|------|
-| `article/` | Deprecated | Do not use for new features |
-| `investment/` | Deprecated | Do not use for new features |
-| `investor/` | Deprecated | Do not use for new features |
-| `expenses/` | Deprecated | Do not use for new features |
-| `comment/` | Deprecated | Do not use for new features |
-| `contact/` | Deprecated | Do not use for new features |
-| `social_auth/` | Deprecated | Do not use for new features |
+| `investor/` | Deprecated | URLs commented out |
+| `investment/` | Deprecated | URLs commented out |
+| `comment/` | Deprecated | URLs commented out |
+| `contact/` | Deprecated | URLs commented out |
+| `social_auth/` | Deprecated | URLs commented out |
+| `income/` | Disabled | Not in INSTALLED_APPS |
 
-**Do not build new features on these apps.**
+### In Development
+
+| App | Status | Note |
+|-----|--------|------|
+| `resources/` | In Development | Models ready, API endpoints pending |
 
 ---
 
@@ -306,7 +281,6 @@ When updating documentation:
 - Use clear, concise language
 - Include code examples where helpful
 - Use tables for structured data
-- Add mermaid diagrams for flows
 - Keep line length reasonable (< 100 chars)
 
 ---

@@ -79,6 +79,7 @@ Authentication flow and permission system.
 ### Role Definitions
 
 #### Anonymous
+- Can view published articles
 - Can view public NMData uploads
 - Can register, login, verify email
 - Can request password reset
@@ -90,10 +91,13 @@ Authentication flow and permission system.
 
 #### Editor (is_staff=True)
 - All Authenticated permissions
+- Can create/edit articles
+- Can upload media
 - Limited admin panel access
 
 #### Admin (is_superuser=True)
 - All Editor permissions
+- Can delete articles
 - Can upload CSV files to results
 - Can manage users
 - Full admin panel access
@@ -144,6 +148,7 @@ We have inconsistent response formats across different apps.
 
 | App | Current Format | Target Format | Status |
 |-----|---------------|---------------|--------|
+| article | Standard | Standard | ✅ Complete |
 | authentication | Legacy | Standard | 🔄 In Progress |
 | results | Custom | Standard | ⏳ Pending |
 

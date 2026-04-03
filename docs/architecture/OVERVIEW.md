@@ -27,15 +27,19 @@ System architecture and design documentation for NM Dividends Backend.
               ▼                                                      ▼
 ┌─────────────────────────────┐                         ┌─────────────────────────────┐
 │        Active Apps          │                         │       Legacy Apps           │
-│  ┌──────────┬──────────┐    │                         │  ┌──────────────────────┐   │
-│  │   auth   │ results  │    │                         │  │ article              │   │
-│  └──────────┴──────────┘    │                         │  │ investment           │   │
-│                             │                         │  │ investor             │   │
-└─────────────────────────────┘                         │  │ expenses             │   │
-                                                        │  │ comment              │   │
-                                                        │  │ contact              │   │
-                                                        │  │ social_auth          │   │
-                                                        └─────────────────────────────┘
+│  ┌───────────────────────┐  │                         │  ┌──────────────────────┐   │
+│  │   authentication      │  │                         │  │ investor             │   │
+│  ├───────────────────────┤  │                         │  │ investment           │   │
+│  │   article             │  │                         │  │ comment              │   │
+│  ├───────────────────────┤  │                         │  │ contact              │   │
+│  │   results             │  │                         │  │ social_auth          │   │
+│  └───────────────────────┘  │                         │  │ income               │   │
+│                             │                         │  └──────────────────────┘   │
+│  ┌───────────────────────┐  │                         │                             │
+│  │   resources           │  │                         │                             │
+│  │   (models only)       │  │                         │                             │
+│  └───────────────────────┘  │                         │                             │
+└─────────────────────────────┘                         └─────────────────────────────┘
               │
               ▼
 ┌─────────────────────────────────────────┐
@@ -50,17 +54,30 @@ System architecture and design documentation for NM Dividends Backend.
 
 ## System Components
 
-| Component | Purpose | Status |
-|-----------|---------|--------|
-| `authentication` | User management, JWT auth, email verification | **Active** |
-| `results` | NM Data CSV uploads and results tracking | **Active** |
-| `article` | Legacy article management | Deprecated |
-| `investment` | Investment portfolios | Deprecated |
-| `investor` | Investor profiles | Deprecated |
-| `expenses` | Expense tracking | Deprecated |
-| `comment` | Comment system | Deprecated |
-| `contact` | Contact forms | Deprecated |
-| `social_auth` | OAuth providers | Deprecated |
+### Active (API Available)
+
+| Component | Purpose | API Base | Status |
+|-----------|---------|----------|--------|
+| `authentication` | User management, JWT auth, email verification | `/auth/` | **Active** |
+| `article` | Content management (articles, news, disclosures) | `/article/` | **Active** |
+| `results` | NM Data CSV uploads and data tracking | `/results/` | **Active** |
+
+### In Development
+
+| Component | Purpose | Status | Notes |
+|-----------|---------|--------|-------|
+| `resources` | Content management (next-gen) | **In Dev** | Models ready, API pending |
+
+### Legacy (Not Available)
+
+| Component | Purpose | Status | Notes |
+|-----------|---------|--------|-------|
+| `investor` | Investor profiles | Deprecated | URLs commented out |
+| `investment` | Investment portfolios | Deprecated | URLs commented out |
+| `comment` | Comment system | Deprecated | URLs commented out |
+| `contact` | Contact forms | Deprecated | URLs commented out |
+| `social_auth` | OAuth providers | Deprecated | URLs commented out |
+| `income` | Income tracking | Disabled | Not in INSTALLED_APPS |
 
 ---
 
@@ -74,15 +91,27 @@ nm-dividends-backend/
 │   ├── serializers.py      # User serializers
 │   ├── urls.py             # Auth routes
 │   └── tests/              # Authentication tests
+├── article/                # Content management - Articles (ACTIVE)
+│   ├── models.py           # Article, ArticleCategory, MediaFile models
+│   ├── views.py            # Article CRUD views
+│   ├── serializers.py      # Article serializers
+│   ├── urls.py             # Article API routes
+│   └── utils.py            # Response utilities
 ├── results/                # NM Data CSV uploads (ACTIVE)
 │   ├── models.py           # NMData model
 │   ├── views.py            # CSV upload, list, update views
 │   ├── serializers.py      # NMData serializers
 │   └── urls.py             # Results API routes
-├── article/                # Legacy (deprecated)
-├── investment/             # Legacy (deprecated)
+├── resources/              # Content management - Next Gen (IN DEVELOPMENT)
+│   ├── models.py           # Resource, MediaFile models (complete)
+│   ├── views.py            # Empty (pending implementation)
+│   ├── serializers.py      # Empty (pending implementation)
+│   ├── urls.py             # Empty (pending implementation)
+│   └── admin.py            # Admin configuration
+├── income/                 # Income tracking (DISABLED)
+│   └── ...                 # Not in INSTALLED_APPS
 ├── investor/               # Legacy (deprecated)
-├── expenses/               # Legacy (deprecated)
+├── investment/             # Legacy (deprecated)
 ├── comment/                # Legacy (deprecated)
 ├── contact/                # Legacy (deprecated)
 ├── social_auth/            # Legacy (deprecated)
@@ -97,6 +126,21 @@ nm-dividends-backend/
 ├── requirements.txt        # Python dependencies
 └── .env-example            # Environment variables template
 ```
+
+---
+
+## API Endpoints Status
+
+| Endpoint | App | Status | Auth |
+|----------|-----|--------|------|
+| `/auth/register/` | authentication | ✅ Active | No |
+| `/auth/login/` | authentication | ✅ Active | No |
+| `/auth/loaduser/` | authentication | ✅ Active | Yes |
+| `/article/posts/` | article | ✅ Active | Varies |
+| `/article/posts/<slug>/` | article | ✅ Active | Varies |
+| `/results/` | results | ✅ Active | No |
+| `/results/upload/` | results | ✅ Active | Admin |
+| `/api/v1/resources/` | resources | ❌ Not Available | - |
 
 ---
 

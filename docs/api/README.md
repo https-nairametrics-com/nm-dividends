@@ -32,15 +32,17 @@ Authorization: Bearer <access_token>
 
 ### Main Endpoints
 
-| Endpoint | Description | Auth Required |
-|----------|-------------|---------------|
-| `/auth/register/` | User registration | No |
-| `/auth/login/` | User login | No |
-| `/api/token/` | Obtain JWT tokens | No |
-| `/api/token/refresh/` | Refresh access token | No |
-| `/auth/loaduser/` | Current user info | Yes |
-| `/results/` | List NMData uploads | No |
-| `/results/upload/` | Upload CSV file | Yes (Admin) |
+| Endpoint | App | Description | Auth Required |
+|----------|-----|-------------|---------------|
+| `/auth/register/` | authentication | User registration | No |
+| `/auth/login/` | authentication | User login | No |
+| `/api/token/` | authentication | Obtain JWT tokens | No |
+| `/api/token/refresh/` | authentication | Refresh access token | No |
+| `/auth/loaduser/` | authentication | Current user info | Yes |
+| `/article/posts/` | article | List articles | No |
+| `/article/posts/<slug>/` | article | Get single article | No |
+| `/results/` | results | List NMData uploads | No |
+| `/results/upload/` | results | Upload CSV file | Yes (Admin) |
 
 ### Response Formats
 

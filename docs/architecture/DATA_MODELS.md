@@ -31,6 +31,7 @@ User:
 ```
 User
 ├── Referrals (FK - owner)
+├── Articles (FK - author)
 └── NMData (FK - uploaded_by)
 ```
 
@@ -62,6 +63,57 @@ Profile:
 
 ---
 
+## Article Model (`article`)
+
+```python
+Article:
+- id: AutoField (PK)
+- slug: SlugField (unique)
+- title: CharField
+- content: TextField (HTML)
+- excerpt: TextField
+- category: CharField (choices: article, disclosure, news, actions)
+- tags: JSONField (list)
+- featured_image: ImageField
+- status: CharField (draft, pending, approved, published, archived)
+- featured: BooleanField
+- meta_title: CharField (SEO)
+- meta_description: TextField (SEO)
+- og_image: CharField (SEO)
+- author_name: CharField
+- author: ForeignKey -> User
+- date: DateTimeField
+- created_at: DateTimeField
+- updated_at: DateTimeField
+```
+
+### ArticleCategory Model (`article`)
+
+```python
+ArticleCategory:
+- id: AutoField (PK)
+- name: CharField (unique)
+- slug: SlugField (unique)
+- description: TextField
+- created_at: DateTimeField
+```
+
+### MediaFile Model (`article`)
+
+```python
+MediaFile:
+- id: AutoField (PK)
+- file: FileField
+- original_filename: CharField
+- file_type: CharField
+- file_size: PositiveIntegerField
+- uploaded_by: ForeignKey -> User
+- uploaded_at: DateTimeField
+- article: ForeignKey -> Article (optional)
+```
+
+---
+
 ## NMData Model (`results`)
 
 ```python
@@ -73,7 +125,7 @@ NMData:
 - description: TextField (optional description)
 - upload_date: DateField (date of upload)
 - csv_file: FileField (uploaded CSV file)
-- status: CharField (choices: pending, approved, disapproved)
+- status: CharField (choices: pending, approved, disapproved, default: pending)
 - json_data: JSONField (parsed CSV data as array)
 - uploaded_by: ForeignKey -> User
 - created_at: DateTimeField (auto_now_add)
@@ -90,6 +142,36 @@ NMData:
 
 ---
 
+## Resource Model (`resources` - In Development)
+
+> **Note:** This model is implemented but has no API endpoints yet.
+
+```python
+Resource:
+- id: AutoField (PK)
+- slug: SlugField (unique)
+- title: CharField
+- content: TextField (HTML)
+- excerpt: TextField
+- category: CharField (article, disclosure, news, actions)
+- tags: JSONField (list, max 10)
+- featured_media: CharField (URL)
+- featured_media_type: CharField (local/external)
+- status: CharField (draft, pending, approved, published, archived)
+- featured: BooleanField
+- meta_title: CharField (SEO)
+- meta_description: TextField (SEO)
+- og_image: CharField (SEO)
+- author_name: CharField
+- author_user: ForeignKey -> User
+- date: DateTimeField
+- link: URLField
+- created_at: DateTimeField
+- updated_at: DateTimeField
+```
+
+---
+
 ## Database Indexes
 
 ### User Table
@@ -98,6 +180,15 @@ NMData:
 CREATE INDEX idx_auth_user_username ON authentication_user(username);
 CREATE INDEX idx_auth_user_email ON authentication_user(email);
 CREATE INDEX idx_auth_user_referral ON authentication_user(referral_code);
+```
+
+### Article Table
+
+```sql
+CREATE INDEX idx_article_category ON article_article(category);
+CREATE INDEX idx_article_status ON article_article(status);
+CREATE INDEX idx_article_date ON article_article(date);
+CREATE INDEX idx_article_featured ON article_article(featured);
 ```
 
 ### NMData Table
@@ -127,45 +218,25 @@ CREATE INDEX idx_results_nmdata_upload_date ON results_nmdata(upload_date);
 │ is_active   │
 └──────┬──────┘
        │
-       ├───────────────────┐
-       │                   │
-       ▼                   ▼
-┌─────────────┐     ┌─────────────┐
-│  Referrals  │     │   NMData    │
-├─────────────┤     ├─────────────┤
-│ id          │     │ id          │
-│ owner       │────▶│ name        │
-│ referred    │     │ data_type   │
-│ status      │     │ csv_file    │
-│ created_at  │     │ json_data   │
-└─────────────┘     │ status      │
-                    │ uploaded_by │────┐
-                    │ created_at  │    │
-                    └─────────────┘    │
-                                       │
-                              ┌────────┴────┐
-                              │    User     │
-                              └─────────────┘
-```
-
----
-
-## Legacy Models (Deprecated)
-
-The following models exist in deprecated apps and should not be used for new features:
-
-### Article Model (`article` app - Deprecated)
-
-```python
-Article:
-- id: AutoField (PK)
-- title: CharField
-- slug: SlugField (unique)
-- content: TextField (HTML)
-- author: ForeignKey -> User
-- featured_image: ImageField
-- created_at: DateTimeField
-- updated_at: DateTimeField
+       ├───────────────────┬───────────────────┐
+       │                   │                   │
+       ▼                   ▼                   ▼
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Referrals  │     │   Article   │     │   NMData    │
+├─────────────┤     ├─────────────┤     ├─────────────┤
+│ id          │     │ id          │     │ id          │
+│ owner       │────▶│ slug        │     │ name        │
+│ referred    │     │ title       │     │ data_type   │
+│ status      │     │ content     │     │ csv_file    │
+│ created_at  │     │ category    │     │ json_data   │
+└─────────────┘     │ status      │     │ status      │
+                    │ author      │────▶│ uploaded_by │────┐
+                    │ created_at  │     │ created_at  │    │
+                    └─────────────┘     └─────────────┘    │
+                                                           │
+                                                  ┌────────┴────┐
+                                                  │    User     │
+                                                  └─────────────┘
 ```
 
 ---

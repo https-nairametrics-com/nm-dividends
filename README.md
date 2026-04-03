@@ -1,13 +1,14 @@
 # NM Dividends Backend
 
-A Django REST API for user authentication and NM Data CSV uploads.
+A Django REST API for content management (articles, news, disclosures), NM Data CSV uploads, and user authentication.
 
 ## Features
 
 - **JWT Authentication** - Secure token-based authentication with SimpleJWT
+- **Articles API** - Content management for articles, disclosures, news, and actions
 - **Results API** - CSV data upload and management for NM Data
-- **Role-Based Access** - Admin and regular user roles
-- **User Management** - Registration, login, email verification, password reset
+- **Role-Based Access** - Admin, Editor, and Public user roles
+- **SEO Support** - Meta tags and Open Graph image support
 
 ## Quick Start
 
@@ -73,6 +74,8 @@ Interactive API documentation is available at:
 | `POST /api/token/` | No | Obtain JWT tokens |
 | `POST /auth/register/` | No | User registration |
 | `POST /auth/login/` | No | User login |
+| `GET /article/posts/` | No | List articles |
+| `GET /article/posts/<slug>/` | No | Get single article |
 | `GET /results/` | No | List NMData uploads |
 | `POST /results/upload/` | Yes (Admin) | Upload CSV file |
 
@@ -94,10 +97,12 @@ curl http://localhost:8000/auth/loaduser/ \
 ```
 nm-dividends-backend/
 ├── authentication/     # User management, JWT auth (ACTIVE)
+├── article/            # Content management - Articles (ACTIVE)
 ├── results/            # NM Data CSV uploads (ACTIVE)
-├── article/            # Legacy - deprecated
-├── investment/         # Legacy - deprecated
+├── resources/          # Content management - Next Gen (IN DEVELOPMENT)
+├── income/             # Income tracking (DISABLED)
 ├── investor/           # Legacy - deprecated
+├── investment/         # Legacy - deprecated
 ├── expenses/           # Legacy - deprecated
 ├── comment/            # Legacy - deprecated
 ├── contact/            # Legacy - deprecated
@@ -108,7 +113,13 @@ nm-dividends-backend/
 └── media/              # Uploaded files
 ```
 
-**Note:** Only `authentication` and `results` apps are active. All other apps are legacy/deprecated.
+**Active Apps:** `authentication`, `article`, `results`
+
+**In Development:** `resources` (models ready, API pending)
+
+**Legacy/Deprecated:** `investor`, `investment`, `expenses`, `comment`, `contact`, `social_auth`
+
+**Disabled:** `income` (not in INSTALLED_APPS)
 
 ## Documentation
 
@@ -125,6 +136,7 @@ python manage.py test
 
 # Run specific app tests
 python manage.py test authentication
+python manage.py test article
 python manage.py test results
 
 # Run with pytest

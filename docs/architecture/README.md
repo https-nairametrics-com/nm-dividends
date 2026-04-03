@@ -36,26 +36,30 @@ System design and architecture documentation.
 
 ## Apps Structure
 
-### Active Apps
+### Active Apps (API Available)
 
 ```
 authentication/  # User management, JWT auth
+article/         # Content management (articles, news, disclosures)
 results/         # NM Data CSV uploads and results tracking
 ```
 
-### Legacy Apps (Deprecated)
+### In Development
 
 ```
-article/         # Legacy - deprecated
-investment/      # Legacy - deprecated
-investor/        # Legacy - deprecated
-expenses/        # Legacy - deprecated
-comment/         # Legacy - deprecated
-contact/         # Legacy - deprecated
-social_auth/     # Legacy - deprecated
+resources/       # Content management (next-gen, models ready, API pending)
 ```
 
-> **Note:** Do not build new features on legacy apps.
+### Legacy/Disabled Apps
+
+```
+income/          # Income tracking (disabled, not in INSTALLED_APPS)
+investor/        # Legacy (deprecated)
+investment/      # Legacy (deprecated)
+comment/         # Legacy (deprecated)
+contact/         # Legacy (deprecated)
+social_auth/     # Legacy (deprecated)
+```
 
 ---
 
